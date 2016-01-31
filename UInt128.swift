@@ -417,8 +417,6 @@ prefix public func ~(rhs: UInt128) -> UInt128 {
     let lowerBits = ~rhs.value.lowerBits
     return UInt128(upperBits: upperBits, lowerBits: lowerBits)
 }
-// MARK: - BitwiseShiftType
-extension UInt128: BitwiseShiftType {}
 /// Shifts `lhs`' bits left by `rhs` bits and returns the result.
 public func <<(lhs: UInt128, rhs: UInt128) -> UInt128 {
     if rhs.value.upperBits > 0 || rhs.value.lowerBits >= 128 {
