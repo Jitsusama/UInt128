@@ -11,6 +11,5 @@ use the `init(stringLiteral: String)` initializer to create an instance with a s
 The string can be in binary, octal, decimal or hexadecimal.
 
 ## Example
-`let uInt128ByString: UInt128 = "0xffaabbcc00129823fa9a12d4aa87f498"`
-
-`let uInt128ByInteger: UInt128 = 1234`
+    let uInt128ByString: UInt128 = "0xffaabbcc00129823fa9a12d4aa87f498"
+    let uInt128ByInteger: UInt128 = 1234
