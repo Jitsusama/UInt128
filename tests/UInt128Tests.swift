@@ -1,5 +1,5 @@
 //
-// UInt128_Tests.swift
+// UInt128-Tests.swift
 //
 // UInt128 unit test cases.
 //
@@ -18,7 +18,7 @@
 // limitations under the License.
 //
 import XCTest
-class UInt128_Tests: XCTestCase {
+class UInt128Tests: XCTestCase {
     override func setUp() {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
