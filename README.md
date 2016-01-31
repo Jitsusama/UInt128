@@ -1,5 +1,7 @@
 # UInt128
-A Swift 128-bit Unsigned Integer Data Type conforming to the UnsignedInteger Protocol
+A Swift 128-bit Unsigned Integer Data Type conforming to the UnsignedInteger Protocol.
+This library also implements a number of other initializers and properties that Swift's
+native unsigned integer types support.
 
 ## Usage
 Since this library fully implements the UnsignedInteger protocol, you can use this data
@@ -9,5 +11,6 @@ use the `init(stringLiteral: String)` initializer to create an instance with a s
 The string can be in binary, octal, decimal or hexadecimal.
 
 ## Example
-let uInt128ByString: UInt128 = "0xffaabbcc00129823fa9a12d4aa87f498"
-let uInt128ByInteger: UInt128 = 1234
+`let uInt128ByString: UInt128 = "0xffaabbcc00129823fa9a12d4aa87f498"`
+
+`let uInt128ByInteger: UInt128 = 1234`
