@@ -280,6 +280,15 @@ public struct UInt128 {
         #endif
     }
     // MARK: Instance Methods
+    /// Converts the stored value into a string representation.
+    /// - parameter radix:
+    ///     The radix for the base numbering system you wish to have
+    ///     the type presented in.
+    /// - parameter uppercase:
+    ///     Determines whether letter components of the outputted string will be in
+    ///     uppercase format or not.
+    /// - returns:
+    ///     String representation of the stored UInt128 value.
     internal func toString(radix radix: Int = 10, uppercase: Bool = true) -> String {
         precondition(radix > 1 && radix < 17, "radix must be within the range of 2-16.")
         // Will store the final string result.
@@ -383,21 +392,26 @@ extension UInt128: BitwiseOperationsType {
         return UInt128(0)
     }
 }
+/// Performs a bitwise AND operation on 2 UInt128 data types.
 public func &(lhs: UInt128, rhs: UInt128) -> UInt128 {
     let upperBits = lhs.value.upperBits & rhs.value.upperBits
     let lowerBits = lhs.value.lowerBits & rhs.value.lowerBits
     return UInt128(upperBits: upperBits, lowerBits: lowerBits)
 }
+/// Performs a bitwise OR operation on 2 UInt128 data types.
 public func |(lhs: UInt128, rhs: UInt128) -> UInt128 {
     let upperBits = lhs.value.upperBits | rhs.value.upperBits
     let lowerBits = lhs.value.lowerBits | rhs.value.lowerBits
     return UInt128(upperBits: upperBits, lowerBits: lowerBits)
 }
+/// Performs a bitwise XOR operation on 2 UInt128 data types.
 public func ^(lhs: UInt128, rhs: UInt128) -> UInt128 {
     let upperBits = lhs.value.upperBits ^ rhs.value.upperBits
     let lowerBits = lhs.value.lowerBits ^ rhs.value.lowerBits
     return UInt128(upperBits: upperBits, lowerBits: lowerBits)
 }
+/// Performs bit inversion on the provided UInt128 data type
+/// and returns the result.
 prefix public func ~(rhs: UInt128) -> UInt128 {
     let upperBits = ~rhs.value.upperBits
     let lowerBits = ~rhs.value.lowerBits
@@ -405,6 +419,7 @@ prefix public func ~(rhs: UInt128) -> UInt128 {
 }
 // MARK: - BitwiseShiftType
 extension UInt128: BitwiseShiftType {}
+/// Shifts `lhs`' bits left by `rhs` bits and returns the result.
 public func <<(lhs: UInt128, rhs: UInt128) -> UInt128 {
     if rhs.value.upperBits > 0 || rhs.value.lowerBits >= 128 {
         return UInt128(0)
@@ -424,6 +439,7 @@ public func <<(lhs: UInt128, rhs: UInt128) -> UInt128 {
     default: return UInt128(0)
     }
 }
+/// Shifts `lhs`' bits right by `rhs` bits and returns the result.
 public func >>(lhs: UInt128, rhs: UInt128) -> UInt128 {
     if rhs.value.upperBits > 0 || rhs.value.lowerBits >= 128 {
         return UInt128(0)
@@ -600,8 +616,8 @@ public func %(lhs: UInt128, rhs: UInt128) -> UInt128 {
 }
 // MARK: - Comparable
 extension UInt128: Comparable {}
-/// Comparable conforming operator that checks if the lhs UInt128 is
-/// less than the rhs UInt128.
+/// Comparable conforming operator that checks if the `lhs` UInt128 is
+/// less than the `rhs` UInt128.
 public func <(lhs: UInt128, rhs: UInt128) -> Bool {
     if lhs.value.upperBits < rhs.value.upperBits {
         return true
