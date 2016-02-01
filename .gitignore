@@ -1,4 +1,2 @@
-
 *.plist
-
-*.pbxproj
+*.xcodeproj
