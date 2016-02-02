@@ -22,7 +22,7 @@ import XCTest
 @testable import UInt128
 /// This class' purpose in life is to test UInt128 like there's no tomorrow.
 class UInt128Tests: XCTestCase {
-    let bizarreUInt128: UInt128 = "0xf0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0"
+    let bizarreUInt128: UInt128 = "0xf1f3f5f7f9fbfdfffefcfaf0f8f6f4f2"
     override func setUp() {
         super.setUp()
     }
@@ -61,13 +61,8 @@ class UInt128Tests: XCTestCase {
         #endif
         // Test instantiation with bigEndian value matches expected value.
         let testUInt128BigEndian = UInt128(bigEndian: testUInt128Native.bigEndian)
-        let original = String(testUInt128Native.bigEndian, radix: 16)
-        let result = String(testUInt128BigEndian, radix: 16)
         #if arch(i386) || arch (x86_64) || arch(arm) || arch(arm64)
-            XCTAssertTrue(
-                testUInt128Native.bigEndian == testUInt128BigEndian,
-                "Result: \(result), Original: \(original)"
-            )
+            XCTAssertTrue(testUInt128Native == testUInt128BigEndian)
         #else
             XCTAssertTrue(testUInt128Native.bigEndian == testUInt128BigEndian)
         #endif

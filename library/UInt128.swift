@@ -106,17 +106,19 @@ public struct UInt128 {
             if byteMask <= UInt128(0xff) << 56 {
                 // The bottom 8 bytes will get masked and shifted to opposing byte.
                 bytes[index] = (self & byteMask) << byteShift
-                byteMask <<= 8
-                // We don't want to decrease the shifter on the bottom half's last byte.
+                // Don't decrease the shifter on the bottom half's last byte, as this
+                // down shift will become the up shift during the next for loop run.
                 if byteMask != UInt128(0xff) << 56 {
                     byteShift -= 16
                 }
+                byteMask <<= 8
             } else if byteMask >= UInt128(0xff) << 64 {
                 // The top 8 bytes will get masked and shifted to opposing byte.
                 bytes[index] = (self & byteMask) >> byteShift
                 byteMask <<= 8
                 byteShift += 16
             }
+            // Cheap way to add the results together.
             result |= bytes[index]
         }
         return result
