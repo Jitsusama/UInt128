@@ -104,6 +104,14 @@ class UInt128Tests: XCTestCase {
         } catch {
             XCTFail("Invalid Radix didn't throw correctly.")
         }
+        // Test 0 output from 0 input.
+        let zero = UInt128(0)
+        XCTAssert(zero.description == "0")
+        // Test String Conversion from UInt128 Input.
+        XCTAssertTrue(
+            try! UInt128(String(bizarreUInt128)) == bizarreUInt128,
+            "UInt128 Input to String Gave Incorrect Result"
+        )
     }
     func testBinaryStringConversion() {
         // String conversion test.
@@ -116,6 +124,24 @@ class UInt128Tests: XCTestCase {
         XCTAssertTrue(
             try! UInt128(binaryString) == sanityValue,
             "Basic Binary String to UInt128 conversion failed"
+        )
+        // Valid string output conversion test (lowercase)
+        XCTAssertTrue(
+            String(sanityValue, radix: 2, uppercase: false) == String.init([
+                "110100001000100011111000100010001101100011",
+                "1100001110100010001000111000001000100100000000",
+                "1000100010000000100010001000000010101"
+                ].joinWithSeparator("")),
+            "Basic UInt128 to Binary Lowercase String Conversion Failed"
+        )
+        // Valid string output conversion test (uppercase)
+        XCTAssertTrue(
+            String(sanityValue, radix: 2, uppercase: true) == String.init([
+                "110100001000100011111000100010001101100011",
+                "1100001110100010001000111000001000100100000000",
+                "1000100010000000100010001000000010101"
+                ].joinWithSeparator("")),
+            "Basic UInt128 to Binary Uppercase String Conversion Failed"
         )
         // Invalid characters.
         do {
@@ -147,6 +173,16 @@ class UInt128Tests: XCTestCase {
             try! UInt128("0o00320421742106617035042160211001042004210025") == sanityValue,
             "Basic Octal String to UInt128 conversion failed"
         )
+        // Valid string output conversion test (lowercase)
+        XCTAssertTrue(
+            String(sanityValue, radix: 8, uppercase: false) == "320421742106617035042160211001042004210025",
+            "Basic UInt128 to Octal Lowercase String Conversion Failed"
+        )
+        // Valid string output conversion test (uppercase)
+        XCTAssertTrue(
+            String(sanityValue, radix: 8, uppercase: true) == "320421742106617035042160211001042004210025",
+            "Basic UInt128 to Octal Uppercase String Conversion Failed"
+        )
         // Invalid characters.
         do {
             let _ = try UInt128("0o008")
@@ -167,10 +203,20 @@ class UInt128Tests: XCTestCase {
         }
     }
     func testDecimalStringConversion() {
-        // String conversion test.
+        // String input conversion test.
         XCTAssertTrue(
             try! UInt128("0034648827046971881013470724628828721173") == sanityValue,
             "Basic Decimal String to UInt128 conversion failed"
+        )
+        // Valid string output conversion test (lowercase)
+        XCTAssertTrue(
+            String(sanityValue, radix: 10, uppercase: false) == "34648827046971881013470724628828721173",
+            "Basic UInt128 to Decimal Lowercase String Conversion Failed"
+        )
+        // Valid string output conversion test (uppercase)
+        XCTAssertTrue(
+            String(sanityValue, radix: 10, uppercase: true) == "34648827046971881013470724628828721173",
+            "Basic UInt128 to Decimal Uppercase String Conversion Failed"
         )
         // Invalid character.
         do {
@@ -192,19 +238,30 @@ class UInt128Tests: XCTestCase {
         }
     }
     func testHexadecimalStringConversion() {
-        // Valid string conversion test.
+        // Valid string input conversion test.
         XCTAssertTrue(
+            // StringLiteralConvertible
             try! UInt128("0x001A111F111B1E1D111C11201110111015") == sanityValue,
-            "Basic Hexadecimal String to UInt128 conversion failed"
+            "Basic Hexadecimal String to UInt128 Conversion Failed"
+        )
+        // Valid string output conversion test (lowercase)
+        XCTAssertTrue(
+            String(sanityValue, radix: 16, uppercase: false) == "1a111f111b1e1d111c11201110111015",
+            "Basic UInt128 to Hexadecimal Lowercase String Conversion Failed"
+        )
+        // Valid string output conversion test (uppercase)
+        XCTAssertTrue(
+            String(sanityValue, radix: 16, uppercase: true) == "1A111F111B1E1D111C11201110111015",
+            "Basic UInt128 to Hexadecimal Uppercase String Conversion Failed"
         )
         // Invalid character.
         do {
             let _ = try UInt128("00g")
-            XCTFail("Hexadecimal String with Invalid Character didn't throw.")
+            XCTFail("Hexadecimal String with Invalid Character Didn't Throw.")
         } catch UInt128Errors.InvalidStringCharacter {
             XCTAssert(true)
         } catch {
-            XCTFail("Hexadecimal String with Invalid Character didn't throw correctly.")
+            XCTFail("Hexadecimal String with Invalid Character Didn't Throw Correctly.")
         }
         // Overflow.
         do {
