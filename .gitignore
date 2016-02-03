@@ -1,3 +1,4 @@
 *.plist
 *.xcodeproj
 *.playground
+*.h
