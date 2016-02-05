@@ -333,7 +333,9 @@ extension UInt128: UnsignedIntegerType {
     }
     // MARK: Hashable Conformance
     public var hashValue: Int {
-        return Int(value.lowerBits.hashValue ^ value.upperBits.hashValue)
+        return Int(
+            value.lowerBits.hashValue ^ value.upperBits.hashValue
+        )
     }
     // MARK: ForwardIndexType Conformance
     public func successor() -> UInt128 {
@@ -347,17 +349,25 @@ extension UInt128: UnsignedIntegerType {
 // MARK: - Strideable
 extension UInt128: Strideable {
     /// Returns an instance of UInt128 that is the current instance's
-    /// value increased by `n`. This version does not support overflow,
-    /// so if you cause an overflow, you will get a run-time error.
+    /// value increased by `n` when `n` is positive or decreased
+    /// by `n` when `n` is negative.
     public func advancedBy(n: UInt128.Distance) -> UInt128 {
-        return self &+ UInt128(integerLiteral: n)
+        if n < 0 {
+            return self &- UInt128(n * -1)
+        }
+        return self &+ UInt128(n)
     }
     /// Returns the distance from the current UInt128 value to the supplied
     /// UInt128 value. This implementation is limited since a signed Int128
     /// data type does not exist, so it has to fall back to an IntMax
-    /// representation which lacks half of the storage space.
+    /// representation which lacks half of the storage space when end
+    /// is less than the value of self.
     public func distanceTo(end: UInt128) -> UInt128.Distance {
-        return Int(self) &- Int(end)
+        if end >= self {
+            return UInt128.Distance(end - self)
+        } else {
+            return Int(end) &- Int(self)
+        }
     }
 }
 // MARK: - IntegerLiteralConvertible
@@ -594,7 +604,7 @@ extension UInt128: IntegerArithmeticType {
     }
 }
 public func +(lhs: UInt128, rhs: UInt128) -> UInt128 {
-    precondition(~lhs > rhs, "Addition overflow!")
+    precondition(~lhs >= rhs, "Addition overflow!")
     let (result, _) = UInt128.addWithOverflow(lhs, rhs)
     return result
 }
