@@ -85,6 +85,10 @@ class UInt128Tests: XCTestCase {
             XCTAssertTrue(testUInt128Native.littleEndian == testUInt128LittleEndian)
         #endif
     }
+}
+class UInt128StringTests: XCTestCase {
+    let bizarreUInt128: UInt128 = "0xf1f3f5f7f9fbfdfffefcfaf0f8f6f4f2"
+    let sanityValue = UInt128(upperBits: 1878316677920070929, lowerBits: 2022432965322149909)
     func testFringeStringConversions() {
         // Test Empty String Input.
         do {
@@ -111,6 +115,21 @@ class UInt128Tests: XCTestCase {
         XCTAssertTrue(
             try! UInt128(String(bizarreUInt128)) == bizarreUInt128,
             "UInt128 Input to String Gave Incorrect Result"
+        )
+        // Test literalStringConversion Failure
+        let invalidStringLiteral: UInt128 = "0z1234"
+        XCTAssertEqual(
+            invalidStringLiteral, UInt128(0), "Invalid StringLiteral Didn't Return 0"
+        )
+        //
+        let unicodeScalarLiteral = UInt128(unicodeScalarLiteral: "\u{0032}")
+        XCTAssertEqual(
+            unicodeScalarLiteral, UInt128(2), "UnicodeScalarLiteral Didn't Return 2"
+        )
+        //
+        let extendedGraphemeCluster = UInt128(extendedGraphemeClusterLiteral: "\u{00032}\u{00032}")
+        XCTAssertEqual(
+            extendedGraphemeCluster, UInt128(22), "ExtendedGraephmeCluster Didn't Return 22"
         )
     }
     func testBinaryStringConversion() {
@@ -279,4 +298,66 @@ class UInt128Tests: XCTestCase {
             // Put the code you want to measure the time of here.
         }
     }*/
+}
+class UInt128UnsignedIntegerTests: XCTestCase {
+    func testUIntInputs() {
+        // Test UInt8 Input
+        XCTAssertEqual(
+            UInt128(UInt8.max).toUIntMax(), UInt8.max.toUIntMax(),
+            "UInt8.max Fed Into UInt128 Doesn't Equal UInt8.max"
+        )
+        // Test UInt16 Input
+        XCTAssertEqual(
+            UInt128(UInt16.max).toUIntMax(), UInt16.max.toUIntMax(),
+            "UInt16.max Fed Into UInt128 Doesn't Equal UInt16.max"
+        )
+        // Test UInt32 Input
+        XCTAssertEqual(
+            UInt128(UInt32.max).toUIntMax(), UInt32.max.toUIntMax(),
+            "UInt32.max Fed Into UInt128 Doesn't Equal UInt32.max"
+        )
+    }
+    func testToUIntMax() {
+        XCTAssertEqual(
+            UInt128.max.toUIntMax(), UIntMax.max,
+            "UInt128.max Converted to UIntMax.max Doesn't Equal UIntMax.max"
+        )
+    }
+    func testHashValues() {
+        let previousValue = UInt128.min
+        for var i = UInt128.min + 1; i <= UInt128.max >> 1; i = (i << 1) + 1 {
+            if i.hashValue == Int(previousValue) {
+                XCTFail("Hash Value is Not Unique")
+            }
+        }
+    }
+    func testIndexTypes() {
+        // Test Successor
+        XCTAssertEqual(
+            UInt128(0).successor(), 1,
+            "0.successor() does not equal 1"
+        )
+        XCTAssertEqual(
+            UInt128(UInt64.max).successor(), UInt128(1) << 64,
+            "UInt128(UInt64.max).successor() Did Not Cross the Bit Boundary Properly"
+        )
+        XCTAssertEqual(
+            UInt128.max.successor(), 0,
+            "Wraparound From Maximum Value Does Not Equal 0"
+        )
+        // Test Predecessor
+        XCTAssertEqual(
+            UInt128(0).predecessor(), UInt128.max,
+            "Wraparound From 0 Down By 1 Does Not Equal UInt128.max"
+        )
+        XCTAssertEqual(
+            UInt128(UInt128(1) << 64).predecessor(), UInt128(UInt64.max),
+            "UInt128(1 << 64).predecessor() Did Not Cross the Bit Boundary Properly"
+        )
+    }
+}
+class UInt128StrideableTests: XCTestCase {
+    func testAdvancedBy() {
+        
+    }
 }
