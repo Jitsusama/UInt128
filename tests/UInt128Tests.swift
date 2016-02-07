@@ -119,17 +119,20 @@ class UInt128StringTests: XCTestCase {
         // Test literalStringConversion Failure
         let invalidStringLiteral: UInt128 = "0z1234"
         XCTAssertEqual(
-            invalidStringLiteral, UInt128(0), "Invalid StringLiteral Didn't Return 0"
+            invalidStringLiteral, UInt128(0),
+            "Invalid StringLiteral Didn't Return 0"
         )
         //
         let unicodeScalarLiteral = UInt128(unicodeScalarLiteral: "\u{0032}")
         XCTAssertEqual(
-            unicodeScalarLiteral, UInt128(2), "UnicodeScalarLiteral Didn't Return 2"
+            unicodeScalarLiteral, UInt128(2),
+            "UnicodeScalarLiteral Didn't Return 2"
         )
         //
         let extendedGraphemeCluster = UInt128(extendedGraphemeClusterLiteral: "\u{00032}\u{00032}")
         XCTAssertEqual(
-            extendedGraphemeCluster, UInt128(22), "ExtendedGraephmeCluster Didn't Return 22"
+            extendedGraphemeCluster, UInt128(22),
+            "ExtendedGraephmeCluster Didn't Return 22"
         )
     }
     func testBinaryStringConversion() {
@@ -339,7 +342,7 @@ class UInt128UnsignedIntegerTests: XCTestCase {
         )
         XCTAssertEqual(
             UInt128(UInt64.max).successor(), UInt128(1) << 64,
-            "UInt128(UInt64.max).successor() Did Not Cross the Bit Boundary Properly"
+            "(UInt64.max).successor() Did Not Cross the Bit Boundary Properly"
         )
         XCTAssertEqual(
             UInt128.max.successor(), 0,
@@ -352,12 +355,200 @@ class UInt128UnsignedIntegerTests: XCTestCase {
         )
         XCTAssertEqual(
             UInt128(UInt128(1) << 64).predecessor(), UInt128(UInt64.max),
-            "UInt128(1 << 64).predecessor() Did Not Cross the Bit Boundary Properly"
+            "(1 << 64).predecessor() Did Not Cross the Bit Boundary Properly"
         )
     }
 }
 class UInt128StrideableTests: XCTestCase {
     func testAdvancedBy() {
-        
+        XCTAssertEqual(
+            UInt128.min.advancedBy(1), UInt128(integerLiteral: 1),
+            "0 Advanced by 1 Does Not Equal 1"
+        )
+        XCTAssertEqual(
+            UInt128.min.advancedBy(-1), UInt128.max,
+            "0 Advanced by -1 Does Not Equal UInt128.max"
+        )
+        XCTAssertEqual(
+            UInt128.max.advancedBy(1), UInt128.min,
+            "UInt128.max Advanced by 1 Does not Equal UInt128.min"
+        )
+    }
+    func testDistanceTo() {
+        XCTAssertEqual(
+            UInt128.min.distanceTo(UInt128(Int.max)), Int.max,
+            "0 Advanced by Int.max Does Not Equal Int.max"
+        )
+        XCTAssertEqual(
+            UInt128(Int.max).distanceTo(0), -Int.max,
+            "Distance to 0 from Int.max Doesn't Equal -Int.max"
+        )
+        XCTAssertEqual(
+            UInt128(integerLiteral: 0).distanceTo(UInt128(Int.max)), Int.max,
+            "Distance to Int.max from 0 Doesn't Equal Int.max"
+        )
+        /*
+        These tests need to wait for such a time that preconditions can be properly checked
+        without requiring magical wizardry.
+        XCTAssertEqual(
+            UInt128(0).distanceTo(UInt128(Int.max) + 2), 0,
+            "Distance to Int.max + 1 from 0 Doesn't Equal 0"
+        )
+        XCTAssertEqual(
+            UInt128.max.distanceTo(UInt128(1) << 70), 1,
+            "Things happened"
+        )
+        */
+    }
+}
+class UInt128BitwiseOperationsTests: XCTestCase {
+    let allZeros = UInt128.allZeros
+    let allOnes = UInt128.max
+    let bizarreUInt128: UInt128 = "0xf1f3f5f7f9fbfdfffefcfaf0f8f6f4f2"
+    func testAllZeros() {
+        XCTAssertEqual(
+            allZeros.value.upperBits, 0,
+            "Upper Bits of UInt128.allZeros Does Not Equal 0"
+        )
+        XCTAssertEqual(
+            allZeros.value.lowerBits, 0,
+            "Lower Bits of UInt128.allZeros Does Not Equal 0"
+        )
+    }
+    func testANDOperation() {
+        XCTAssertEqual(
+            allZeros & allOnes, allZeros,
+            "All Bits Equal To 0 ANDed With All Bits Equal to 1 Does Not Return an All Zero Pattern"
+        )
+        XCTAssertEqual(
+            allZeros & allZeros, allZeros,
+            "All Bits Equal to 0 ANDed With All Bits Equal to 0 Does Not Return an All Zero Pattern"
+        )
+        XCTAssertEqual(
+            allOnes & allOnes, allOnes,
+            "All Bits Equal to 1 ANDed With All Bits Equal to 1 Does Not Return an All Zero Pattern"
+        )
+        XCTAssertEqual(
+            bizarreUInt128 & bizarreUInt128.bigEndian, try! UInt128("0xF0F0F4F0F0FAFCFEFEFCFAF0F0F4F0F0"),
+            "Complicated Bit Pattern ANDed With Its Big Endian Conversion Doesn't Equal Expected Value"
+        )
+    }
+    func testOROperation() {
+        XCTAssertEqual(
+            allZeros | allOnes, allOnes,
+            "All Bits Equal to 0 ORed With All Bits Equal to 1 Does Not Return an All One Pattern"
+        )
+        XCTAssertEqual(
+            allZeros | allZeros, allZeros,
+            "All Bits Equal to 0 ORed With All Bits Equal to 0 Does Not Return an All Zero Pattern"
+        )
+        XCTAssertEqual(
+            allOnes | allOnes, allOnes,
+            "All Bits Equal to 1 ORed With All Bits Equal to 1 Does Not Retun an All One Pattern"
+        )
+        XCTAssertEqual(
+            bizarreUInt128 | bizarreUInt128.bigEndian, try! UInt128("0xF3F7F7FFF9FBFDFFFFFDFBF9FFF7F7F3"),
+            "Complicated Bit Pattern ORed With Its Big Endian Conversion Doesn't Equal Expected Value"
+        )
+    }
+    func testXOROperation() {
+        XCTAssertEqual(
+            allZeros ^ allOnes, allOnes,
+            "All Bits Equal to 0 XORed With All Bits Equal to 1 Does Not Return an All One Pattern"
+        )
+        XCTAssertEqual(
+            allZeros ^ allZeros, allZeros,
+            "All Bits Equal to 0 XORed With All Bits Equal to 0 Does Not Return an All Zero Pattern"
+        )
+        XCTAssertEqual(
+            allOnes ^ allOnes, allZeros,
+            "All Bits Equal to 1 XORed With All Bits Equal to 1 Does Not Return an All Zero Pattern"
+        )
+        XCTAssertEqual(
+            bizarreUInt128 ^ bizarreUInt128.bigEndian, try! UInt128("0x307030F09010101010101090F030703"),
+            "Complicated Bit Pattern XORed With Its Big Endian Conversion Doesn't Equal Expected Value"
+        )
+    }
+    func testComplementOperation() {
+        XCTAssertEqual(
+            ~allZeros, allOnes,
+            "Complement of All Bits Equal to 0 Does Not Return an All One Pattern"
+        )
+        XCTAssertEqual(
+            ~allOnes, allZeros,
+            "Complement of All Bits Equal to 1 Does Not Return an All Zero Pattern"
+        )
+        XCTAssertEqual(
+            ~bizarreUInt128, try! UInt128("0xE0C0A08060402000103050F07090B0D"),
+            "Complement of Complicated Bit Pattern Doesn't Equal Expected Value"
+        )
+    }
+    func testShiftLeft() {
+        XCTAssertEqual(
+            UInt128(1) << UInt128(upperBits: 1, lowerBits: 0), 0,
+            "1 Shifted by UIntMax.max + 1 Didn't Shift Out All Values"
+        )
+        XCTAssertEqual(
+            UInt128(1) << 129, 0,
+            "1 Shifted by Bit Storage Area + 1 Didn't Shift Out All Values"
+        )
+        XCTAssertEqual(
+            UInt128(1) << 128, 0,
+            "1 Shifted by Bit Storage Area Didn't Shift Out All Values"
+        )
+        XCTAssertEqual(
+            bizarreUInt128 << 0, bizarreUInt128,
+            "Complicated Bit Pattern Shifted by 0 Bits Doesn't Equal Complicated Bit Pattern"
+        )
+        XCTAssertEqual(
+            (bizarreUInt128 << 64).value.upperBits, bizarreUInt128.value.lowerBits,
+            "Complicated Bit Pattern Shifted by 64 Bits Doesn't Have upperBits Equal Original lowerBits"
+        )
+        XCTAssertEqual(
+            (bizarreUInt128 << 64).value.lowerBits, 0,
+            "Complicated Bit Pattern Shifted by 64 Bits Has a Value in Lower 64 Bits"
+        )
+        XCTAssertEqual(
+            try! UInt128("0b101") << 3, 40,
+            "5 Shifted 3 Bits Doesn't Equal 40"
+        )
+        XCTAssertEqual(
+            try! UInt128("0b1101") << 67, try! UInt128("0x680000000000000000"),
+            "13 Shifted 67 Bits Doesn't Equal Expected Value"
+        )
+    }
+    func testShiftRight() {
+        XCTAssertEqual(
+            bizarreUInt128 >> UInt128(upperBits: 1, lowerBits: 0), 0,
+            "Complicated Number Shifted by UIntMax.max + 1 Didn't Shift Out All Values"
+        )
+        XCTAssertEqual(
+            bizarreUInt128 >> 129, 0,
+            "Complicated Number by Bit Storage Area + 1 Didn't Shift Out All Values"
+        )
+        XCTAssertEqual(
+            bizarreUInt128 >> 128, 0,
+            "Complicated Number Shifted by Bit Storage Area Didn't Shift Out All Values"
+        )
+        XCTAssertEqual(
+            bizarreUInt128 >> 0, bizarreUInt128,
+            "Complicated Bit Pattern Shifted by 0 Bits Doesn't Equal Complicated Bit Pattern"
+        )
+        XCTAssertEqual(
+            (bizarreUInt128 >> 64).value.lowerBits, bizarreUInt128.value.upperBits,
+            "Complicated Bit Pattern Shifted by 64 Bits Doesn't Have Lower 64 Bits Equal Original Upper 64 Bits"
+        )
+        XCTAssertEqual(
+            (bizarreUInt128 >> 64).value.upperBits, 0,
+            "Complicated Bit Pattern Shifted by 64 Bits Has a Value in Upper 64 Bits"
+        )
+        XCTAssertEqual(
+            try! UInt128("0b101000") >> 3, 5,
+            "40 Shifted 3 Bits Doesn't Equal 5"
+        )
+        XCTAssertEqual(
+            try! UInt128("0x680000000000000000") >> 67, try! UInt128("0b1101"),
+            "Large Number Shifted 67 Bits Doesn't Equal 15"
+        )
     }
 }
