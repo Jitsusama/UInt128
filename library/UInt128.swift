@@ -365,9 +365,8 @@ extension UInt128: Strideable {
     public func distanceTo(end: UInt128) -> UInt128.Distance {
         if end >= self {
             return UInt128.Distance(end - self)
-        } else {
-            return Int(end) &- Int(self)
         }
+        return Int(end) &- Int(self)
     }
 }
 // MARK: - IntegerLiteralConvertible
@@ -431,7 +430,7 @@ prefix public func ~(rhs: UInt128) -> UInt128 {
 }
 /// Shifts `lhs`' bits left by `rhs` bits and returns the result.
 public func <<(lhs: UInt128, rhs: UInt128) -> UInt128 {
-    if rhs.value.upperBits > 0 || rhs.value.lowerBits >= 128 {
+    if rhs.value.upperBits > 0 || rhs.value.lowerBits > 128 {
         return UInt128(0)
     }
     switch rhs {
@@ -451,7 +450,7 @@ public func <<(lhs: UInt128, rhs: UInt128) -> UInt128 {
 }
 /// Shifts `lhs`' bits right by `rhs` bits and returns the result.
 public func >>(lhs: UInt128, rhs: UInt128) -> UInt128 {
-    if rhs.value.upperBits > 0 || rhs.value.lowerBits >= 128 {
+    if rhs.value.upperBits > 0 || rhs.value.lowerBits > 128 {
         return UInt128(0)
     }
     switch rhs {
@@ -472,6 +471,8 @@ public func >>(lhs: UInt128, rhs: UInt128) -> UInt128 {
 // MARK: IntegerArithmeticType Conformance
 extension UInt128: IntegerArithmeticType {
     public func toIntMax() -> IntMax {
+        precondition(self.value.lowerBits <= UInt64(IntMax.max),
+            "Converting `self` to 'IntMax' causes an integer overflow")
         return IntMax(value.lowerBits)
     }
     public static func addWithOverflow(lhs: UInt128, _ rhs: UInt128) -> (UInt128, overflow: Bool) {
