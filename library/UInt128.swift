@@ -226,7 +226,7 @@ public struct UInt128 {
             switch character {
             case digit: current = UInt128(character - digit.startIndex)
             case lower: current = UInt128(character - lower.startIndex) + 10
-            default: throw UInt128Errors.Inconceivable
+            default: throw UInt128Errors.InvalidStringCharacter
             }
             // Make room for current positional value.
             let (multiplyResult, multiplyOverflow) = UInt128.multiplyWithOverflow(
@@ -471,8 +471,7 @@ public func >>(lhs: UInt128, rhs: UInt128) -> UInt128 {
 // MARK: IntegerArithmeticType Conformance
 extension UInt128: IntegerArithmeticType {
     public func toIntMax() -> IntMax {
-        precondition(self.value.lowerBits <= UInt64(IntMax.max),
-            "Converting `self` to 'IntMax' causes an integer overflow")
+        precondition(self.value.lowerBits <= UInt64(IntMax.max) && self.value.upperBits == 0, "Converting `self` to 'IntMax' causes an integer overflow")
         return IntMax(value.lowerBits)
     }
     public static func addWithOverflow(lhs: UInt128, _ rhs: UInt128) -> (UInt128, overflow: Bool) {
@@ -491,7 +490,7 @@ extension UInt128: IntegerArithmeticType {
         }
         return (
             UInt128(upperBits: upperBits, lowerBits: lowerBits),
-            lowerOverflow || upperOverflow || resultOverflow
+            upperOverflow || resultOverflow
         )
     }
     public static func subtractWithOverflow(lhs: UInt128, _ rhs: UInt128) -> (UInt128, overflow: Bool) {
@@ -504,13 +503,13 @@ extension UInt128: IntegerArithmeticType {
         var (upperBits, upperOverflow) = UInt64.subtractWithOverflow(
             lhs.value.upperBits, rhs.value.upperBits
         )
-        // If the lower bits overflowed, we need to subtract 1 from the upper bits.
+        // If the lower bits overflowed, we need to subtract (borrow) 1 from the upper bits.
         if lowerOverflow {
             (upperBits, resultOverflow) = UInt64.subtractWithOverflow(upperBits, 1)
         }
         return (
             UInt128(upperBits: upperBits, lowerBits: lowerBits),
-            lowerOverflow || upperOverflow || resultOverflow
+            upperOverflow || resultOverflow
         )
     }
     public static func divideWithOverflow(lhs: UInt128, _ rhs: UInt128) -> (UInt128, overflow: Bool) {
@@ -542,8 +541,8 @@ extension UInt128: IntegerArithmeticType {
         // Holds overflow status
         var overflow = false
         // Loop through every combination of lhsArray[x] * rhsArray[y]
-        for rhsSegment in 0..<rhsArray.count {
-            for lhsSegment in 0..<lhsArray.count {
+        for rhsSegment in 0 ..< rhsArray.count {
+            for lhsSegment in 0 ..< lhsArray.count {
                 let currentValue = lhsArray[lhsSegment] * rhsArray[rhsSegment]
                 // Depending upon which segments we're looking at, we'll want to
                 // check for overflow conditions and flag them when encountered.
@@ -760,6 +759,7 @@ public func /%(dividend: UInt128, divisor: UInt128) -> (quotient: UInt128, remai
 }
 // MARK: - Extend SignedIntegerType for UInt128
 extension SignedIntegerType {
+    // TODO: Need to break this out into each Signed Type to check for overflows.
     public init(_ value: UInt128) {
         self.init(value.toIntMax())
     }
