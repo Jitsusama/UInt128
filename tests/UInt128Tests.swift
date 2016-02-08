@@ -20,9 +20,10 @@
 import XCTest
 // import UInt128 module and mark as testable so we can, y'know, test it.
 @testable import UInt128
+// A UInt128 with a decently complicated bit pattern
+let bizarreUInt128: UInt128 = "0xf1f3f5f7f9fbfdfffefcfaf0f8f6f4f2"
 /// This class' purpose in life is to test UInt128 like there's no tomorrow.
 class UInt128Tests: XCTestCase {
-    let bizarreUInt128: UInt128 = "0xf1f3f5f7f9fbfdfffefcfaf0f8f6f4f2"
     let sanityValue = UInt128(upperBits: 1878316677920070929, lowerBits: 2022432965322149909)
     override func setUp() {
         super.setUp()
@@ -117,11 +118,21 @@ class UInt128StringTests: XCTestCase {
             "UInt128 Input to String Gave Incorrect Result"
         )
         // Test literalStringConversion Failure
-        let invalidStringLiteral: UInt128 = "0z1234"
+        var invalidStringLiteral: UInt128 = "0z1234"
         XCTAssertEqual(
             invalidStringLiteral, UInt128(0),
             "Invalid StringLiteral Didn't Return 0"
         )
+        // Test Inconceivable Failure
+        do {
+            invalidStringLiteral = try UInt128.fromParsedString("!".utf16, radix: 16)
+            XCTFail("Inconceiveable character didn't throw")
+        } catch UInt128Errors.InvalidStringCharacter {
+            XCTAssert(true)
+        } catch {
+            XCTFail("Inconceivable character didn't throw correctly")
+        }
+        
         //
         let unicodeScalarLiteral = UInt128(unicodeScalarLiteral: "\u{0032}")
         XCTAssertEqual(
@@ -404,7 +415,6 @@ class UInt128StrideableTests: XCTestCase {
 class UInt128BitwiseOperationsTests: XCTestCase {
     let allZeros = UInt128.allZeros
     let allOnes = UInt128.max
-    let bizarreUInt128: UInt128 = "0xf1f3f5f7f9fbfdfffefcfaf0f8f6f4f2"
     func testAllZeros() {
         XCTAssertEqual(
             allZeros.value.upperBits, 0,
@@ -549,6 +559,64 @@ class UInt128BitwiseOperationsTests: XCTestCase {
         XCTAssertEqual(
             try! UInt128("0x680000000000000000") >> 67, try! UInt128("0b1101"),
             "Large Number Shifted 67 Bits Doesn't Equal 15"
+        )
+    }
+}
+class UInt128IntegerArithmeticTests: XCTestCase {
+    func testAddWithOverflow() {
+        var mathOperation = UInt128.addWithOverflow(UInt128(UInt64.max), 1)
+        XCTAssert(
+            mathOperation.overflow == false && mathOperation.0 == UInt128(upperBits: 1, lowerBits: 0),
+            "Crossing the 64 Bit Boundary by 1 Didn't Give the Expected Result"
+        )
+        mathOperation = UInt128.addWithOverflow(UInt128.max, 1)
+        XCTAssert(
+            mathOperation.overflow == true && mathOperation.0 == 0,
+            "128 Bit Overflow by 1 Didn't Give the Expected Result"
+        )
+        mathOperation = UInt128.addWithOverflow(0, UInt128.max)
+        XCTAssert(
+            mathOperation.overflow == false && mathOperation.0 == UInt128.max,
+            "Adding UInt128.max to 0 Doesn't Equal UInt128.max"
+        )
+        mathOperation = UInt128.addWithOverflow(2, UInt128.max)
+        XCTAssert(
+            mathOperation.overflow == true && mathOperation.0 == 1,
+            "Adding UInt128.max to 2 Doesn't Equal 1"
+        )
+        mathOperation = UInt128.addWithOverflow(bizarreUInt128, bizarreUInt128.bigEndian)
+        let expectedResult = try! UInt128("0xE4E8ECF0EAF6FAFEFEFAF6EAF0ECE8E3")
+        XCTAssert(
+            mathOperation.overflow == true && mathOperation.0 == expectedResult,
+            "Complicated Bit Pattern Added to its Big Endian Representation Didn't Give Expected Result"
+        )
+    }
+    func testSubtractWithOverflow() {
+        var mathOperation = UInt128.subtractWithOverflow(UInt128(UInt64.max) + 1, 1)
+        XCTAssert(
+            mathOperation.overflow == false && mathOperation.0 == UInt128(UInt64.max),
+            "Crossing the 64 Bit Boundary by 1 Didn't Give the Expected Result"
+        )
+        mathOperation = UInt128.subtractWithOverflow(UInt128.min, 1)
+        XCTAssert(
+            mathOperation.overflow == true && mathOperation.0 == UInt128.max,
+            "128 Bit Underflow by 1 Didn't Give the Expected Result"
+        )
+        mathOperation = UInt128.subtractWithOverflow(UInt128.max, UInt128.max)
+        XCTAssert(
+            mathOperation.overflow == false && mathOperation.0 == 0,
+            "Subtracting Across the Whole Value Range Didn't Equal 0"
+        )
+        mathOperation = UInt128.subtractWithOverflow(UInt128(UInt64.max), UInt128.max)
+        XCTAssert(
+            mathOperation.overflow == true && mathOperation.0 == UInt128(UInt64.max) + 1,
+            "Underflow Across 64 Bit Boundaries Didn't Give the Expected Result"
+        )
+        mathOperation = UInt128.subtractWithOverflow(bizarreUInt128, bizarreUInt128.bigEndian)
+        let expectedResult = try! UInt128("0xFEFEFEFF09010100FEFEFEF701010101")
+        XCTAssert(
+            mathOperation.overflow == true && mathOperation.0 == expectedResult,
+            "Complicated Bit Pattern's Big Endian Representation Subtracted From Itself Didn't Give the Expected Result"
         )
     }
 }
