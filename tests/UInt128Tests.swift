@@ -425,7 +425,7 @@ class UInt128BitwiseOperationsTests: XCTestCase {
             "Lower Bits of UInt128.allZeros Does Not Equal 0"
         )
     }
-    func testANDOperation() {
+    func testAND() {
         XCTAssertEqual(
             allZeros & allOnes, allZeros,
             "All Bits Equal To 0 ANDed With All Bits Equal to 1 Does Not Return an All Zero Pattern"
@@ -442,8 +442,14 @@ class UInt128BitwiseOperationsTests: XCTestCase {
             bizarreUInt128 & bizarreUInt128.bigEndian, try! UInt128("0xF0F0F4F0F0FAFCFEFEFCFAF0F0F4F0F0"),
             "Complicated Bit Pattern ANDed With Its Big Endian Conversion Doesn't Equal Expected Value"
         )
+        var testValue = allZeros
+        testValue &= allOnes
+        XCTAssertEqual(
+            testValue, allZeros,
+            "All Bits Equal to 0 &= With All Bits Equal to 1 Does Not Return an All Zero Pattern"
+        )
     }
-    func testOROperation() {
+    func testOR() {
         XCTAssertEqual(
             allZeros | allOnes, allOnes,
             "All Bits Equal to 0 ORed With All Bits Equal to 1 Does Not Return an All One Pattern"
@@ -460,8 +466,14 @@ class UInt128BitwiseOperationsTests: XCTestCase {
             bizarreUInt128 | bizarreUInt128.bigEndian, try! UInt128("0xF3F7F7FFF9FBFDFFFFFDFBF9FFF7F7F3"),
             "Complicated Bit Pattern ORed With Its Big Endian Conversion Doesn't Equal Expected Value"
         )
+        var testValue = allZeros
+        testValue += allOnes
+        XCTAssertEqual(
+            testValue, allOnes,
+            "All Bits Equal to 0 += With All Bits Equal to 1 Does Not Return an All One Pattern"
+        )
     }
-    func testXOROperation() {
+    func testXOR() {
         XCTAssertEqual(
             allZeros ^ allOnes, allOnes,
             "All Bits Equal to 0 XORed With All Bits Equal to 1 Does Not Return an All One Pattern"
@@ -478,8 +490,14 @@ class UInt128BitwiseOperationsTests: XCTestCase {
             bizarreUInt128 ^ bizarreUInt128.bigEndian, try! UInt128("0x307030F09010101010101090F030703"),
             "Complicated Bit Pattern XORed With Its Big Endian Conversion Doesn't Equal Expected Value"
         )
+        var testValue = bizarreUInt128
+        testValue ^= bizarreUInt128.bigEndian
+        XCTAssertEqual(
+            testValue, try! UInt128("0x307030F09010101010101090F030703"),
+            "Complicated Bit Pattern ^= With All Its Big Endian Conversion Doesn't Equal Expected Value"
+        )
     }
-    func testComplementOperation() {
+    func testComplement() {
         XCTAssertEqual(
             ~allZeros, allOnes,
             "Complement of All Bits Equal to 0 Does Not Return an All One Pattern"
@@ -526,6 +544,12 @@ class UInt128BitwiseOperationsTests: XCTestCase {
             try! UInt128("0b1101") << 67, try! UInt128("0x680000000000000000"),
             "13 Shifted 67 Bits Doesn't Equal Expected Value"
         )
+        var testValue: UInt128 = 5
+        testValue <<= 3
+        XCTAssertEqual(
+            testValue, 40,
+            "5 <<= 3 Doesn't Equal 40"
+        )
     }
     func testShiftRight() {
         XCTAssertEqual(
@@ -560,10 +584,16 @@ class UInt128BitwiseOperationsTests: XCTestCase {
             try! UInt128("0x680000000000000000") >> 67, try! UInt128("0b1101"),
             "Large Number Shifted 67 Bits Doesn't Equal 15"
         )
+        var testValue: UInt128 = 40
+        testValue >>= 3
+        XCTAssertEqual(
+            testValue, 5,
+            "40 >>= 3 Doesn't Equal 5"
+        )
     }
 }
 class UInt128IntegerArithmeticTests: XCTestCase {
-    func testAddWithOverflow() {
+    func testAddition() {
         var mathOperation = UInt128.addWithOverflow(UInt128(UInt64.max), 1)
         XCTAssert(
             mathOperation.overflow == false && mathOperation.0 == UInt128(upperBits: 1, lowerBits: 0),
@@ -590,8 +620,22 @@ class UInt128IntegerArithmeticTests: XCTestCase {
             mathOperation.overflow == true && mathOperation.0 == expectedResult,
             "Complicated Bit Pattern Added to its Big Endian Representation Didn't Give Expected Result"
         )
+        var testInteger: UInt128 = 2
+        testInteger += 5
+        XCTAssertEqual(
+            testInteger, 7,
+            "2 += 5 Doesn't Equal Expected Result"
+        )
+        XCTAssertEqual(
+            ++testInteger, 8,
+            "Prefix Increment Does Not Equal Expected Result"
+        )
+        XCTAssert(
+            testInteger++ == 8 && testInteger == 9,
+            "Postfix Increment Does Not Equal Expected Result"
+        )
     }
-    func testSubtractWithOverflow() {
+    func testSubtraction() {
         var mathOperation = UInt128.subtractWithOverflow(UInt128(UInt64.max) + 1, 1)
         XCTAssert(
             mathOperation.overflow == false && mathOperation.0 == UInt128(UInt64.max),
@@ -617,6 +661,47 @@ class UInt128IntegerArithmeticTests: XCTestCase {
         XCTAssert(
             mathOperation.overflow == true && mathOperation.0 == expectedResult,
             "Complicated Bit Pattern's Big Endian Representation Subtracted From Itself Didn't Give the Expected Result"
+        )
+        var testInteger: UInt128 = 7
+        testInteger -= 2
+        XCTAssertEqual(
+            testInteger, 5,
+            "7 -= 2 Doesn't Equal Expected Result"
+        )
+        XCTAssertEqual(
+            --testInteger, 4,
+            "Prefix Decrement Doesn't Equal Expected Result"
+        )
+        XCTAssert(
+            testInteger-- == 4 && testInteger == 3,
+            "Postfix Decrement Doesn't Equal Expected Result"
+        )
+    }
+    func testDivisionWithModulus() {
+        var mathOperation = bizarreUInt128 /% 1
+        XCTAssert(
+            mathOperation.quotient == bizarreUInt128 && mathOperation.remainder == 0,
+            "Complicated Bit Pattern / 1 Doesn't Equal Complicated Bit Pattern"
+        )
+        mathOperation = bizarreUInt128 /% bizarreUInt128
+        XCTAssert(
+            mathOperation.quotient == 1 && mathOperation.remainder == 0,
+            "Complicated Bit Pattern / Itself Doesn't Equal 1"
+        )
+        mathOperation = 0 /% bizarreUInt128
+        XCTAssert(
+            mathOperation.quotient == 0 && mathOperation.remainder == 0,
+            "0 / Complicated Bit Pattern Doesn't Equal 0"
+        )
+        mathOperation = bizarreUInt128 /% bizarreUInt128.bigEndian
+        XCTAssert(
+            mathOperation.quotient == 0 && mathOperation.remainder == bizarreUInt128,
+            "Complicated Bit Pattern Divided by a Smaller Complicated Bit Pattern Doesn't Equal the First Bit Pattern"
+        )
+        mathOperation = UInt128.max /% (UInt128(UInt64.max) + 1)
+        XCTAssert(
+            mathOperation.quotient == UInt128(UInt64.max) && mathOperation.remainder == UInt128(UInt64.max),
+            "Maximum Value Divided by Half the Bit Count of Maximum Value + 1 (Division Across 64 Bit Boundary) Doesn't Equal Half the Bit Count of Maximum Value"
         )
     }
 }
