@@ -409,11 +409,17 @@ public func &(lhs: UInt128, rhs: UInt128) -> UInt128 {
     let lowerBits = lhs.value.lowerBits & rhs.value.lowerBits
     return UInt128(upperBits: upperBits, lowerBits: lowerBits)
 }
+public func &=(inout lhs: UInt128, rhs: UInt128) {
+    lhs = lhs & rhs
+}
 /// Performs a bitwise OR operation on 2 UInt128 data types.
 public func |(lhs: UInt128, rhs: UInt128) -> UInt128 {
     let upperBits = lhs.value.upperBits | rhs.value.upperBits
     let lowerBits = lhs.value.lowerBits | rhs.value.lowerBits
     return UInt128(upperBits: upperBits, lowerBits: lowerBits)
+}
+public func |=(inout lhs: UInt128, rhs: UInt128) {
+    lhs = lhs | rhs
 }
 /// Performs a bitwise XOR operation on 2 UInt128 data types.
 public func ^(lhs: UInt128, rhs: UInt128) -> UInt128 {
@@ -421,7 +427,10 @@ public func ^(lhs: UInt128, rhs: UInt128) -> UInt128 {
     let lowerBits = lhs.value.lowerBits ^ rhs.value.lowerBits
     return UInt128(upperBits: upperBits, lowerBits: lowerBits)
 }
-/// Performs bit inversion on the provided UInt128 data type
+public func ^=(inout lhs: UInt128, rhs: UInt128) {
+    lhs = lhs ^ rhs
+}
+/// Performs bit inversion (complement) on the provided UInt128 data type
 /// and returns the result.
 prefix public func ~(rhs: UInt128) -> UInt128 {
     let upperBits = ~rhs.value.upperBits
@@ -448,6 +457,9 @@ public func <<(lhs: UInt128, rhs: UInt128) -> UInt128 {
     default: return UInt128(0)
     }
 }
+public func <<=(inout lhs: UInt128, rhs: UInt128) {
+    lhs = lhs << rhs
+}
 /// Shifts `lhs`' bits right by `rhs` bits and returns the result.
 public func >>(lhs: UInt128, rhs: UInt128) -> UInt128 {
     if rhs.value.upperBits > 0 || rhs.value.lowerBits > 128 {
@@ -467,6 +479,9 @@ public func >>(lhs: UInt128, rhs: UInt128) -> UInt128 {
         return UInt128(upperBits: 0, lowerBits: lowerBits)
     default: return UInt128(0)
     }
+}
+public func >>=(inout lhs: UInt128, rhs: UInt128) {
+    lhs = lhs >> rhs
 }
 // MARK: IntegerArithmeticType Conformance
 extension UInt128: IntegerArithmeticType {
@@ -515,6 +530,11 @@ extension UInt128: IntegerArithmeticType {
     public static func divideWithOverflow(lhs: UInt128, _ rhs: UInt128) -> (UInt128, overflow: Bool) {
         return (
             (lhs /% rhs).quotient, false
+        )
+    }
+    public static func remainderWithOverflow(lhs: UInt128, _ rhs: UInt128) -> (UInt128, overflow: Bool) {
+        return (
+            (lhs /% rhs).remainder, false
         )
     }
     public static func multiplyWithOverflow(lhs: UInt128, _ rhs: UInt128) -> (UInt128, overflow: Bool) {
@@ -597,76 +617,11 @@ extension UInt128: IntegerArithmeticType {
             overflow || firstBitSegment >> 32 > 0
         )
     }
-    public static func remainderWithOverflow(lhs: UInt128, _ rhs: UInt128) -> (UInt128, overflow: Bool) {
-        return (
-            (lhs /% rhs).remainder, false
-        )
-    }
 }
 public func +(lhs: UInt128, rhs: UInt128) -> UInt128 {
     precondition(~lhs >= rhs, "Addition overflow!")
     let (result, _) = UInt128.addWithOverflow(lhs, rhs)
     return result
-}
-public func -(lhs: UInt128, rhs: UInt128) -> UInt128 {
-    precondition(lhs >= rhs, "Integer underflow")
-    let (result, _) = UInt128.subtractWithOverflow(lhs, rhs)
-    return result
-}
-public func *(lhs: UInt128, rhs: UInt128) -> UInt128 {
-    let result = UInt128.multiplyWithOverflow(lhs, rhs)
-    precondition(result.overflow == false, "Multiplication overflow!")
-    return result.0
-}
-public func /(lhs: UInt128, rhs: UInt128) -> UInt128 {
-    return (lhs /% rhs).quotient
-}
-public func %(lhs: UInt128, rhs: UInt128) -> UInt128 {
-    return (lhs /% rhs).remainder
-}
-// MARK: - Comparable
-extension UInt128: Comparable {}
-/// Comparable conforming operator that checks if the `lhs` UInt128 is
-/// less than the `rhs` UInt128.
-public func <(lhs: UInt128, rhs: UInt128) -> Bool {
-    if lhs.value.upperBits < rhs.value.upperBits {
-        return true
-    } else if lhs.value.upperBits == rhs.value.upperBits && lhs.value.lowerBits < rhs.value.lowerBits {
-        return true
-    }
-    return false
-}
-// MARK: - Equatable
-extension UInt128: Equatable {}
-/// Equatable conforming operator that checks if the lhs UInt128 is
-/// equal to the rhs UInt128.
-public func ==(lhs: UInt128, rhs: UInt128) -> Bool {
-    if lhs.value.lowerBits == rhs.value.lowerBits && lhs.value.upperBits == rhs.value.upperBits {
-        return true
-    }
-    return false
-}
-// MARK: - CustomStringConvertible
-extension UInt128: CustomStringConvertible {
-    public var description: String {
-        return self.toString()
-    }
-}
-// MARK: - Self Modifying Operators
-public func &=(inout lhs: UInt128, rhs: UInt128) {
-    lhs = lhs & rhs
-}
-public func |=(inout lhs: UInt128, rhs: UInt128) {
-    lhs = lhs | rhs
-}
-public func ^=(inout lhs: UInt128, rhs: UInt128) {
-    lhs = lhs ^ rhs
-}
-public func >>=(inout lhs: UInt128, rhs: UInt128) {
-    lhs = lhs >> rhs
-}
-public func <<=(inout lhs: UInt128, rhs: UInt128) {
-    lhs = lhs << rhs
 }
 public func +=(inout lhs: UInt128, rhs: UInt128) {
     lhs = lhs + rhs
@@ -678,6 +633,11 @@ prefix public func ++(inout lhs: UInt128) -> UInt128 {
 postfix public func ++(inout lhs: UInt128) -> UInt128 {
     let result = lhs
     lhs = lhs + 1
+    return result
+}
+public func -(lhs: UInt128, rhs: UInt128) -> UInt128 {
+    precondition(lhs >= rhs, "Integer underflow")
+    let (result, _) = UInt128.subtractWithOverflow(lhs, rhs)
     return result
 }
 public func -=(inout lhs: UInt128, rhs: UInt128) {
@@ -692,11 +652,24 @@ postfix public func --(inout lhs: UInt128) -> UInt128 {
     lhs = lhs - 1
     return result
 }
+public func *(lhs: UInt128, rhs: UInt128) -> UInt128 {
+    let result = UInt128.multiplyWithOverflow(lhs, rhs)
+    precondition(result.overflow == false, "Multiplication overflow!")
+    return result.0
+}
 public func *=(inout lhs: UInt128, rhs: UInt128) {
     lhs = lhs * rhs
 }
+public func /(lhs: UInt128, rhs: UInt128) -> UInt128 {
+    let (result, _) = UInt128.divideWithOverflow(lhs, rhs)
+    return result
+}
 public func /=(inout lhs: UInt128, rhs: UInt128) {
     lhs = lhs / rhs
+}
+public func %(lhs: UInt128, rhs: UInt128) -> UInt128 {
+    let (result, _) = UInt128.remainderWithOverflow(lhs, rhs)
+    return result
 }
 public func %=(inout lhs: UInt128, rhs: UInt128) {
     lhs = lhs % rhs
@@ -756,6 +729,34 @@ public func /%(dividend: UInt128, divisor: UInt128) -> (quotient: UInt128, remai
         }
     }
     return result
+}
+// MARK: - Comparable
+extension UInt128: Comparable {}
+/// Comparable conforming operator that checks if the `lhs` UInt128 is
+/// less than the `rhs` UInt128.
+public func <(lhs: UInt128, rhs: UInt128) -> Bool {
+    if lhs.value.upperBits < rhs.value.upperBits {
+        return true
+    } else if lhs.value.upperBits == rhs.value.upperBits && lhs.value.lowerBits < rhs.value.lowerBits {
+        return true
+    }
+    return false
+}
+// MARK: - Equatable
+extension UInt128: Equatable {}
+/// Equatable conforming operator that checks if the lhs UInt128 is
+/// equal to the rhs UInt128.
+public func ==(lhs: UInt128, rhs: UInt128) -> Bool {
+    if lhs.value.lowerBits == rhs.value.lowerBits && lhs.value.upperBits == rhs.value.upperBits {
+        return true
+    }
+    return false
+}
+// MARK: - CustomStringConvertible
+extension UInt128: CustomStringConvertible {
+    public var description: String {
+        return self.toString()
+    }
 }
 // MARK: - Extend SignedIntegerType for UInt128
 extension SignedIntegerType {
