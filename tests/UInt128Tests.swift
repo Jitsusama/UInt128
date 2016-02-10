@@ -677,7 +677,7 @@ class UInt128IntegerArithmeticTests: XCTestCase {
             "Postfix Decrement Doesn't Equal Expected Result"
         )
     }
-    func testDivisionWithModulus() {
+    func testDivisionAndModulus() {
         var mathOperation = bizarreUInt128 /% 1
         XCTAssert(
             mathOperation.quotient == bizarreUInt128 && mathOperation.remainder == 0,
@@ -702,6 +702,119 @@ class UInt128IntegerArithmeticTests: XCTestCase {
         XCTAssert(
             mathOperation.quotient == UInt128(UInt64.max) && mathOperation.remainder == UInt128(UInt64.max),
             "Maximum Value Divided by Half the Bit Count of Maximum Value + 1 (Division Across 64 Bit Boundary) Doesn't Equal Half the Bit Count of Maximum Value"
+        )
+        var newMathOperation = UInt128.max
+        newMathOperation /= UInt128(UInt64.max) + 1
+        XCTAssertEqual(
+            newMathOperation, UInt128(UInt64.max),
+            "/= Doesn't Give the Same Result as /%'s Quotient"
+        )
+        newMathOperation = UInt128.max
+        newMathOperation %= UInt128(UInt64.max) + 1
+        XCTAssertEqual(
+            newMathOperation, UInt128(UInt64.max),
+            "%= Doesn't Give the Same Result as /%'s Remainder"
+        )
+    }
+    func testMultiplication() {
+        var mathOperation = UInt128.multiplyWithOverflow(1, 1)
+        XCTAssert(
+            mathOperation.0 == 1 && mathOperation.overflow == false,
+            "1 * 1 Doesn't Equal 1"
+        )
+        mathOperation = UInt128.multiplyWithOverflow(UInt128(UInt64.max), 2)
+        var expectedResult = try! UInt128("0x1FFFFFFFFFFFFFFFE")
+        XCTAssert(
+            mathOperation.0 == expectedResult && mathOperation.overflow == false,
+            "Crossing the 64 Bit Boundary by 1 Bit Didn't Give the Correct Result"
+        )
+        mathOperation = UInt128.multiplyWithOverflow(UInt128.max, 1)
+        XCTAssert(
+            mathOperation.0 == UInt128.max && mathOperation.overflow == false,
+            "UInt128.max Times 1 Doesn't Equal Expected Result"
+        )
+        mathOperation = UInt128.multiplyWithOverflow(1 << 97, 1 << 33)
+        XCTAssert(
+            mathOperation.0 == 0 && mathOperation.overflow == true,
+            "LHS, 32bit Position 0 * RHS, 32bit Position 0 Overflow Check Failed"
+        )
+        mathOperation = UInt128.multiplyWithOverflow(1 << 97, UInt128(UInt32.max))
+        expectedResult = try! UInt128("0xFFFFFFFE000000000000000000000000")
+        XCTAssert(
+            mathOperation.0 == expectedResult && mathOperation.overflow == true,
+            "LHS, 32bit Position 1 * RHS, 32bit Position 4 Overflow Check Failed"
+        )
+        mathOperation = UInt128.multiplyWithOverflow(1 << 65, 1 << 65)
+        XCTAssert(
+            mathOperation.0 == 0 && mathOperation.overflow == true,
+            "LHS, 32bit Position 2 * RHS, 32bit Position 2 Overflow Check Failed"
+        )
+        mathOperation = UInt128.multiplyWithOverflow(1 << 65, UInt128(UInt32.max) << 32)
+        XCTAssert(
+            mathOperation.0 == expectedResult && mathOperation.overflow == true,
+            "LHS, 32bit Position 2 * RHS, 32bit Position 3 Overflow Check Failed"
+        )
+        mathOperation = UInt128.multiplyWithOverflow(1 << 32, 1 << 96)
+        XCTAssert(
+            mathOperation.0 == 0 && mathOperation.overflow == true,
+            "LHS, 32bit Position 3 * RHS, 32bit Position 1 Overflow Check Failed"
+        )
+        mathOperation = UInt128.multiplyWithOverflow(UInt128(UInt32.max) << 32, 1 << 65)
+        XCTAssert(
+            mathOperation.0 == expectedResult && mathOperation.overflow == true,
+            "LHS, 32bit Position 3 * RHS, 32bit Position 2 Overflow Check Failed"
+        )
+        mathOperation = UInt128.multiplyWithOverflow(UInt128(UInt32.max), 1 << 97)
+        XCTAssert(
+            mathOperation.0 == expectedResult && mathOperation.overflow == true,
+            "LHS, 32bit Position 4 * RHS, 32bit Position 1 Overflow Check Failed"
+        )
+        mathOperation = UInt128.multiplyWithOverflow(bizarreUInt128, bizarreUInt128.bigEndian)
+        expectedResult = try! UInt128("0b11110110110100010000100101011011111001100001000011011101111010010100001010110111000010010011110010110100100110000100110111010010")
+        XCTAssert(
+            mathOperation.0 == expectedResult && mathOperation.overflow == true,
+            "Complicated Number Multiplied by Its Big Endian Version Didn't Give Expected Result"
+        )
+        var newMathOperation = UInt128(UInt64.max)
+        newMathOperation *= 2
+        expectedResult = try! UInt128("0x1FFFFFFFFFFFFFFFE")
+        XCTAssertEqual(
+            newMathOperation, expectedResult,
+            "*= Didn't Give the Same Result as multiplyWithOverflow"
+        )
+    }
+}
+class UInt128ComparableTests: XCTestCase {
+    func testComparable() {
+        XCTAssertGreaterThan(
+            UInt128(UInt64.max) << 64, UInt128(UInt64.max),
+            "RHS Upper 64 Bits Equal to LHS Lower 64 Bits Didn't Compare Correctly"
+        )
+        XCTAssertGreaterThan(
+            UInt128(1), 0,
+            "1 Isn't Greater Than 0"
+        )
+        XCTAssertLessThan(
+            UInt128(UInt64.max), UInt128(UInt64.max) << 64,
+            "LHS Upper 64 Bits Equal to LHS 64 Bits Didn't Compare Correctly"
+        )
+        XCTAssertLessThan(
+            UInt128(0), 1,
+            "0 Isn't Less Than 1"
+        )
+    }
+    func testEquatable() {
+        XCTAssertEqual(
+            UInt128.max, UInt128.max,
+            "Max Doesn't Equal Max"
+        )
+        XCTAssertEqual(
+            UInt64(UInt128(0)), 0,
+            "0 Doesn't Equal 0"
+        )
+        XCTAssertNotEqual(
+            bizarreUInt128, bizarreUInt128.bigEndian,
+            "Complicated Pattern Equals its Big Endian Counterpart"
         )
     }
 }
