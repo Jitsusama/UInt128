@@ -652,14 +652,6 @@ postfix public func --(inout lhs: UInt128) -> UInt128 {
     lhs = lhs - 1
     return result
 }
-public func *(lhs: UInt128, rhs: UInt128) -> UInt128 {
-    let result = UInt128.multiplyWithOverflow(lhs, rhs)
-    precondition(result.overflow == false, "Multiplication overflow!")
-    return result.0
-}
-public func *=(inout lhs: UInt128, rhs: UInt128) {
-    lhs = lhs * rhs
-}
 public func /(lhs: UInt128, rhs: UInt128) -> UInt128 {
     let (result, _) = UInt128.divideWithOverflow(lhs, rhs)
     return result
@@ -673,6 +665,14 @@ public func %(lhs: UInt128, rhs: UInt128) -> UInt128 {
 }
 public func %=(inout lhs: UInt128, rhs: UInt128) {
     lhs = lhs % rhs
+}
+public func *(lhs: UInt128, rhs: UInt128) -> UInt128 {
+    let result = UInt128.multiplyWithOverflow(lhs, rhs)
+    precondition(result.overflow == false, "Multiplication overflow!")
+    return result.0
+}
+public func *=(inout lhs: UInt128, rhs: UInt128) {
+    lhs = lhs * rhs
 }
 // MARK: - Division and Modulus Combined Operator
 infix operator /% { associativity left precedence 150 }
@@ -760,7 +760,6 @@ extension UInt128: CustomStringConvertible {
 }
 // MARK: - Extend SignedIntegerType for UInt128
 extension SignedIntegerType {
-    // TODO: Need to break this out into each Signed Type to check for overflows.
     public init(_ value: UInt128) {
         self.init(value.toIntMax())
     }
