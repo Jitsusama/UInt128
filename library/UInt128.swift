@@ -36,8 +36,6 @@ public enum UInt128Errors: ErrorType {
     /// The unsigned integer representation of string exceeds
     /// 128 bits.
     case StringInputOverflow
-    /// A condition that shouldn't ever happen. Hax0r!
-    case Inconceivable
 }
 // MARK: Data Type
 /// A 128-bit unsigned integer value type.
@@ -51,6 +49,14 @@ public struct UInt128 {
     /// The smallest value a UInt128 can hold.
     public static var min: UInt128 {
         return UInt128(upperBits: 0, lowerBits: 0)
+    }
+    /// Returns size of data type in bits.
+    public static var _sizeInBits: Int32 {
+        return 128
+    }
+    /// Returns size of data type in bytes.
+    public static var _sizeInBytes: Int32 {
+        return 128 / 8
     }
     // MARK: Instance Properties
     /// Internal value is presented as a tuple of 2 64-bit
@@ -103,16 +109,16 @@ public struct UInt128 {
         var byteShift: UInt128 = 120
         // Loop through each of our 16 bytes.
         for index in 0 ..< bytes.count {
-            if byteMask <= UInt128(0xff) << 56 {
+            if byteMask <= 0xff << 56 {
                 // The bottom 8 bytes will get masked and shifted to opposing byte.
                 bytes[index] = (self & byteMask) << byteShift
                 // Don't decrease the shifter on the bottom half's last byte, as this
                 // down shift will become the up shift during the next for loop run.
-                if byteMask != UInt128(0xff) << 56 {
+                if byteMask != 0xff << 56 {
                     byteShift -= 16
                 }
                 byteMask <<= 8
-            } else if byteMask >= UInt128(0xff) << 64 {
+            } else if byteMask >= (0xff << 63) << 1 {
                 // The top 8 bytes will get masked and shifted to opposing byte.
                 bytes[index] = (self & byteMask) >> byteShift
                 byteMask <<= 8
@@ -319,14 +325,17 @@ extension UInt128: UnsignedIntegerType {
         self.init()
         self.value.lowerBits = value
     }
+    public init(_ value: UInt) {
+        self.init(value.toUIntMax())
+    }
     public init(_ value: UInt8) {
-        self.init(UIntMax(value))
+        self.init(value.toUIntMax())
     }
     public init(_ value: UInt16) {
-        self.init(UIntMax(value))
+        self.init(value.toUIntMax())
     }
     public init(_ value: UInt32) {
-        self.init(UIntMax(value))
+        self.init(value.toUIntMax())
     }
     public func toUIntMax() -> UIntMax {
         return UIntMax(value.lowerBits)
@@ -348,10 +357,11 @@ extension UInt128: UnsignedIntegerType {
 }
 // MARK: - Strideable
 extension UInt128: Strideable {
+    public typealias Stride = Int
     /// Returns an instance of UInt128 that is the current instance's
     /// value increased by `n` when `n` is positive or decreased
     /// by `n` when `n` is negative.
-    public func advancedBy(n: UInt128.Distance) -> UInt128 {
+    public func advancedBy(n: Stride) -> UInt128 {
         if n < 0 {
             return self &- UInt128(n * -1)
         }
@@ -362,38 +372,40 @@ extension UInt128: Strideable {
     /// data type does not exist, so it has to fall back to an IntMax
     /// representation which lacks half of the storage space when end
     /// is less than the value of self.
-    public func distanceTo(end: UInt128) -> UInt128.Distance {
+    public func distanceTo(end: UInt128) -> Stride {
         if end >= self {
-            return UInt128.Distance(end - self)
+            return Stride(end - self)
         }
-        return Int(end) &- Int(self)
+        return Stride(end) &- Stride(self)
     }
 }
 // MARK: - IntegerLiteralConvertible
 extension UInt128: IntegerLiteralConvertible {
-    public init(integerLiteral value: IntegerLiteralType) {
-        self.init()
-        self.value.lowerBits = UInt64(value)
+    public typealias IntegerLiteralType = Int
+    public init(integerLiteral value: UInt128.IntegerLiteralType) {
+        self.init(value)
     }
     public init(_builtinIntegerLiteral value: _MaxBuiltinIntegerType) {
-        self.init()
-        self.value.lowerBits = UInt64(_builtinIntegerLiteral: value)
+        self.init(UInt64(_builtinIntegerLiteral: value))
     }
 }
 // MARK: - StringLiteralConvertible
 extension UInt128: StringLiteralConvertible {
-    public init(stringLiteral value: String) {
+    public typealias StringLiteralType = String
+    public typealias UnicodeScalarLiteralType = String
+    public typealias ExtendedGraphemeClusterLiteralType = String
+    public init(stringLiteral value: StringLiteralType) {
         self.init()
         do {
             try self = UInt128.fromUnparsedString(value)
         } catch { return }
     }
     // MARK: UnicodeScalarLiteralConvertible
-    public init(unicodeScalarLiteral value: String)  {
+    public init(unicodeScalarLiteral value: UnicodeScalarLiteralType)  {
         self.init(stringLiteral: value)
     }
     // MARK: ExtendedGraphemeClusterLiteralConvertible
-    public init(extendedGraphemeClusterLiteral value: String) {
+    public init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
         self.init(stringLiteral: value)
     }
 }
@@ -452,7 +464,7 @@ public func <<(lhs: UInt128, rhs: UInt128) -> UInt128 {
         // Shift 64 means move lower bits to upper bits.
         return UInt128(upperBits: lhs.value.lowerBits, lowerBits: 0)
     case 65...127:
-        let upperBits = lhs.value.lowerBits << (rhs.value.lowerBits - 64)
+        let upperBits = lhs.value.lowerBits << UInt64(rhs - 64)
         return UInt128(upperBits: upperBits, lowerBits: 0)
     default: return UInt128(0)
     }
