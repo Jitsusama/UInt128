@@ -754,6 +754,26 @@ public func <(lhs: UInt128, rhs: UInt128) -> Bool {
     }
     return false
 }
+public func <=(lhs: UInt128, rhs: UInt128) -> Bool {
+    if lhs < rhs || lhs == rhs {
+        return true
+    }
+    return false
+}
+public func >(lhs: UInt128, rhs: UInt128) -> Bool {
+    if lhs.value.upperBits > rhs.value.upperBits {
+        return true
+    } else if lhs.value.upperBits == rhs.value.upperBits && lhs.value.lowerBits > rhs.value.lowerBits {
+        return true
+    }
+    return false
+}
+public func >=(lhs: UInt128, rhs: UInt128) -> Bool {
+    if lhs > rhs || lhs == rhs {
+        return true
+    }
+    return false
+}
 // MARK: - Equatable
 extension UInt128: Equatable {}
 /// Equatable conforming operator that checks if the lhs UInt128 is
