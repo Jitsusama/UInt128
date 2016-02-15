@@ -25,12 +25,6 @@ let bizarreUInt128: UInt128 = "0xf1f3f5f7f9fbfdfffefcfaf0f8f6f4f2"
 /// This class' purpose in life is to test UInt128 like there's no tomorrow.
 class UInt128Tests: XCTestCase {
     let sanityValue = UInt128(upperBits: 1878316677920070929, lowerBits: 2022432965322149909)
-    override func setUp() {
-        super.setUp()
-    }
-    override func tearDown() {
-        super.tearDown()
-    }
     func testMax() {
         XCTAssertEqual(
             UInt128.max,
@@ -85,6 +79,16 @@ class UInt128Tests: XCTestCase {
         #else
             XCTAssertTrue(testUInt128Native.littleEndian == testUInt128LittleEndian)
         #endif
+    }
+    func testSize() {
+        XCTAssertEqual(
+            UInt128._sizeInBits, 128,
+            "UInt128 Must be 128 Bits in Size"
+        )
+        XCTAssertEqual(
+            UInt128._sizeInBytes, 16,
+            "UInt128 Must be 16 Bytes in Size"
+        )
     }
 }
 class UInt128StringTests: XCTestCase {
@@ -329,6 +333,16 @@ class UInt128UnsignedIntegerTests: XCTestCase {
         XCTAssertEqual(
             UInt128(UInt32.max).toUIntMax(), UInt32.max.toUIntMax(),
             "UInt32.max Fed Into UInt128 Doesn't Equal UInt32.max"
+        )
+        // Test UInt64 Input
+        XCTAssertEqual(
+            UInt128(UInt64.max).toUIntMax(), UInt64.max.toUIntMax(),
+            "UInt64.max Fed Into UInt64 Doesn't Equal UInt64.max"
+        )
+        // Test UInt Input
+        XCTAssertEqual(
+            UInt128(UInt.max).toUIntMax(), UInt.max.toUIntMax(),
+            "UInt.max Fed Into UInt128 Doesn't Equal UInt.max"
         )
     }
     func testToUIntMax() {
