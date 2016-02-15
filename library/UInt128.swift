@@ -392,8 +392,6 @@ extension UInt128: IntegerLiteralConvertible {
 // MARK: - StringLiteralConvertible
 extension UInt128: StringLiteralConvertible {
     public typealias StringLiteralType = String
-    public typealias UnicodeScalarLiteralType = String
-    public typealias ExtendedGraphemeClusterLiteralType = String
     public init(stringLiteral value: StringLiteralType) {
         self.init()
         do {
@@ -401,10 +399,12 @@ extension UInt128: StringLiteralConvertible {
         } catch { return }
     }
     // MARK: UnicodeScalarLiteralConvertible
+    public typealias UnicodeScalarLiteralType = String
     public init(unicodeScalarLiteral value: UnicodeScalarLiteralType)  {
         self.init(stringLiteral: value)
     }
     // MARK: ExtendedGraphemeClusterLiteralConvertible
+    public typealias ExtendedGraphemeClusterLiteralType = String
     public init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
         self.init(stringLiteral: value)
     }
