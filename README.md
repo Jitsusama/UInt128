@@ -13,3 +13,6 @@ The string can be in binary, octal, decimal or hexadecimal.
 ## Example
     let uInt128ByString: UInt128 = "0xffaabbcc00129823fa9a12d4aa87f498"
     let uInt128ByInteger: UInt128 = 1234
+
+## Building
+This project includes an example Xcode project for building the framework that also includes a playground that can be utilized for testing things out. This Xcode project can build from one target a iphone, iphonesimulator or mac os x build. It also includes unit testing and code coverage.
