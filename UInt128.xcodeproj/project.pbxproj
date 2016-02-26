@@ -25,6 +25,8 @@
 		48D0A6A41C80F17300A73CDF /* UInt128.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48D0A6991C80F17300A73CDF /* UInt128.framework */; };
 		48D0A6A91C80F17300A73CDF /* UInt128Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48D0A6A81C80F17300A73CDF /* UInt128Tests.swift */; };
 		48D0A6B41C80F22000A73CDF /* UInt128.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48D0A6B31C80F22000A73CDF /* UInt128.swift */; };
+		48D0A6BF1C80F86400A73CDF /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 48D0A6BD1C80F86400A73CDF /* LICENSE */; };
+		48D0A6C01C80F86400A73CDF /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 48D0A6BE1C80F86400A73CDF /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +49,8 @@
 		48D0A6B31C80F22000A73CDF /* UInt128.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UInt128.swift; sourceTree = "<group>"; };
 		48D0A6B51C80F44700A73CDF /* build_aggregate.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = build_aggregate.sh; sourceTree = "<group>"; };
 		48D0A6BB1C80F56500A73CDF /* Playground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = Playground.playground; sourceTree = "<group>"; };
+		48D0A6BD1C80F86400A73CDF /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		48D0A6BE1C80F86400A73CDF /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,6 +77,7 @@
 			children = (
 				48D0A6BB1C80F56500A73CDF /* Playground.playground */,
 				48D0A6BC1C80F5EE00A73CDF /* bin */,
+				48D0A6C11C80F86B00A73CDF /* docs */,
 				48D0A69B1C80F17300A73CDF /* library */,
 				48D0A6A71C80F17300A73CDF /* tests */,
 				48D0A69A1C80F17300A73CDF /* Products */,
@@ -113,6 +118,15 @@
 				48D0A6B51C80F44700A73CDF /* build_aggregate.sh */,
 			);
 			path = bin;
+			sourceTree = "<group>";
+		};
+		48D0A6C11C80F86B00A73CDF /* docs */ = {
+			isa = PBXGroup;
+			children = (
+				48D0A6BD1C80F86400A73CDF /* LICENSE */,
+				48D0A6BE1C80F86400A73CDF /* README.md */,
+			);
+			name = docs;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -211,6 +225,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				48D0A6BF1C80F86400A73CDF /* LICENSE in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -244,6 +259,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				48D0A6C01C80F86400A73CDF /* README.md in Sources */,
 				48D0A6B41C80F22000A73CDF /* UInt128.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
