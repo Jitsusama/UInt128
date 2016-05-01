@@ -25,8 +25,6 @@
 		48D0A6A41C80F17300A73CDF /* UInt128.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48D0A6991C80F17300A73CDF /* UInt128.framework */; };
 		48D0A6A91C80F17300A73CDF /* UInt128Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48D0A6A81C80F17300A73CDF /* UInt128Tests.swift */; };
 		48D0A6B41C80F22000A73CDF /* UInt128.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48D0A6B31C80F22000A73CDF /* UInt128.swift */; };
-		48D0A6BF1C80F86400A73CDF /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 48D0A6BD1C80F86400A73CDF /* LICENSE */; };
-		48D0A6C01C80F86400A73CDF /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 48D0A6BE1C80F86400A73CDF /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -225,7 +223,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				48D0A6BF1C80F86400A73CDF /* LICENSE in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -259,7 +256,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				48D0A6C01C80F86400A73CDF /* README.md in Sources */,
 				48D0A6B41C80F22000A73CDF /* UInt128.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -487,6 +483,7 @@
 				48D0A6B91C80F49500A73CDF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
