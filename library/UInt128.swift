@@ -142,7 +142,7 @@ public struct UInt128 {
     ///     Returns a valid UInt128 instance.
     /// - throws:
     ///      A `UInt128Errors` ErrorType.
-    internal static func fromUnparsedString(var string: String) throws -> UInt128 {
+    internal static func fromUnparsedString(string: String) throws -> UInt128 {
         // Empty string is bad.
         guard !string.isEmpty else {
             throw UInt128Errors.EmptyString
@@ -160,14 +160,16 @@ public struct UInt128 {
         } else { // default to decimal.
             radix = 10
         }
+        // Used to hold passed string with radix removed.
+        var stringSansRadix = string
         // Remove the radix identifier from the front of the string.
         if radix != 10 {
-            string.removeRange(string.startIndex...string.startIndex.advancedBy(1))
+            stringSansRadix.removeRange(string.startIndex...string.startIndex.advancedBy(1))
         }
         // Lowercase the string for normalization purposes.
-        string = string.lowercaseString
+        stringSansRadix = stringSansRadix.lowercaseString
         // Filter string for valid digits and build into a new string.
-        for character in string.characters {
+        for character in stringSansRadix.characters {
             switch character {
             case "0"..."1": // Digits specific to all numbering systems.
                 builtString.append(character)
