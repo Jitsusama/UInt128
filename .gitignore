@@ -1,2 +1,4 @@
+# Unimportant user state files from XCode
 *.xcuserstate
-xcuserdata/
+# Vi swap files
+*.swp
