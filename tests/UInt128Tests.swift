@@ -351,12 +351,18 @@ class UInt128UnsignedIntegerTests: XCTestCase {
             "UInt128.max Converted to UIntMax.max Doesn't Equal UIntMax.max"
         )
     }
+    /// An imperfect test of hash values. This method will walk through
+    /// most of the possible values within a UInt128 type and make sure
+    /// that 2 consecutive hash values are not the same.
     func testHashValues() {
-        let previousValue = UInt128.min
-        for var i = UInt128.min + 1; i <= UInt128.max >> 1; i = (i << 1) + 1 {
-            if i.hashValue == Int(previousValue) {
+        var previousValue = UInt128.min
+        var currentValue = UInt128.min + 1
+        while currentValue <= UInt128.max >> 1 {
+            currentValue = (currentValue << 1) + 1
+            if currentValue.hashValue == previousValue.hashValue {
                 XCTFail("Hash Value is Not Unique")
             }
+            previousValue = currentValue
         }
     }
     func testIndexTypes() {
