@@ -75,11 +75,10 @@ public struct UInt128 {
         } else if self.value.lowerBits > 0 {
             bitsToWalk = self.value.lowerBits
         }
-        if bitsToWalk > 0 {
-            // Walk significant bits by shifting right until all bits are equal to 0.
-            for var bitsLeft = bitsToWalk; bitsLeft > 0; bitsLeft >>= 1 {
-                significantBitCount += 1
-            }
+        // Walk significant bits by shifting right until all bits are equal to 0.
+        while bitsToWalk > 0 {
+            bitsToWalk >>= 1
+            significantBitCount += 1
         }
         return significantBitCount
     }
