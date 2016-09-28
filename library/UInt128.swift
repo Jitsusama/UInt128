@@ -26,16 +26,16 @@
 /// for the 4 possible errors that can occur during string
 /// conversion, and 1 impossible error to satisfy a default
 /// case in a switch statement.
-public enum UInt128Errors: ErrorType {
+public enum UInt128Errors: Error {
     /// Invalid character supplied in input string.
-    case InvalidStringCharacter
+    case invalidStringCharacter
     /// Invalid radix given for conversion.
-    case InvalidRadix
+    case invalidRadix
     /// Cannot convert an empty string into a UInt128 value.
-    case EmptyString
+    case emptyString
     /// The unsigned integer representation of string exceeds
     /// 128 bits.
-    case StringInputOverflow
+    case stringInputOverflow
 }
 // MARK: Data Type
 /// A 128-bit unsigned integer value type.
@@ -102,7 +102,7 @@ public struct UInt128 {
     public var byteSwapped: UInt128 {
         var result: UInt128 = 0
         // Swap endian (big to little) or (little to big)
-        var bytes = [UInt128].init(count: 16, repeatedValue: 0)
+        var bytes = [UInt128].init(repeating: 0, count: 16)
         // Used in for loop to mask and shift our stored value.
         var byteMask: UInt128 = 0xff
         var byteShift: UInt128 = 120
@@ -141,10 +141,10 @@ public struct UInt128 {
     ///     Returns a valid UInt128 instance.
     /// - throws:
     ///      A `UInt128Errors` ErrorType.
-    internal static func fromUnparsedString(string: String) throws -> UInt128 {
+    internal static func fromUnparsedString(_ string: String) throws -> UInt128 {
         // Empty string is bad.
         guard !string.isEmpty else {
-            throw UInt128Errors.EmptyString
+            throw UInt128Errors.emptyString
         }
         // Internal variables.
         let radix: UInt8
@@ -163,10 +163,10 @@ public struct UInt128 {
         var stringSansRadix = string
         // Remove the radix identifier from the front of the string.
         if radix != 10 {
-            stringSansRadix.removeRange(string.startIndex...string.startIndex.advancedBy(1))
+            stringSansRadix.removeSubrange(string.startIndex...string.characters.index(string.startIndex, offsetBy: 1))
         }
         // Lowercase the string for normalization purposes.
-        stringSansRadix = stringSansRadix.lowercaseString
+        stringSansRadix = stringSansRadix.lowercased()
         // Filter string for valid digits and build into a new string.
         for character in stringSansRadix.characters {
             switch character {
@@ -174,27 +174,27 @@ public struct UInt128 {
                 builtString.append(character)
             case "2"..."7": // Digits specific to octal, decimal and hexadecimal.
                 guard radix == 8 || radix == 10 || radix == 16 else {
-                    throw UInt128Errors.InvalidStringCharacter
+                    throw UInt128Errors.invalidStringCharacter
                 }
                 builtString.append(character)
             case "8"..."9": // Digits specific to decimal and hexadecimal.
                 guard radix == 10 || radix == 16 else {
-                    throw UInt128Errors.InvalidStringCharacter
+                    throw UInt128Errors.invalidStringCharacter
                 }
                 builtString.append(character)
             case "a"..."f": // Digits specific to hexadecimal.
                 guard radix == 16 else {
-                    throw UInt128Errors.InvalidStringCharacter
+                    throw UInt128Errors.invalidStringCharacter
                 }
                 builtString.append(character)
             default:
-                throw UInt128Errors.InvalidStringCharacter
+                throw UInt128Errors.invalidStringCharacter
             }
         }
         // Remove any leading 0s.
         for character in builtString.characters {
             if character == "0" {
-                builtString.removeAtIndex(builtString.startIndex)
+                builtString.remove(at: builtString.startIndex)
             } else {
                 break
             }
@@ -217,23 +217,23 @@ public struct UInt128 {
     ///     Returns a valid UInt128 instance.
     /// - throws:
     ///      A `UInt128Errors` ErrorType.
-    internal static func fromParsedString(string: String.UTF16View, radix: UInt8) throws -> UInt128 {
+    internal static func fromParsedString(_ string: String.UTF16View, radix: UInt8) throws -> UInt128 {
         var result: UInt128 = 0
         // Define ranges. Used to convert character value to numeric later.
         let digit = "0".utf16.first!..."9".utf16.first!
         let lower = "a".utf16.first!..."z".utf16.first!
         // radix cannot exceed basic number and [a-z] character set count.
         guard radix <= UInt8(digit.count + lower.count) else {
-            throw UInt128Errors.InvalidRadix
+            throw UInt128Errors.invalidRadix
         }
         // Loop through each charcter's CodeUnit value.
         for character in string {
             var current: UInt128 = 0
             // For each CodeUnit value, convert to a "decimal" value.
             switch character {
-            case digit: current = UInt128(character - digit.startIndex)
-            case lower: current = UInt128(character - lower.startIndex) + 10
-            default: throw UInt128Errors.InvalidStringCharacter
+            case digit: current = UInt128(character - digit.lowerBound)
+            case lower: current = UInt128(character - lower.lowerBound) + 10
+            default: throw UInt128Errors.invalidStringCharacter
             }
             // Make room for current positional value.
             let (multiplyResult, multiplyOverflow) = UInt128.multiplyWithOverflow(
@@ -245,7 +245,7 @@ public struct UInt128 {
             )
             // We don't desire handling overflows during string conversion.
             guard !multiplyOverflow && !addOverflow else {
-                throw UInt128Errors.StringInputOverflow
+                throw UInt128Errors.stringInputOverflow
             }
             result = addResult
         }
@@ -298,13 +298,13 @@ public struct UInt128 {
     ///     uppercase format or not.
     /// - returns:
     ///     String representation of the stored UInt128 value.
-    internal func toString(radix radix: Int = 10, uppercase: Bool = true) -> String {
+    internal func toString(radix: Int = 10, uppercase: Bool = true) -> String {
         precondition(radix > 1 && radix < 17, "radix must be within the range of 2-16.")
         // Will store the final string result.
         var result = String()
         // Simple case.
         if self == 0 {
-            result.appendContentsOf("0")
+            result.append("0")
             return result
         }
         // Used as the check for indexing through UInt128 for string interpolation.
@@ -314,14 +314,14 @@ public struct UInt128 {
         // Go through internal value until every base position is string(ed).
         repeat {
             divmodResult = divmodResult.quotient /% UInt128(radix)
-            let index = characterPool.startIndex.advancedBy(Int(divmodResult.remainder))
-            result.insert(characterPool[index], atIndex: result.startIndex)
+            let index = characterPool.characters.index(characterPool.startIndex, offsetBy: Int(divmodResult.remainder))
+            result.insert(characterPool[index], at: result.startIndex)
         } while divmodResult.quotient > 0
         return result
     }
 }
 // MARK: - UnsignedIntegerType
-extension UInt128: UnsignedIntegerType {
+extension UInt128: UnsignedInteger {
     public init(_ value: UIntMax) {
         self.init()
         self.value.lowerBits = value
@@ -362,7 +362,7 @@ extension UInt128: Strideable {
     /// Returns an instance of UInt128 that is the current instance's
     /// value increased by `n` when `n` is positive or decreased
     /// by `n` when `n` is negative.
-    public func advancedBy(n: Stride) -> UInt128 {
+    public func advancedBy(_ n: Stride) -> UInt128 {
         if n < 0 {
             return self &- UInt128(n * -1)
         }
@@ -373,7 +373,7 @@ extension UInt128: Strideable {
     /// data type does not exist, so it has to fall back to an IntMax
     /// representation which lacks half of the storage space when end
     /// is less than the value of self.
-    public func distanceTo(end: UInt128) -> Stride {
+    public func distanceTo(_ end: UInt128) -> Stride {
         if end >= self {
             return Stride(end - self)
         }
@@ -381,7 +381,7 @@ extension UInt128: Strideable {
     }
 }
 // MARK: - IntegerLiteralConvertible
-extension UInt128: IntegerLiteralConvertible {
+extension UInt128: ExpressibleByIntegerLiteral {
     public typealias IntegerLiteralType = Int
     public init(integerLiteral value: UInt128.IntegerLiteralType) {
         self.init(value)
@@ -391,7 +391,7 @@ extension UInt128: IntegerLiteralConvertible {
     }
 }
 // MARK: - StringLiteralConvertible
-extension UInt128: StringLiteralConvertible {
+extension UInt128: ExpressibleByStringLiteral {
     public typealias StringLiteralType = String
     public init(stringLiteral value: StringLiteralType) {
         self.init()
@@ -411,7 +411,7 @@ extension UInt128: StringLiteralConvertible {
     }
 }
 // MARK: - BitwiseOperationsType
-extension UInt128: BitwiseOperationsType {
+extension UInt128: BitwiseOperations {
     public static var allZeros: UInt128 {
         return UInt128(0)
     }
@@ -422,7 +422,7 @@ public func &(lhs: UInt128, rhs: UInt128) -> UInt128 {
     let lowerBits = lhs.value.lowerBits & rhs.value.lowerBits
     return UInt128(upperBits: upperBits, lowerBits: lowerBits)
 }
-public func &=(inout lhs: UInt128, rhs: UInt128) {
+public func &=(lhs: inout UInt128, rhs: UInt128) {
     lhs = lhs & rhs
 }
 /// Performs a bitwise OR operation on 2 UInt128 data types.
@@ -431,7 +431,7 @@ public func |(lhs: UInt128, rhs: UInt128) -> UInt128 {
     let lowerBits = lhs.value.lowerBits | rhs.value.lowerBits
     return UInt128(upperBits: upperBits, lowerBits: lowerBits)
 }
-public func |=(inout lhs: UInt128, rhs: UInt128) {
+public func |=(lhs: inout UInt128, rhs: UInt128) {
     lhs = lhs | rhs
 }
 /// Performs a bitwise XOR operation on 2 UInt128 data types.
@@ -440,7 +440,7 @@ public func ^(lhs: UInt128, rhs: UInt128) -> UInt128 {
     let lowerBits = lhs.value.lowerBits ^ rhs.value.lowerBits
     return UInt128(upperBits: upperBits, lowerBits: lowerBits)
 }
-public func ^=(inout lhs: UInt128, rhs: UInt128) {
+public func ^=(lhs: inout UInt128, rhs: UInt128) {
     lhs = lhs ^ rhs
 }
 /// Performs bit inversion (complement) on the provided UInt128 data type
@@ -470,7 +470,7 @@ public func <<(lhs: UInt128, rhs: UInt128) -> UInt128 {
     default: return UInt128(0)
     }
 }
-public func <<=(inout lhs: UInt128, rhs: UInt128) {
+public func <<=(lhs: inout UInt128, rhs: UInt128) {
     lhs = lhs << rhs
 }
 /// Shifts `lhs`' bits right by `rhs` bits and returns the result.
@@ -493,16 +493,16 @@ public func >>(lhs: UInt128, rhs: UInt128) -> UInt128 {
     default: return UInt128(0)
     }
 }
-public func >>=(inout lhs: UInt128, rhs: UInt128) {
+public func >>=(lhs: inout UInt128, rhs: UInt128) {
     lhs = lhs >> rhs
 }
 // MARK: IntegerArithmeticType Conformance
-extension UInt128: IntegerArithmeticType {
+extension UInt128: IntegerArithmetic {
     public func toIntMax() -> IntMax {
         precondition(self.value.lowerBits <= UInt64(IntMax.max) && self.value.upperBits == 0, "Converting `self` to 'IntMax' causes an integer overflow")
         return IntMax(value.lowerBits)
     }
-    public static func addWithOverflow(lhs: UInt128, _ rhs: UInt128) -> (UInt128, overflow: Bool) {
+    public static func addWithOverflow(_ lhs: UInt128, _ rhs: UInt128) -> (UInt128, overflow: Bool) {
         var resultOverflow = false
         // Add lower bits and check for overflow.
         let (lowerBits, lowerOverflow) = UInt64.addWithOverflow(
@@ -521,7 +521,7 @@ extension UInt128: IntegerArithmeticType {
             upperOverflow || resultOverflow
         )
     }
-    public static func subtractWithOverflow(lhs: UInt128, _ rhs: UInt128) -> (UInt128, overflow: Bool) {
+    public static func subtractWithOverflow(_ lhs: UInt128, _ rhs: UInt128) -> (UInt128, overflow: Bool) {
         var resultOverflow = false
         // Subtract lower bits and check for overflow.
         let (lowerBits, lowerOverflow) = UInt64.subtractWithOverflow(
@@ -540,17 +540,17 @@ extension UInt128: IntegerArithmeticType {
             upperOverflow || resultOverflow
         )
     }
-    public static func divideWithOverflow(lhs: UInt128, _ rhs: UInt128) -> (UInt128, overflow: Bool) {
+    public static func divideWithOverflow(_ lhs: UInt128, _ rhs: UInt128) -> (UInt128, overflow: Bool) {
         return (
             (lhs /% rhs).quotient, false
         )
     }
-    public static func remainderWithOverflow(lhs: UInt128, _ rhs: UInt128) -> (UInt128, overflow: Bool) {
+    public static func remainderWithOverflow(_ lhs: UInt128, _ rhs: UInt128) -> (UInt128, overflow: Bool) {
         return (
             (lhs /% rhs).remainder, false
         )
     }
-    public static func multiplyWithOverflow(lhs: UInt128, _ rhs: UInt128) -> (UInt128, overflow: Bool) {
+    public static func multiplyWithOverflow(_ lhs: UInt128, _ rhs: UInt128) -> (UInt128, overflow: Bool) {
         // Useful bitmasks to be used later.
         let lower32 = UInt64(UInt32.max)
         let upper32 = ~UInt64(UInt32.max)
@@ -567,9 +567,9 @@ extension UInt128: IntegerArithmeticType {
         // The future contents of this array will be used to store segment
         // multiplication results.
         var resultArray = [[UInt64]].init(
-            count: 4, repeatedValue: [UInt64].init(
-                count: 4, repeatedValue: 0
-            )
+            repeating: [UInt64].init(
+                repeating: 0, count: 4
+            ), count: 4
         )
         // Holds overflow status
         var overflow = false
@@ -602,25 +602,25 @@ extension UInt128: IntegerArithmeticType {
         }
         // Perform multiplication similar to pen and paper, ignoring calculations
         // that would definitely result in an overflow.
-        let fourthBitSegment = resultArray[3][3] & lower32
-        let thirdBitSegment  = resultArray[2][3] & lower32 +
-                               resultArray[3][2] & lower32 +
-                               // Add overflow from 4th segment.
-                              (resultArray[3][3] & upper32) >> 32
-        let secondBitSegment = resultArray[1][3] & lower32 +
-                               resultArray[2][2] & lower32 +
-                               resultArray[3][1] & lower32 +
-                               // Add overflows from 3rd segment.
-                              (resultArray[2][3] & upper32) >> 32 +
-                              (resultArray[3][2] & upper32) >> 32
-        let firstBitSegment  = resultArray[0][3] & lower32 +
-                               resultArray[1][2] & lower32 +
-                               resultArray[2][1] & lower32 +
-                               resultArray[3][0] & lower32 +
-                               // Add overflows from 2nd segment.
-                              (resultArray[1][3] & upper32) >> 32 +
-                              (resultArray[2][2] & upper32) >> 32 +
-                              (resultArray[3][1] & upper32) >> 32
+        let fourthBitSegment =  resultArray[3][3] & lower32
+        var thirdBitSegment  =  resultArray[2][3] & lower32 +
+                                resultArray[3][2] & lower32
+        // Add overflow from 4th segment.
+        thirdBitSegment     += (resultArray[3][3] & upper32) >> 32
+        var secondBitSegment =  resultArray[1][3] & lower32 +
+                                resultArray[2][2] & lower32 +
+                                resultArray[3][1] & lower32
+        // Add overflows from 3rd segment.
+        secondBitSegment    += (resultArray[2][3] & upper32) >> 32
+        secondBitSegment    += (resultArray[3][2] & upper32) >> 32
+        var firstBitSegment  =  resultArray[0][3] & lower32 +
+                                resultArray[1][2] & lower32 +
+                                resultArray[2][1] & lower32 +
+                                resultArray[3][0] & lower32
+        // Add overflows from 2nd segment.
+        firstBitSegment     += (resultArray[1][3] & upper32) >> 32
+        firstBitSegment     += (resultArray[2][2] & upper32) >> 32
+        firstBitSegment     += (resultArray[3][1] & upper32) >> 32
         // Slot the bit counts into the appropriate position with multiple adds.
         return (
             UInt128(upperBits: firstBitSegment << 32, lowerBits: 0) &+
@@ -636,14 +636,14 @@ public func +(lhs: UInt128, rhs: UInt128) -> UInt128 {
     let (result, _) = UInt128.addWithOverflow(lhs, rhs)
     return result
 }
-public func +=(inout lhs: UInt128, rhs: UInt128) {
+public func +=(lhs: inout UInt128, rhs: UInt128) {
     lhs = lhs + rhs
 }
-prefix public func ++(inout lhs: UInt128) -> UInt128 {
+prefix public func ++(lhs: inout UInt128) -> UInt128 {
     lhs = lhs + 1
     return lhs
 }
-postfix public func ++(inout lhs: UInt128) -> UInt128 {
+postfix public func ++(lhs: inout UInt128) -> UInt128 {
     let result = lhs
     lhs = lhs + 1
     return result
@@ -653,14 +653,14 @@ public func -(lhs: UInt128, rhs: UInt128) -> UInt128 {
     let (result, _) = UInt128.subtractWithOverflow(lhs, rhs)
     return result
 }
-public func -=(inout lhs: UInt128, rhs: UInt128) {
+public func -=(lhs: inout UInt128, rhs: UInt128) {
     lhs = lhs - rhs
 }
-prefix public func --(inout lhs: UInt128) -> UInt128 {
+prefix public func --(lhs: inout UInt128) -> UInt128 {
     lhs = lhs - 1
     return lhs
 }
-postfix public func --(inout lhs: UInt128) -> UInt128 {
+postfix public func --(lhs: inout UInt128) -> UInt128 {
     let result = lhs
     lhs = lhs - 1
     return result
@@ -669,14 +669,14 @@ public func /(lhs: UInt128, rhs: UInt128) -> UInt128 {
     let (result, _) = UInt128.divideWithOverflow(lhs, rhs)
     return result
 }
-public func /=(inout lhs: UInt128, rhs: UInt128) {
+public func /=(lhs: inout UInt128, rhs: UInt128) {
     lhs = lhs / rhs
 }
 public func %(lhs: UInt128, rhs: UInt128) -> UInt128 {
     let (result, _) = UInt128.remainderWithOverflow(lhs, rhs)
     return result
 }
-public func %=(inout lhs: UInt128, rhs: UInt128) {
+public func %=(lhs: inout UInt128, rhs: UInt128) {
     lhs = lhs % rhs
 }
 public func *(lhs: UInt128, rhs: UInt128) -> UInt128 {
@@ -684,11 +684,11 @@ public func *(lhs: UInt128, rhs: UInt128) -> UInt128 {
     precondition(result.overflow == false, "Multiplication overflow!")
     return result.0
 }
-public func *=(inout lhs: UInt128, rhs: UInt128) {
+public func *=(lhs: inout UInt128, rhs: UInt128) {
     lhs = lhs * rhs
 }
 // MARK: - Division and Modulus Combined Operator
-infix operator /% { associativity left precedence 150 }
+infix operator /% : AssignmentPrecedence
 /// Division and Modulus combined. Someone [else's] smart take on the
 /// [integer division with remainder] algorithm.
 ///
@@ -792,13 +792,13 @@ extension UInt128: CustomStringConvertible {
     }
 }
 // MARK: - Extend SignedIntegerType for UInt128
-extension SignedIntegerType {
+extension SignedInteger {
     public init(_ value: UInt128) {
         self.init(value.toIntMax())
     }
 }
 // MARK: - Extend UnsignedIntegerType for UInt128
-extension UnsignedIntegerType {
+extension UnsignedInteger {
     public init (_ value: UInt128) {
         self.init(value.toUIntMax())
     }
@@ -807,11 +807,11 @@ extension UnsignedIntegerType {
 extension String {
     public init(_ value: UInt128) {
         self.init()
-        self.appendContentsOf(value.toString())
+        self.append(value.toString())
     }
     public init(_ value: UInt128, radix: Int, uppercase: Bool = true) {
         self.init()
         let string = value.toString(radix: radix, uppercase: uppercase)
-        self.appendContentsOf(string)
+        self.append(string)
     }
 }

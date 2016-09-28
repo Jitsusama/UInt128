@@ -99,7 +99,7 @@ class UInt128StringTests: XCTestCase {
         do {
             let _ = try UInt128("")
             XCTFail("Empty String to UInt128 didn't throw")
-        } catch UInt128Errors.EmptyString {
+        } catch UInt128Errors.emptyString {
             XCTAssert(true)
         } catch {
             XCTFail("Empty String to UInt128 didn't throw correctly")
@@ -108,7 +108,7 @@ class UInt128StringTests: XCTestCase {
         do {
             let _ = try UInt128.fromParsedString("01234".utf16, radix: 37)
             XCTFail("Invalid Radix didn't throw")
-        } catch UInt128Errors.InvalidRadix {
+        } catch UInt128Errors.invalidRadix {
             XCTAssert(true)
         } catch {
             XCTFail("Invalid Radix didn't throw correctly.")
@@ -131,7 +131,7 @@ class UInt128StringTests: XCTestCase {
         do {
             invalidStringLiteral = try UInt128.fromParsedString("!".utf16, radix: 16)
             XCTFail("Inconceiveable character didn't throw")
-        } catch UInt128Errors.InvalidStringCharacter {
+        } catch UInt128Errors.invalidStringCharacter {
             XCTAssert(true)
         } catch {
             XCTFail("Inconceivable character didn't throw correctly")
@@ -156,10 +156,10 @@ class UInt128StringTests: XCTestCase {
             "0b00110100001000100011111000100010001101100011",
             "1100001110100010001000111000001000100100000000",
             "1000100010000000100010001000000010101"
-            ].joinWithSeparator("")
+            ].joined(separator: "")
         )
         XCTAssertTrue(
-            try! UInt128(binaryString) == sanityValue,
+            try! UInt128(binaryString!) == sanityValue,
             "Basic Binary String to UInt128 conversion failed"
         )
         // Valid string output conversion test (lowercase)
@@ -168,7 +168,7 @@ class UInt128StringTests: XCTestCase {
                 "110100001000100011111000100010001101100011",
                 "1100001110100010001000111000001000100100000000",
                 "1000100010000000100010001000000010101"
-                ].joinWithSeparator("")),
+                ].joined(separator: "")),
             "Basic UInt128 to Binary Lowercase String Conversion Failed"
         )
         // Valid string output conversion test (uppercase)
@@ -177,14 +177,14 @@ class UInt128StringTests: XCTestCase {
                 "110100001000100011111000100010001101100011",
                 "1100001110100010001000111000001000100100000000",
                 "1000100010000000100010001000000010101"
-                ].joinWithSeparator("")),
+                ].joined(separator: "")),
             "Basic UInt128 to Binary Uppercase String Conversion Failed"
         )
         // Invalid characters.
         do {
             let _ = try UInt128("0b002")
             XCTFail("Binary String with Invalid Character didn't throw.")
-        } catch UInt128Errors.InvalidStringCharacter {
+        } catch UInt128Errors.invalidStringCharacter {
             XCTAssert(true)
         } catch {
             XCTFail("Binary String with Invalid Character didn't throw correctly.")
@@ -195,10 +195,10 @@ class UInt128StringTests: XCTestCase {
                 "0b11110100001000100011111000100010001101100011",
                 "1100001110100010001000111000001000100100000000",
                 "1000100010000000100010001000000010101010101"
-                ].joinWithSeparator("")
+                ].joined(separator: "")
             )
             XCTFail("Binary String Overflow didn't throw.")
-        } catch UInt128Errors.StringInputOverflow {
+        } catch UInt128Errors.stringInputOverflow {
             XCTAssert(true)
         } catch {
             XCTFail("Binary String Overflow didn't throw correctly.")
@@ -224,7 +224,7 @@ class UInt128StringTests: XCTestCase {
         do {
             let _ = try UInt128("0o008")
             XCTFail("Octal String with Invalid Character didn't throw.")
-        } catch UInt128Errors.InvalidStringCharacter {
+        } catch UInt128Errors.invalidStringCharacter {
             XCTAssert(true)
         } catch {
             XCTFail("Octal String with Invalid Character didn't throw correctly.")
@@ -233,7 +233,7 @@ class UInt128StringTests: XCTestCase {
         do {
             let _ = try UInt128("0o7654321076543210765432107654321765432107654")
             XCTFail("Octal String overflow didn't throw.")
-        } catch UInt128Errors.StringInputOverflow {
+        } catch UInt128Errors.stringInputOverflow {
             XCTAssert(true)
         } catch {
             XCTFail("Octal String overflow didn't throw correctly.")
@@ -259,7 +259,7 @@ class UInt128StringTests: XCTestCase {
         do {
             let _ = try UInt128("00a")
             XCTFail("Decimal String with Invalid Character didn't throw.")
-        } catch UInt128Errors.InvalidStringCharacter {
+        } catch UInt128Errors.invalidStringCharacter {
             XCTAssert(true)
         } catch {
             XCTFail("Decimal String with Invalid Character didn't throw correctly.")
@@ -268,7 +268,7 @@ class UInt128StringTests: XCTestCase {
         do {
             let _ = try UInt128("987654321098765432109876543210987654320")
             XCTFail("Decimal String overflow didn't throw.")
-        } catch UInt128Errors.StringInputOverflow {
+        } catch UInt128Errors.stringInputOverflow {
             XCTAssert(true)
         } catch {
             XCTFail("Decimal String overflow didn't throw correctly.")
@@ -295,7 +295,7 @@ class UInt128StringTests: XCTestCase {
         do {
             let _ = try UInt128("00g")
             XCTFail("Hexadecimal String with Invalid Character Didn't Throw.")
-        } catch UInt128Errors.InvalidStringCharacter {
+        } catch UInt128Errors.invalidStringCharacter {
             XCTAssert(true)
         } catch {
             XCTFail("Hexadecimal String with Invalid Character Didn't Throw Correctly.")
@@ -304,7 +304,7 @@ class UInt128StringTests: XCTestCase {
         do {
             let _ = try UInt128("0xfedcba9876543210fedcba9876543210f")
             XCTFail("Hexadecimal string overflow didn't throw.")
-        } catch UInt128Errors.StringInputOverflow {
+        } catch UInt128Errors.stringInputOverflow {
             XCTAssert(true)
         } catch {
             XCTFail("Hexadecimal string overflow didn't throw correctly.")
