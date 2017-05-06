@@ -3,6 +3,8 @@ A Swift 128-bit Unsigned Integer Data Type conforming to the UnsignedInteger Pro
 This library also implements a number of other initializers and properties that Swift's
 native unsigned integer types support.
 
+[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
+
 ## Usage
 Since this library fully implements the UnsignedInteger protocol, you can use this data
 type just like any other native UInt data type. For numbers larger than UIntMax, you'll
