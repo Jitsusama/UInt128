@@ -20,6 +20,13 @@
 import XCTest
 // import UInt128 module and mark as testable so we can, y'know, test it.
 @testable import UInt128
+
+extension MemoryLayout {
+    public static var bitSize : Int {
+        return size * 8
+    }
+}
+
 // A UInt128 with a decently complicated bit pattern
 let bizarreUInt128: UInt128 = "0xf1f3f5f7f9fbfdfffefcfaf0f8f6f4f2"
 /// This class' purpose in life is to test UInt128 like there's no tomorrow.

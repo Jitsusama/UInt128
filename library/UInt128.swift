@@ -698,13 +698,6 @@ extension String {
             return 10
         }
     }
-
-}
-
-extension MemoryLayout {
-    public static var bitSize : Int {
-        return size * 8
-    }
 }
 
 extension UInt64 {
