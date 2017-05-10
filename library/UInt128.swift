@@ -26,6 +26,7 @@
 /// for the 4 possible errors that can occur during string
 /// conversion, and 1 impossible error to satisfy a default
 /// case in a switch statement.
+
 public enum UInt128Errors: Error {
     /// Invalid character supplied in input string.
     case invalidStringCharacter
@@ -36,6 +37,26 @@ public enum UInt128Errors: Error {
     /// The unsigned integer representation of string exceeds
     /// 128 bits.
     case stringInputOverflow
+}
+
+
+extension String {
+    var radix : UInt8 {
+        if hasPrefix("0b") { // binary
+            return 2
+        } else if hasPrefix("0o") { // octal
+            return 8
+        } else if hasPrefix("0x") { // hex
+            return 16
+        } else { // default to decimal.
+            return 10
+        }
+    }
+
+//    func trim(left charset : Set<Character>) -> String {
+//        let s = characters.first { !charset.contains($0) }.map { self.remove($0) }
+//        return self
+//    }
 }
 // MARK: Data Type
 /// A 128-bit unsigned integer value type.
@@ -49,14 +70,6 @@ public struct UInt128 {
     /// The smallest value a UInt128 can hold.
     public static var min: UInt128 {
         return UInt128(hi: 0, lo: 0)
-    }
-    /// Returns size of data type in bits.
-    public static var _sizeInBits: Int32 {
-        return 128
-    }
-    /// Returns size of data type in bytes.
-    public static var _sizeInBytes: Int32 {
-        return 128 / 8
     }
     // MARK: Instance Properties
     /// Internal value is presented as a tuple of 2 64-bit
@@ -105,7 +118,7 @@ public struct UInt128 {
     public var byteSwapped: UInt128 {
         var result: UInt128 = 0
         // Swap endian (big to little) or (little to big)
-        var bytes = [UInt128].init(repeating: 0, count: 16)
+        var bytes = [UInt128](repeating: 0, count: 16)
         // Used in for loop to mask and shift our stored value.
         var byteMask: UInt128 = 0xff
         var byteShift: UInt128 = 120
@@ -150,18 +163,9 @@ public struct UInt128 {
             throw UInt128Errors.emptyString
         }
         // Internal variables.
-        let radix: UInt8
+        let radix: UInt8 = string.radix
         var builtString = String()
-        // Determine radix based upon number prefix.
-        if string.hasPrefix("0b") { // binary
-            radix = 2
-        } else if string.hasPrefix("0o") { // octal
-            radix = 8
-        } else if string.hasPrefix("0x") { // hex
-            radix = 16
-        } else { // default to decimal.
-            radix = 10
-        }
+
         // Used to hold passed string with radix removed.
         var stringSansRadix = string
         // Remove the radix identifier from the front of the string.
@@ -194,6 +198,8 @@ public struct UInt128 {
                 throw UInt128Errors.invalidStringCharacter
             }
         }
+
+
         // Remove any leading 0s.
         for character in builtString.characters {
             if character == "0" {
@@ -326,7 +332,7 @@ public struct UInt128 {
     }
 }
 // MARK: - UnsignedIntegerType
-extension UInt128: UnsignedInteger {
+extension UInt128: UnsignedInteger, ExpressibleByIntegerLiteral {
     public init(_ value: UIntMax) {
         assert(MemoryLayout<UIntMax>.size == MemoryLayout<UInt64>.size)
         self.init()
@@ -359,7 +365,7 @@ extension UInt128: Strideable {
     /// Returns an instance of UInt128 that is the current instance's
     /// value increased by `n` when `n` is positive or decreased
     /// by `n` when `n` is negative.
-    public func advancedBy(_ n: Stride) -> UInt128 {
+    public func advanced(by n: Stride) -> UInt128 {
         if n < 0 {
             return self &- UInt128(n * -1)
         }
@@ -370,15 +376,17 @@ extension UInt128: Strideable {
     /// data type does not exist, so it has to fall back to an IntMax
     /// representation which lacks half of the storage space when end
     /// is less than the value of self.
-    public func distanceTo(_ end: UInt128) -> Stride {
-        if end >= self {
-            return Stride(end - self)
+
+    public func distance(to other: UInt128) -> Stride {
+        if other >= self {
+            return Stride(other - self)
         }
-        return Stride(end) &- Stride(self)
+        return Stride(other) &- Stride(self)
+
     }
 }
 // MARK: - IntegerLiteralConvertible
-extension UInt128: ExpressibleByIntegerLiteral {
+extension UInt128 {
     public typealias IntegerLiteralType = Int
     public init(integerLiteral value: UInt128.IntegerLiteralType) {
         self.init(value)
@@ -409,9 +417,7 @@ extension UInt128: ExpressibleByStringLiteral {
 }
 // MARK: - BitwiseOperationsType
 extension UInt128: BitwiseOperations {
-    public static var allZeros: UInt128 {
-        return UInt128(0)
-    }
+    public static let allZeros: UInt128 = 0
 
     /// Performs a bitwise AND operation on 2 UInt128 data types.
     static public func &(lhs: UInt128, rhs: UInt128) -> UInt128 {
@@ -504,22 +510,16 @@ extension UInt128: IntegerArithmetic {
     public static func addWithOverflow(_ lhs: UInt128, _ rhs: UInt128) -> (UInt128, overflow: Bool) {
         var resultOverflow = false
         // Add lower bits and check for overflow.
-        let (lo, lowerOverflow) = UInt64.addWithOverflow(
-            lhs.lo, rhs.lo
-        )
+        let (lo, lowerOverflow) = UInt64.addWithOverflow(lhs.lo, rhs.lo)
         // Add upper bits and check for overflow.
-        var (hi, upperOverflow) = UInt64.addWithOverflow(
-            lhs.hi, rhs.hi
-        )
+        var (hi, upperOverflow) = UInt64.addWithOverflow(lhs.hi, rhs.hi)
         // If the lower bits overflowed, we need to add 1 to upper bits.
         if lowerOverflow {
             (hi, resultOverflow) = UInt64.addWithOverflow(hi, 1)
         }
-        return (
-            UInt128(hi: hi, lo: lo),
-            upperOverflow || resultOverflow
-        )
+        return (UInt128(hi: hi, lo: lo), upperOverflow || resultOverflow)
     }
+
     public static func subtractWithOverflow(_ lhs: UInt128, _ rhs: UInt128) -> (UInt128, overflow: Bool) {
         var resultOverflow = false
         // Subtract lower bits and check for overflow.
