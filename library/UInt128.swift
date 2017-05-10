@@ -26,7 +26,6 @@
 /// for the 4 possible errors that can occur during string
 /// conversion, and 1 impossible error to satisfy a default
 /// case in a switch statement.
-
 public enum UInt128Errors: Error {
     /// Invalid character supplied in input string.
     case invalidStringCharacter
@@ -38,7 +37,6 @@ public enum UInt128Errors: Error {
     /// 128 bits.
     case stringInputOverflow
 }
-
 
 extension String {
     var radix : UInt8 {
@@ -53,24 +51,29 @@ extension String {
         }
     }
 }
+
+extension MemoryLayout {
+    public static var bitSize : Int {
+        return size * 8
+    }
+}
+
 // MARK: Data Type
 /// A 128-bit unsigned integer value type.
 /// Storage is based upon a tuple of 2, 64-bit unsigned integers.
 public struct UInt128 {
     // MARK: Type Properties
     /// The largest value a UInt128 can hold.
-    public static var max: UInt128 {
-        return UInt128(hi: UInt64.max, lo: UInt64.max)
-    }
+    public static let max: UInt128 = UInt128(hi: .max, lo: .max)
+
     /// The smallest value a UInt128 can hold.
-    public static var min: UInt128 {
-        return UInt128(hi: 0, lo: 0)
-    }
+    public static let min: UInt128 = UInt128()
+
     // MARK: Instance Properties
     /// Internal value is presented as a tuple of 2 64-bit
     /// unsigned integers.
-    fileprivate var lo : UInt64 = 0
-    fileprivate var hi : UInt64 = 0
+    public fileprivate(set) var lo : UInt64 = 0
+    public fileprivate(set) var hi : UInt64 = 0
     /// Counts up the significant bits in stored data.
     public var significantBits: UInt128 {
         // Will turn into final result.
@@ -548,11 +551,8 @@ extension UInt128: IntegerArithmetic {
         ]
         // The future contents of this array will be used to store segment
         // multiplication results.
-        var resultArray = [[UInt64]].init(
-            repeating: [UInt64].init(
-                repeating: 0, count: 4
-            ), count: 4
-        )
+        var resultArray = [[UInt64]](repeating: [UInt64](repeating: 0, count: 4), count: 4)
+
         // Holds overflow status
         var overflow = false
         // Loop through every combination of lhsArray[x] * rhsArray[y]
