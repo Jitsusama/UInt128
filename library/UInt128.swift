@@ -442,7 +442,7 @@ extension UInt128: BitwiseOperations {
     /// Shifts `lhs`' bits left by `rhs` bits and returns the result.
     static public func <<(lhs: UInt128, rhs: UInt128) -> UInt128 {
         if rhs.hi > 0 || rhs.lo > 128 {
-            return UInt128(0)
+            return 0
         }
         switch rhs {
         case 0: return lhs // Do nothing shift.
@@ -456,7 +456,7 @@ extension UInt128: BitwiseOperations {
         case 65...127:
             let hi = lhs.lo << UInt64(rhs - 64)
             return UInt128(hi: hi, lo: 0)
-        default: return UInt128(0)
+        default: return 0
         }
     }
     static public func <<=(lhs: inout UInt128, rhs: UInt128) {
@@ -465,7 +465,7 @@ extension UInt128: BitwiseOperations {
     /// Shifts `lhs`' bits right by `rhs` bits and returns the result.
     static public func >>(lhs: UInt128, rhs: UInt128) -> UInt128 {
         if rhs.hi > 0 || rhs.lo > 128 {
-            return UInt128(0)
+            return 0
         }
         switch rhs {
         case 0: return lhs // Do nothing shift.
@@ -479,7 +479,7 @@ extension UInt128: BitwiseOperations {
         case 65...127:
             let lo = lhs.hi >> (rhs.lo - 64)
             return UInt128(hi: 0, lo: lo)
-        default: return UInt128(0)
+        default: return 0
         }
     }
     static public func >>=(lhs: inout UInt128, rhs: UInt128) {
@@ -637,35 +637,39 @@ extension UInt128 : Comparable, CustomStringConvertible {
 
     static public func -(lhs: UInt128, rhs: UInt128) -> UInt128 {
         precondition(lhs >= rhs, "Integer underflow")
-        let (result, _) = UInt128.subtractWithOverflow(lhs, rhs)
-        return result
+        return UInt128.subtractWithOverflow(lhs, rhs).0
     }
+
     static public func -=(lhs: inout UInt128, rhs: UInt128) {
         lhs = lhs - rhs
     }
 
     static public func /(lhs: UInt128, rhs: UInt128) -> UInt128 {
-        let (result, _) = UInt128.divideWithOverflow(lhs, rhs)
-        return result
+        return UInt128.divideWithOverflow(lhs, rhs).0
     }
+
     static public func /=(lhs: inout UInt128, rhs: UInt128) {
         lhs = lhs / rhs
     }
+
     static public func %(lhs: UInt128, rhs: UInt128) -> UInt128 {
-        let (result, _) = UInt128.remainderWithOverflow(lhs, rhs)
-        return result
+        return UInt128.remainderWithOverflow(lhs, rhs).0
     }
+
     static public func %=(lhs: inout UInt128, rhs: UInt128) {
         lhs = lhs % rhs
     }
+
     static public func *(lhs: UInt128, rhs: UInt128) -> UInt128 {
         let result = UInt128.multiplyWithOverflow(lhs, rhs)
         precondition(result.overflow == false, "Multiplication overflow!")
         return result.0
     }
+
     static public func *=(lhs: inout UInt128, rhs: UInt128) {
         lhs = lhs * rhs
     }
+
     static public func /%(dividend: UInt128, divisor: UInt128) -> (quotient: UInt128, remainder: UInt128) {
         // Naughty boy, trying to divide by 0.
         precondition(divisor != 0, "Division by 0")
@@ -713,6 +717,7 @@ extension UInt128 : Comparable, CustomStringConvertible {
         }
         return result
     }
+
     /// Comparable conforming operator that checks if the `lhs` UInt128 is
     /// less than the `rhs` UInt128.
     static public func <(lhs: UInt128, rhs: UInt128) -> Bool {
