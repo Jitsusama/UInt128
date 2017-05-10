@@ -20,21 +20,28 @@
 import XCTest
 // import UInt128 module and mark as testable so we can, y'know, test it.
 @testable import UInt128
+
+extension MemoryLayout {
+    public static var bitSize : Int {
+        return size * 8
+    }
+}
+
 // A UInt128 with a decently complicated bit pattern
 let bizarreUInt128: UInt128 = "0xf1f3f5f7f9fbfdfffefcfaf0f8f6f4f2"
 /// This class' purpose in life is to test UInt128 like there's no tomorrow.
 class UInt128Tests: XCTestCase {
-    let sanityValue = UInt128(upperBits: 1878316677920070929, lowerBits: 2022432965322149909)
+    let sanityValue = UInt128(hi: 1878316677920070929, lo: 2022432965322149909)
     func testMax() {
         XCTAssertEqual(
             UInt128.max,
-            UInt128(upperBits: UInt64.max, lowerBits: UInt64.max)
+            UInt128(hi: .max, lo: .max)
         )
     }
     func testMin() {
         XCTAssertEqual(
             UInt128.min,
-            UInt128(upperBits: UInt64.min, lowerBits: UInt64.min)
+            UInt128(hi: .min, lo: .min)
         )
     }
     func testSignificantBits() {
@@ -82,18 +89,18 @@ class UInt128Tests: XCTestCase {
     }
     func testSize() {
         XCTAssertEqual(
-            UInt128._sizeInBits, 128,
+            MemoryLayout<UInt128>.bitSize, 128,
             "UInt128 Must be 128 Bits in Size"
         )
         XCTAssertEqual(
-            UInt128._sizeInBytes, 16,
+            MemoryLayout<UInt128>.size, 16,
             "UInt128 Must be 16 Bytes in Size"
         )
     }
 }
 class UInt128StringTests: XCTestCase {
     let bizarreUInt128: UInt128 = "0xf1f3f5f7f9fbfdfffefcfaf0f8f6f4f2"
-    let sanityValue = UInt128(upperBits: 1878316677920070929, lowerBits: 2022432965322149909)
+    let sanityValue = UInt128(hi: 1878316677920070929, lo: 2022432965322149909)
     func testFringeStringConversions() {
         // Test Empty String Input.
         do {
@@ -365,57 +372,34 @@ class UInt128UnsignedIntegerTests: XCTestCase {
             previousValue = currentValue
         }
     }
-    func testIndexTypes() {
-        // Test Successor
-        XCTAssertEqual(
-            UInt128(0).successor(), 1,
-            "0.successor() does not equal 1"
-        )
-        XCTAssertEqual(
-            UInt128(UInt64.max).successor(), UInt128(1) << 64,
-            "(UInt64.max).successor() Did Not Cross the Bit Boundary Properly"
-        )
-        XCTAssertEqual(
-            UInt128.max.successor(), 0,
-            "Wraparound From Maximum Value Does Not Equal 0"
-        )
-        // Test Predecessor
-        XCTAssertEqual(
-            UInt128(0).predecessor(), UInt128.max,
-            "Wraparound From 0 Down By 1 Does Not Equal UInt128.max"
-        )
-        XCTAssertEqual(
-            UInt128(UInt128(1) << 64).predecessor(), UInt128(UInt64.max),
-            "(1 << 64).predecessor() Did Not Cross the Bit Boundary Properly"
-        )
-    }
+
 }
 class UInt128StrideableTests: XCTestCase {
     func testAdvancedBy() {
         XCTAssertEqual(
-            UInt128.min.advancedBy(1), UInt128(integerLiteral: 1),
+            UInt128.min.advanced(by: 1), UInt128(integerLiteral: 1),
             "0 Advanced by 1 Does Not Equal 1"
         )
         XCTAssertEqual(
-            UInt128.min.advancedBy(-1), UInt128.max,
+            UInt128.min.advanced(by: -1), UInt128.max,
             "0 Advanced by -1 Does Not Equal UInt128.max"
         )
         XCTAssertEqual(
-            UInt128.max.advancedBy(1), UInt128.min,
+            UInt128.max.advanced(by: 1), UInt128.min,
             "UInt128.max Advanced by 1 Does not Equal UInt128.min"
         )
     }
     func testDistanceTo() {
         XCTAssertEqual(
-            UInt128.min.distanceTo(UInt128(Int.max)), Int.max,
+            UInt128.min.distance(to: UInt128(Int.max)), Int.max,
             "0 Advanced by Int.max Does Not Equal Int.max"
         )
         XCTAssertEqual(
-            UInt128(Int.max).distanceTo(0), -Int.max,
+            UInt128(Int.max).distance(to: 0), -Int.max,
             "Distance to 0 from Int.max Doesn't Equal -Int.max"
         )
         XCTAssertEqual(
-            UInt128(integerLiteral: 0).distanceTo(UInt128(Int.max)), Int.max,
+            UInt128(integerLiteral: 0).distance(to: UInt128(Int.max)), Int.max,
             "Distance to Int.max from 0 Doesn't Equal Int.max"
         )
         /*
@@ -437,11 +421,11 @@ class UInt128BitwiseOperationsTests: XCTestCase {
     let allOnes = UInt128.max
     func testAllZeros() {
         XCTAssertEqual(
-            allZeros.value.upperBits, 0,
+            allZeros.hi, 0,
             "Upper Bits of UInt128.allZeros Does Not Equal 0"
         )
         XCTAssertEqual(
-            allZeros.value.lowerBits, 0,
+            allZeros.lo, 0,
             "Lower Bits of UInt128.allZeros Does Not Equal 0"
         )
     }
@@ -533,7 +517,7 @@ class UInt128BitwiseOperationsTests: XCTestCase {
     }
     func testShiftLeft() {
         XCTAssertEqual(
-            UInt128(1) << UInt128(upperBits: 1, lowerBits: 0), 0,
+            UInt128(1) << UInt128(hi: 1, lo: 0), 0,
             "1 Shifted by UIntMax.max + 1 Didn't Shift Out All Values"
         )
         XCTAssertEqual(
@@ -549,11 +533,11 @@ class UInt128BitwiseOperationsTests: XCTestCase {
             "Complicated Bit Pattern Shifted by 0 Bits Doesn't Equal Complicated Bit Pattern"
         )
         XCTAssertEqual(
-            (bizarreUInt128 << 64).value.upperBits, bizarreUInt128.value.lowerBits,
-            "Complicated Bit Pattern Shifted by 64 Bits Doesn't Have upperBits Equal Original lowerBits"
+            (bizarreUInt128 << 64).hi, bizarreUInt128.lo,
+            "Complicated Bit Pattern Shifted by 64 Bits Doesn't Have hi Equal Original lo"
         )
         XCTAssertEqual(
-            (bizarreUInt128 << 64).value.lowerBits, 0,
+            (bizarreUInt128 << 64).lo, 0,
             "Complicated Bit Pattern Shifted by 64 Bits Has a Value in Lower 64 Bits"
         )
         XCTAssertEqual(
@@ -573,7 +557,7 @@ class UInt128BitwiseOperationsTests: XCTestCase {
     }
     func testShiftRight() {
         XCTAssertEqual(
-            bizarreUInt128 >> UInt128(upperBits: 1, lowerBits: 0), 0,
+            bizarreUInt128 >> UInt128(hi: 1, lo: 0), 0,
             "Complicated Number Shifted by UIntMax.max + 1 Didn't Shift Out All Values"
         )
         XCTAssertEqual(
@@ -589,11 +573,11 @@ class UInt128BitwiseOperationsTests: XCTestCase {
             "Complicated Bit Pattern Shifted by 0 Bits Doesn't Equal Complicated Bit Pattern"
         )
         XCTAssertEqual(
-            (bizarreUInt128 >> 64).value.lowerBits, bizarreUInt128.value.upperBits,
+            (bizarreUInt128 >> 64).lo, bizarreUInt128.hi,
             "Complicated Bit Pattern Shifted by 64 Bits Doesn't Have Lower 64 Bits Equal Original Upper 64 Bits"
         )
         XCTAssertEqual(
-            (bizarreUInt128 >> 64).value.upperBits, 0,
+            (bizarreUInt128 >> 64).hi, 0,
             "Complicated Bit Pattern Shifted by 64 Bits Has a Value in Upper 64 Bits"
         )
         XCTAssertEqual(
@@ -616,7 +600,7 @@ class UInt128IntegerArithmeticTests: XCTestCase {
     func testAddition() {
         var mathOperation = UInt128.addWithOverflow(UInt128(UInt64.max), 1)
         XCTAssert(
-            mathOperation.overflow == false && mathOperation.0 == UInt128(upperBits: 1, lowerBits: 0),
+            mathOperation.overflow == false && mathOperation.0 == UInt128(hi: 1, lo: 0),
             "Crossing the 64 Bit Boundary by 1 Didn't Give the Expected Result"
         )
         mathOperation = UInt128.addWithOverflow(UInt128.max, 1)
@@ -645,14 +629,6 @@ class UInt128IntegerArithmeticTests: XCTestCase {
         XCTAssertEqual(
             testInteger, 7,
             "2 += 5 Doesn't Equal Expected Result"
-        )
-        XCTAssertEqual(
-            ++testInteger, 8,
-            "Prefix Increment Does Not Equal Expected Result"
-        )
-        XCTAssert(
-            testInteger++ == 8 && testInteger == 9,
-            "Postfix Increment Does Not Equal Expected Result"
         )
     }
     func testSubtraction() {
@@ -687,14 +663,6 @@ class UInt128IntegerArithmeticTests: XCTestCase {
         XCTAssertEqual(
             testInteger, 5,
             "7 -= 2 Doesn't Equal Expected Result"
-        )
-        XCTAssertEqual(
-            --testInteger, 4,
-            "Prefix Decrement Doesn't Equal Expected Result"
-        )
-        XCTAssert(
-            testInteger-- == 4 && testInteger == 3,
-            "Postfix Decrement Doesn't Equal Expected Result"
         )
     }
     func testDivisionAndModulus() {
