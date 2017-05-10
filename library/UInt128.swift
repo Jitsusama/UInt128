@@ -44,11 +44,11 @@ public struct UInt128 {
     // MARK: Type Properties
     /// The largest value a UInt128 can hold.
     public static var max: UInt128 {
-        return UInt128(upperBits: UInt64.max, lowerBits: UInt64.max)
+        return UInt128(hi: UInt64.max, lo: UInt64.max)
     }
     /// The smallest value a UInt128 can hold.
     public static var min: UInt128 {
-        return UInt128(upperBits: 0, lowerBits: 0)
+        return UInt128(hi: 0, lo: 0)
     }
     /// Returns size of data type in bits.
     public static var _sizeInBits: Int32 {
@@ -61,19 +61,22 @@ public struct UInt128 {
     // MARK: Instance Properties
     /// Internal value is presented as a tuple of 2 64-bit
     /// unsigned integers.
-    internal var value: (upperBits: UInt64, lowerBits: UInt64) = (0, 0)
+
+
+    fileprivate var lo : UInt64 = 0
+    fileprivate var hi : UInt64 = 0
     /// Counts up the significant bits in stored data.
     public var significantBits: UInt128 {
         // Will turn into final result.
         var significantBitCount: UInt128 = 0
         // The bits to crawl in loop.
         var bitsToWalk: UInt64 = 0
-        if self.value.upperBits > 0 {
-            bitsToWalk = self.value.upperBits
-            // When upperBits > 0, lowerBits are all significant.
+        if hi > 0 {
+            bitsToWalk = hi
+            // When hi > 0, lo are all significant.
             significantBitCount += 64
-        } else if self.value.lowerBits > 0 {
-            bitsToWalk = self.value.lowerBits
+        } else if lo > 0 {
+            bitsToWalk = lo
         }
         // Walk significant bits by shifting right until all bits are equal to 0.
         while bitsToWalk > 0 {
@@ -253,19 +256,21 @@ public struct UInt128 {
     }
     // MARK: Initialization
     public init() {
-        value.lowerBits = 0
-        value.upperBits = 0
+        lo = 0
+        hi = 0
     }
     public init(_ value: UInt128) {
-        self.value = value.value
+
+        lo = value.lo
+        hi = value.hi
     }
-    public init(upperBits: UInt64, lowerBits: UInt64) {
-        value.upperBits = upperBits
-        value.lowerBits = lowerBits
+    public init(hi: UInt64, lo: UInt64) {
+        self.hi = hi
+        self.lo = lo
     }
     public init(_ value: Int) {
         self.init()
-        self.value.lowerBits = UInt64(value)
+        lo = UInt64(value)
     }
     public init(_ value: String) throws {
         try self = UInt128.fromUnparsedString(value)
@@ -323,8 +328,9 @@ public struct UInt128 {
 // MARK: - UnsignedIntegerType
 extension UInt128: UnsignedInteger {
     public init(_ value: UIntMax) {
+        assert(MemoryLayout<UIntMax>.size == MemoryLayout<UInt64>.size)
         self.init()
-        self.value.lowerBits = value
+        lo = value
     }
     public init(_ value: UInt) {
         self.init(value.toUIntMax())
@@ -339,23 +345,14 @@ extension UInt128: UnsignedInteger {
         self.init(value.toUIntMax())
     }
     public func toUIntMax() -> UIntMax {
-        return UIntMax(value.lowerBits)
+        return UIntMax(lo)
     }
     // MARK: Hashable Conformance
     public var hashValue: Int {
-        return Int(
-            value.lowerBits.hashValue ^ value.upperBits.hashValue
-        )
-    }
-    // MARK: ForwardIndexType Conformance
-    public func successor() -> UInt128 {
-        return self &+ 1
-    }
-    // MARK: BidirectionalIndexType Conformance
-    public func predecessor() -> UInt128 {
-        return self &- 1
+        return lo.hashValue ^ hi.hashValue
     }
 }
+
 // MARK: - Strideable
 extension UInt128: Strideable {
     public typealias Stride = Int
@@ -418,27 +415,27 @@ extension UInt128: BitwiseOperations {
 
     /// Performs a bitwise AND operation on 2 UInt128 data types.
     static public func &(lhs: UInt128, rhs: UInt128) -> UInt128 {
-        let upperBits = lhs.value.upperBits & rhs.value.upperBits
-        let lowerBits = lhs.value.lowerBits & rhs.value.lowerBits
-        return UInt128(upperBits: upperBits, lowerBits: lowerBits)
+        let hi = lhs.hi & rhs.hi
+        let lo = lhs.lo & rhs.lo
+        return UInt128(hi: hi, lo: lo)
     }
     static public func &=(lhs: inout UInt128, rhs: UInt128) {
         lhs = lhs & rhs
     }
     /// Performs a bitwise OR operation on 2 UInt128 data types.
     static public func |(lhs: UInt128, rhs: UInt128) -> UInt128 {
-        let upperBits = lhs.value.upperBits | rhs.value.upperBits
-        let lowerBits = lhs.value.lowerBits | rhs.value.lowerBits
-        return UInt128(upperBits: upperBits, lowerBits: lowerBits)
+        let hi = lhs.hi | rhs.hi
+        let lo = lhs.lo | rhs.lo
+        return UInt128(hi: hi, lo: lo)
     }
     static public func |=(lhs: inout UInt128, rhs: UInt128) {
         lhs = lhs | rhs
     }
     /// Performs a bitwise XOR operation on 2 UInt128 data types.
     static public func ^(lhs: UInt128, rhs: UInt128) -> UInt128 {
-        let upperBits = lhs.value.upperBits ^ rhs.value.upperBits
-        let lowerBits = lhs.value.lowerBits ^ rhs.value.lowerBits
-        return UInt128(upperBits: upperBits, lowerBits: lowerBits)
+        let hi = lhs.hi ^ rhs.hi
+        let lo = lhs.lo ^ rhs.lo
+        return UInt128(hi: hi, lo: lo)
     }
     static public func ^=(lhs: inout UInt128, rhs: UInt128) {
         lhs = lhs ^ rhs
@@ -446,27 +443,27 @@ extension UInt128: BitwiseOperations {
     /// Performs bit inversion (complement) on the provided UInt128 data type
     /// and returns the result.
     static prefix public func ~(rhs: UInt128) -> UInt128 {
-        let upperBits = ~rhs.value.upperBits
-        let lowerBits = ~rhs.value.lowerBits
-        return UInt128(upperBits: upperBits, lowerBits: lowerBits)
+        let hi = ~rhs.hi
+        let lo = ~rhs.lo
+        return UInt128(hi: hi, lo: lo)
     }
     /// Shifts `lhs`' bits left by `rhs` bits and returns the result.
     static public func <<(lhs: UInt128, rhs: UInt128) -> UInt128 {
-        if rhs.value.upperBits > 0 || rhs.value.lowerBits > 128 {
+        if rhs.hi > 0 || rhs.lo > 128 {
             return UInt128(0)
         }
         switch rhs {
         case 0: return lhs // Do nothing shift.
         case 1...63:
-            let upperBits = (lhs.value.upperBits << rhs.value.lowerBits) + (lhs.value.lowerBits >> (64 - rhs.value.lowerBits))
-            let lowerBits = lhs.value.lowerBits << rhs.value.lowerBits
-            return UInt128(upperBits: upperBits, lowerBits: lowerBits)
+            let hi = (lhs.hi << rhs.lo) + (lhs.lo >> (64 - rhs.lo))
+            let lo = lhs.lo << rhs.lo
+            return UInt128(hi: hi, lo: lo)
         case 64:
             // Shift 64 means move lower bits to upper bits.
-            return UInt128(upperBits: lhs.value.lowerBits, lowerBits: 0)
+            return UInt128(hi: lhs.lo, lo: 0)
         case 65...127:
-            let upperBits = lhs.value.lowerBits << UInt64(rhs - 64)
-            return UInt128(upperBits: upperBits, lowerBits: 0)
+            let hi = lhs.lo << UInt64(rhs - 64)
+            return UInt128(hi: hi, lo: 0)
         default: return UInt128(0)
         }
     }
@@ -475,21 +472,21 @@ extension UInt128: BitwiseOperations {
     }
     /// Shifts `lhs`' bits right by `rhs` bits and returns the result.
     static public func >>(lhs: UInt128, rhs: UInt128) -> UInt128 {
-        if rhs.value.upperBits > 0 || rhs.value.lowerBits > 128 {
+        if rhs.hi > 0 || rhs.lo > 128 {
             return UInt128(0)
         }
         switch rhs {
         case 0: return lhs // Do nothing shift.
         case 1...63:
-            let upperBits = lhs.value.upperBits >> rhs.value.lowerBits
-            let lowerBits = (lhs.value.lowerBits >> rhs.value.lowerBits) + (lhs.value.upperBits << (64 - rhs.value.lowerBits))
-            return UInt128(upperBits: upperBits, lowerBits: lowerBits)
+            let hi = lhs.hi >> rhs.lo
+            let lo = (lhs.lo >> rhs.lo) + (lhs.hi << (64 - rhs.lo))
+            return UInt128(hi: hi, lo: lo)
         case 64:
             // Shift 64 means move upper bits to lower bits.
-            return UInt128(upperBits: 0, lowerBits: lhs.value.upperBits)
+            return UInt128(hi: 0, lo: lhs.hi)
         case 65...127:
-            let lowerBits = lhs.value.upperBits >> (rhs.value.lowerBits - 64)
-            return UInt128(upperBits: 0, lowerBits: lowerBits)
+            let lo = lhs.hi >> (rhs.lo - 64)
+            return UInt128(hi: 0, lo: lo)
         default: return UInt128(0)
         }
     }
@@ -501,44 +498,44 @@ extension UInt128: BitwiseOperations {
 // MARK: IntegerArithmeticType Conformance
 extension UInt128: IntegerArithmetic {
     public func toIntMax() -> IntMax {
-        precondition(self.value.lowerBits <= UInt64(IntMax.max) && self.value.upperBits == 0, "Converting `self` to 'IntMax' causes an integer overflow")
-        return IntMax(value.lowerBits)
+        precondition(lo <= UInt64(IntMax.max) && hi == 0, "Converting `self` to 'IntMax' causes an integer overflow")
+        return IntMax(lo)
     }
     public static func addWithOverflow(_ lhs: UInt128, _ rhs: UInt128) -> (UInt128, overflow: Bool) {
         var resultOverflow = false
         // Add lower bits and check for overflow.
-        let (lowerBits, lowerOverflow) = UInt64.addWithOverflow(
-            lhs.value.lowerBits, rhs.value.lowerBits
+        let (lo, lowerOverflow) = UInt64.addWithOverflow(
+            lhs.lo, rhs.lo
         )
         // Add upper bits and check for overflow.
-        var (upperBits, upperOverflow) = UInt64.addWithOverflow(
-            lhs.value.upperBits, rhs.value.upperBits
+        var (hi, upperOverflow) = UInt64.addWithOverflow(
+            lhs.hi, rhs.hi
         )
         // If the lower bits overflowed, we need to add 1 to upper bits.
         if lowerOverflow {
-            (upperBits, resultOverflow) = UInt64.addWithOverflow(upperBits, 1)
+            (hi, resultOverflow) = UInt64.addWithOverflow(hi, 1)
         }
         return (
-            UInt128(upperBits: upperBits, lowerBits: lowerBits),
+            UInt128(hi: hi, lo: lo),
             upperOverflow || resultOverflow
         )
     }
     public static func subtractWithOverflow(_ lhs: UInt128, _ rhs: UInt128) -> (UInt128, overflow: Bool) {
         var resultOverflow = false
         // Subtract lower bits and check for overflow.
-        let (lowerBits, lowerOverflow) = UInt64.subtractWithOverflow(
-            lhs.value.lowerBits, rhs.value.lowerBits
+        let (lo, lowerOverflow) = UInt64.subtractWithOverflow(
+            lhs.lo, rhs.lo
         )
         // Subtract upper bits and check for overflow.
-        var (upperBits, upperOverflow) = UInt64.subtractWithOverflow(
-            lhs.value.upperBits, rhs.value.upperBits
+        var (hi, upperOverflow) = UInt64.subtractWithOverflow(
+            lhs.hi, rhs.hi
         )
         // If the lower bits overflowed, we need to subtract (borrow) 1 from the upper bits.
         if lowerOverflow {
-            (upperBits, resultOverflow) = UInt64.subtractWithOverflow(upperBits, 1)
+            (hi, resultOverflow) = UInt64.subtractWithOverflow(hi, 1)
         }
         return (
-            UInt128(upperBits: upperBits, lowerBits: lowerBits),
+            UInt128(hi: hi, lo: lo),
             upperOverflow || resultOverflow
         )
     }
@@ -558,13 +555,13 @@ extension UInt128: IntegerArithmetic {
         let upper32 = ~UInt64(UInt32.max)
         // Decompose lhs into an array of 4, 32 significant bit UInt64s.
         let lhsArray = [
-            lhs.value.upperBits >> 32, /*0*/ lhs.value.upperBits & lower32, /*1*/
-            lhs.value.lowerBits >> 32, /*2*/ lhs.value.lowerBits & lower32  /*3*/
+            lhs.hi >> 32, /*0*/ lhs.hi & lower32, /*1*/
+            lhs.lo >> 32, /*2*/ lhs.lo & lower32  /*3*/
         ]
         // Decompose rhs into an array of 4, 32 significant bit UInt64s.
         let rhsArray = [
-            rhs.value.upperBits >> 32, /*0*/ rhs.value.upperBits & lower32, /*1*/
-            rhs.value.lowerBits >> 32, /*2*/ rhs.value.lowerBits & lower32  /*3*/
+            rhs.hi >> 32, /*0*/ rhs.hi & lower32, /*1*/
+            rhs.lo >> 32, /*2*/ rhs.lo & lower32  /*3*/
         ]
         // The future contents of this array will be used to store segment
         // multiplication results.
@@ -625,9 +622,9 @@ extension UInt128: IntegerArithmetic {
         firstBitSegment     += (resultArray[3][1] & upper32) >> 32
         // Slot the bit counts into the appropriate position with multiple adds.
         return (
-            UInt128(upperBits: firstBitSegment << 32, lowerBits: 0) &+
-                UInt128(upperBits: secondBitSegment, lowerBits: 0) &+
-                UInt128(upperBits: thirdBitSegment >> 32, lowerBits: thirdBitSegment << 32) &+
+            UInt128(hi: firstBitSegment << 32, lo: 0) &+
+                UInt128(hi: secondBitSegment, lo: 0) &+
+                UInt128(hi: thirdBitSegment >> 32, lo: thirdBitSegment << 32) &+
                 UInt128(fourthBitSegment),
             overflow || firstBitSegment >> 32 > 0
         )
@@ -736,9 +733,9 @@ extension UInt128 : Comparable, CustomStringConvertible {
     /// Comparable conforming operator that checks if the `lhs` UInt128 is
     /// less than the `rhs` UInt128.
     static public func <(lhs: UInt128, rhs: UInt128) -> Bool {
-        if lhs.value.upperBits < rhs.value.upperBits {
+        if lhs.hi < rhs.hi {
             return true
-        } else if lhs.value.upperBits == rhs.value.upperBits && lhs.value.lowerBits < rhs.value.lowerBits {
+        } else if lhs.hi == rhs.hi && lhs.lo < rhs.lo {
             return true
         }
         return false
@@ -747,7 +744,7 @@ extension UInt128 : Comparable, CustomStringConvertible {
     /// Equatable conforming operator that checks if the lhs UInt128 is
     /// equal to the rhs UInt128.
     static public func ==(lhs: UInt128, rhs: UInt128) -> Bool {
-        return lhs.value.lowerBits == rhs.value.lowerBits && lhs.value.upperBits == rhs.value.upperBits
+        return lhs.lo == rhs.lo && lhs.hi == rhs.hi
     }
 
     public var description: String {
