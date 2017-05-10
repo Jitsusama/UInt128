@@ -415,87 +415,89 @@ extension UInt128: BitwiseOperations {
     public static var allZeros: UInt128 {
         return UInt128(0)
     }
-}
-/// Performs a bitwise AND operation on 2 UInt128 data types.
-public func &(lhs: UInt128, rhs: UInt128) -> UInt128 {
-    let upperBits = lhs.value.upperBits & rhs.value.upperBits
-    let lowerBits = lhs.value.lowerBits & rhs.value.lowerBits
-    return UInt128(upperBits: upperBits, lowerBits: lowerBits)
-}
-public func &=(lhs: inout UInt128, rhs: UInt128) {
-    lhs = lhs & rhs
-}
-/// Performs a bitwise OR operation on 2 UInt128 data types.
-public func |(lhs: UInt128, rhs: UInt128) -> UInt128 {
-    let upperBits = lhs.value.upperBits | rhs.value.upperBits
-    let lowerBits = lhs.value.lowerBits | rhs.value.lowerBits
-    return UInt128(upperBits: upperBits, lowerBits: lowerBits)
-}
-public func |=(lhs: inout UInt128, rhs: UInt128) {
-    lhs = lhs | rhs
-}
-/// Performs a bitwise XOR operation on 2 UInt128 data types.
-public func ^(lhs: UInt128, rhs: UInt128) -> UInt128 {
-    let upperBits = lhs.value.upperBits ^ rhs.value.upperBits
-    let lowerBits = lhs.value.lowerBits ^ rhs.value.lowerBits
-    return UInt128(upperBits: upperBits, lowerBits: lowerBits)
-}
-public func ^=(lhs: inout UInt128, rhs: UInt128) {
-    lhs = lhs ^ rhs
-}
-/// Performs bit inversion (complement) on the provided UInt128 data type
-/// and returns the result.
-prefix public func ~(rhs: UInt128) -> UInt128 {
-    let upperBits = ~rhs.value.upperBits
-    let lowerBits = ~rhs.value.lowerBits
-    return UInt128(upperBits: upperBits, lowerBits: lowerBits)
-}
-/// Shifts `lhs`' bits left by `rhs` bits and returns the result.
-public func <<(lhs: UInt128, rhs: UInt128) -> UInt128 {
-    if rhs.value.upperBits > 0 || rhs.value.lowerBits > 128 {
-        return UInt128(0)
-    }
-    switch rhs {
-    case 0: return lhs // Do nothing shift.
-    case 1...63:
-        let upperBits = (lhs.value.upperBits << rhs.value.lowerBits) + (lhs.value.lowerBits >> (64 - rhs.value.lowerBits))
-        let lowerBits = lhs.value.lowerBits << rhs.value.lowerBits
+
+    /// Performs a bitwise AND operation on 2 UInt128 data types.
+    static public func &(lhs: UInt128, rhs: UInt128) -> UInt128 {
+        let upperBits = lhs.value.upperBits & rhs.value.upperBits
+        let lowerBits = lhs.value.lowerBits & rhs.value.lowerBits
         return UInt128(upperBits: upperBits, lowerBits: lowerBits)
-    case 64:
-        // Shift 64 means move lower bits to upper bits.
-        return UInt128(upperBits: lhs.value.lowerBits, lowerBits: 0)
-    case 65...127:
-        let upperBits = lhs.value.lowerBits << UInt64(rhs - 64)
-        return UInt128(upperBits: upperBits, lowerBits: 0)
-    default: return UInt128(0)
     }
-}
-public func <<=(lhs: inout UInt128, rhs: UInt128) {
-    lhs = lhs << rhs
-}
-/// Shifts `lhs`' bits right by `rhs` bits and returns the result.
-public func >>(lhs: UInt128, rhs: UInt128) -> UInt128 {
-    if rhs.value.upperBits > 0 || rhs.value.lowerBits > 128 {
-        return UInt128(0)
+    static public func &=(lhs: inout UInt128, rhs: UInt128) {
+        lhs = lhs & rhs
     }
-    switch rhs {
-    case 0: return lhs // Do nothing shift.
-    case 1...63:
-        let upperBits = lhs.value.upperBits >> rhs.value.lowerBits
-        let lowerBits = (lhs.value.lowerBits >> rhs.value.lowerBits) + (lhs.value.upperBits << (64 - rhs.value.lowerBits))
+    /// Performs a bitwise OR operation on 2 UInt128 data types.
+    static public func |(lhs: UInt128, rhs: UInt128) -> UInt128 {
+        let upperBits = lhs.value.upperBits | rhs.value.upperBits
+        let lowerBits = lhs.value.lowerBits | rhs.value.lowerBits
         return UInt128(upperBits: upperBits, lowerBits: lowerBits)
-    case 64:
-        // Shift 64 means move upper bits to lower bits.
-        return UInt128(upperBits: 0, lowerBits: lhs.value.upperBits)
-    case 65...127:
-        let lowerBits = lhs.value.upperBits >> (rhs.value.lowerBits - 64)
-        return UInt128(upperBits: 0, lowerBits: lowerBits)
-    default: return UInt128(0)
+    }
+    static public func |=(lhs: inout UInt128, rhs: UInt128) {
+        lhs = lhs | rhs
+    }
+    /// Performs a bitwise XOR operation on 2 UInt128 data types.
+    static public func ^(lhs: UInt128, rhs: UInt128) -> UInt128 {
+        let upperBits = lhs.value.upperBits ^ rhs.value.upperBits
+        let lowerBits = lhs.value.lowerBits ^ rhs.value.lowerBits
+        return UInt128(upperBits: upperBits, lowerBits: lowerBits)
+    }
+    static public func ^=(lhs: inout UInt128, rhs: UInt128) {
+        lhs = lhs ^ rhs
+    }
+    /// Performs bit inversion (complement) on the provided UInt128 data type
+    /// and returns the result.
+    static prefix public func ~(rhs: UInt128) -> UInt128 {
+        let upperBits = ~rhs.value.upperBits
+        let lowerBits = ~rhs.value.lowerBits
+        return UInt128(upperBits: upperBits, lowerBits: lowerBits)
+    }
+    /// Shifts `lhs`' bits left by `rhs` bits and returns the result.
+    static public func <<(lhs: UInt128, rhs: UInt128) -> UInt128 {
+        if rhs.value.upperBits > 0 || rhs.value.lowerBits > 128 {
+            return UInt128(0)
+        }
+        switch rhs {
+        case 0: return lhs // Do nothing shift.
+        case 1...63:
+            let upperBits = (lhs.value.upperBits << rhs.value.lowerBits) + (lhs.value.lowerBits >> (64 - rhs.value.lowerBits))
+            let lowerBits = lhs.value.lowerBits << rhs.value.lowerBits
+            return UInt128(upperBits: upperBits, lowerBits: lowerBits)
+        case 64:
+            // Shift 64 means move lower bits to upper bits.
+            return UInt128(upperBits: lhs.value.lowerBits, lowerBits: 0)
+        case 65...127:
+            let upperBits = lhs.value.lowerBits << UInt64(rhs - 64)
+            return UInt128(upperBits: upperBits, lowerBits: 0)
+        default: return UInt128(0)
+        }
+    }
+    static public func <<=(lhs: inout UInt128, rhs: UInt128) {
+        lhs = lhs << rhs
+    }
+    /// Shifts `lhs`' bits right by `rhs` bits and returns the result.
+    static public func >>(lhs: UInt128, rhs: UInt128) -> UInt128 {
+        if rhs.value.upperBits > 0 || rhs.value.lowerBits > 128 {
+            return UInt128(0)
+        }
+        switch rhs {
+        case 0: return lhs // Do nothing shift.
+        case 1...63:
+            let upperBits = lhs.value.upperBits >> rhs.value.lowerBits
+            let lowerBits = (lhs.value.lowerBits >> rhs.value.lowerBits) + (lhs.value.upperBits << (64 - rhs.value.lowerBits))
+            return UInt128(upperBits: upperBits, lowerBits: lowerBits)
+        case 64:
+            // Shift 64 means move upper bits to lower bits.
+            return UInt128(upperBits: 0, lowerBits: lhs.value.upperBits)
+        case 65...127:
+            let lowerBits = lhs.value.upperBits >> (rhs.value.lowerBits - 64)
+            return UInt128(upperBits: 0, lowerBits: lowerBits)
+        default: return UInt128(0)
+        }
+    }
+    static public func >>=(lhs: inout UInt128, rhs: UInt128) {
+        lhs = lhs >> rhs
     }
 }
-public func >>=(lhs: inout UInt128, rhs: UInt128) {
-    lhs = lhs >> rhs
-}
+
 // MARK: IntegerArithmeticType Conformance
 extension UInt128: IntegerArithmetic {
     public func toIntMax() -> IntMax {
@@ -604,19 +606,19 @@ extension UInt128: IntegerArithmetic {
         // that would definitely result in an overflow.
         let fourthBitSegment =  resultArray[3][3] & lower32
         var thirdBitSegment  =  resultArray[2][3] & lower32 +
-                                resultArray[3][2] & lower32
+            resultArray[3][2] & lower32
         // Add overflow from 4th segment.
         thirdBitSegment     += (resultArray[3][3] & upper32) >> 32
         var secondBitSegment =  resultArray[1][3] & lower32 +
-                                resultArray[2][2] & lower32 +
-                                resultArray[3][1] & lower32
+            resultArray[2][2] & lower32 +
+            resultArray[3][1] & lower32
         // Add overflows from 3rd segment.
         secondBitSegment    += (resultArray[2][3] & upper32) >> 32
         secondBitSegment    += (resultArray[3][2] & upper32) >> 32
         var firstBitSegment  =  resultArray[0][3] & lower32 +
-                                resultArray[1][2] & lower32 +
-                                resultArray[2][1] & lower32 +
-                                resultArray[3][0] & lower32
+            resultArray[1][2] & lower32 +
+            resultArray[2][1] & lower32 +
+            resultArray[3][0] & lower32
         // Add overflows from 2nd segment.
         firstBitSegment     += (resultArray[1][3] & upper32) >> 32
         firstBitSegment     += (resultArray[2][2] & upper32) >> 32
@@ -624,69 +626,14 @@ extension UInt128: IntegerArithmetic {
         // Slot the bit counts into the appropriate position with multiple adds.
         return (
             UInt128(upperBits: firstBitSegment << 32, lowerBits: 0) &+
-            UInt128(upperBits: secondBitSegment, lowerBits: 0) &+
-            UInt128(upperBits: thirdBitSegment >> 32, lowerBits: thirdBitSegment << 32) &+
-            UInt128(fourthBitSegment),
+                UInt128(upperBits: secondBitSegment, lowerBits: 0) &+
+                UInt128(upperBits: thirdBitSegment >> 32, lowerBits: thirdBitSegment << 32) &+
+                UInt128(fourthBitSegment),
             overflow || firstBitSegment >> 32 > 0
         )
     }
 }
-public func +(lhs: UInt128, rhs: UInt128) -> UInt128 {
-    precondition(~lhs >= rhs, "Addition overflow!")
-    let (result, _) = UInt128.addWithOverflow(lhs, rhs)
-    return result
-}
-public func +=(lhs: inout UInt128, rhs: UInt128) {
-    lhs = lhs + rhs
-}
-prefix public func ++(lhs: inout UInt128) -> UInt128 {
-    lhs = lhs + 1
-    return lhs
-}
-postfix public func ++(lhs: inout UInt128) -> UInt128 {
-    let result = lhs
-    lhs = lhs + 1
-    return result
-}
-public func -(lhs: UInt128, rhs: UInt128) -> UInt128 {
-    precondition(lhs >= rhs, "Integer underflow")
-    let (result, _) = UInt128.subtractWithOverflow(lhs, rhs)
-    return result
-}
-public func -=(lhs: inout UInt128, rhs: UInt128) {
-    lhs = lhs - rhs
-}
-prefix public func --(lhs: inout UInt128) -> UInt128 {
-    lhs = lhs - 1
-    return lhs
-}
-postfix public func --(lhs: inout UInt128) -> UInt128 {
-    let result = lhs
-    lhs = lhs - 1
-    return result
-}
-public func /(lhs: UInt128, rhs: UInt128) -> UInt128 {
-    let (result, _) = UInt128.divideWithOverflow(lhs, rhs)
-    return result
-}
-public func /=(lhs: inout UInt128, rhs: UInt128) {
-    lhs = lhs / rhs
-}
-public func %(lhs: UInt128, rhs: UInt128) -> UInt128 {
-    let (result, _) = UInt128.remainderWithOverflow(lhs, rhs)
-    return result
-}
-public func %=(lhs: inout UInt128, rhs: UInt128) {
-    lhs = lhs % rhs
-}
-public func *(lhs: UInt128, rhs: UInt128) -> UInt128 {
-    let result = UInt128.multiplyWithOverflow(lhs, rhs)
-    precondition(result.overflow == false, "Multiplication overflow!")
-    return result.0
-}
-public func *=(lhs: inout UInt128, rhs: UInt128) {
-    lhs = lhs * rhs
-}
+
 // MARK: - Division and Modulus Combined Operator
 infix operator /% : AssignmentPrecedence
 /// Division and Modulus combined. Someone [else's] smart take on the
@@ -696,101 +643,118 @@ infix operator /% : AssignmentPrecedence
 ///     https://github.com/calccrypto/uint128_t
 /// [integer division with remainder]:
 ///     https://en.wikipedia.org/wiki/Division_algorithm#Integer_division_.28unsigned.29_with_remainder
-public func /%(dividend: UInt128, divisor: UInt128) -> (quotient: UInt128, remainder: UInt128) {
-    // Naughty boy, trying to divide by 0.
-    precondition(divisor != 0, "Division by 0")
-    // x/1 = x
-    if divisor == 1 {
-        return (dividend, 0)
+
+
+extension UInt128 : Comparable, CustomStringConvertible {
+    static public func +(lhs: UInt128, rhs: UInt128) -> UInt128 {
+        precondition(~lhs >= rhs, "Addition overflow!")
+        let (result, _) = UInt128.addWithOverflow(lhs, rhs)
+        return result
     }
-    // x/x = 1
-    if dividend == divisor {
-        return (1, 0)
+    static public func +=(lhs: inout UInt128, rhs: UInt128) {
+        lhs = lhs + rhs
     }
-    // 0/x = 0
-    if dividend == 0 {
-        return (0, 0)
+
+    static public func -(lhs: UInt128, rhs: UInt128) -> UInt128 {
+        precondition(lhs >= rhs, "Integer underflow")
+        let (result, _) = UInt128.subtractWithOverflow(lhs, rhs)
+        return result
     }
-    // x = y/z, when y < z, x = 0, r: y
-    // This would happen with below logic, but doing it now saves a few cycles.
-    if dividend < divisor {
-        return (0, dividend)
+    static public func -=(lhs: inout UInt128, rhs: UInt128) {
+        lhs = lhs - rhs
     }
-    // Prime the result making the remainder equal the dividend. This will get
-    // decremented until no further even divisions can be made.
-    var result = (quotient: UInt128(0), remainder: dividend)
-    // Initially shift the divisor left by significant bit difference so that quicker
-    // division can take place. IE: Discover GCD (Greatest Common Divisor).
-    // This value will get shifted right as the algorithm gets closer to the final solution.
-    var shiftedDivisor: UInt128 = divisor << (dividend.significantBits - divisor.significantBits)
-    // Initially shift 1 by the same amount as shiftedDivisor. Subtracting shiftedDivisor
-    // from dividend will be equal to that many subtractions of divisor from dividend.
-    var adder: UInt128 = 1 << (dividend.significantBits - divisor.significantBits)
-    // Remainder cannot be allowed to get below the divisor.
-    while result.remainder >= divisor {
-        // If remainder is great than shiftedDivisor we need to loop again as our
-        // bit shift is to high for even division.
-        if result.remainder >= shiftedDivisor {
-            result.remainder -= shiftedDivisor
-            result.quotient += adder
+
+    static public func /(lhs: UInt128, rhs: UInt128) -> UInt128 {
+        let (result, _) = UInt128.divideWithOverflow(lhs, rhs)
+        return result
+    }
+    static public func /=(lhs: inout UInt128, rhs: UInt128) {
+        lhs = lhs / rhs
+    }
+    static public func %(lhs: UInt128, rhs: UInt128) -> UInt128 {
+        let (result, _) = UInt128.remainderWithOverflow(lhs, rhs)
+        return result
+    }
+    static public func %=(lhs: inout UInt128, rhs: UInt128) {
+        lhs = lhs % rhs
+    }
+    static public func *(lhs: UInt128, rhs: UInt128) -> UInt128 {
+        let result = UInt128.multiplyWithOverflow(lhs, rhs)
+        precondition(result.overflow == false, "Multiplication overflow!")
+        return result.0
+    }
+    static public func *=(lhs: inout UInt128, rhs: UInt128) {
+        lhs = lhs * rhs
+    }
+    static public func /%(dividend: UInt128, divisor: UInt128) -> (quotient: UInt128, remainder: UInt128) {
+        // Naughty boy, trying to divide by 0.
+        precondition(divisor != 0, "Division by 0")
+        // x/1 = x
+        if divisor == 1 {
+            return (dividend, 0)
         }
-        // Protect ourselves from shifting too far too fast.
-        if result.remainder.significantBits <= shiftedDivisor.significantBits {
-            // Continue to shift down until we've reached our final even division.
-            shiftedDivisor >>= 1
-            adder >>= 1
+        // x/x = 1
+        if dividend == divisor {
+            return (1, 0)
         }
+        // 0/x = 0
+        if dividend == 0 {
+            return (0, 0)
+        }
+        // x = y/z, when y < z, x = 0, r: y
+        // This would happen with below logic, but doing it now saves a few cycles.
+        if dividend < divisor {
+            return (0, dividend)
+        }
+        // Prime the result making the remainder equal the dividend. This will get
+        // decremented until no further even divisions can be made.
+        var result = (quotient: UInt128(0), remainder: dividend)
+        // Initially shift the divisor left by significant bit difference so that quicker
+        // division can take place. IE: Discover GCD (Greatest Common Divisor).
+        // This value will get shifted right as the algorithm gets closer to the final solution.
+        var shiftedDivisor: UInt128 = divisor << (dividend.significantBits - divisor.significantBits)
+        // Initially shift 1 by the same amount as shiftedDivisor. Subtracting shiftedDivisor
+        // from dividend will be equal to that many subtractions of divisor from dividend.
+        var adder: UInt128 = 1 << (dividend.significantBits - divisor.significantBits)
+        // Remainder cannot be allowed to get below the divisor.
+        while result.remainder >= divisor {
+            // If remainder is great than shiftedDivisor we need to loop again as our
+            // bit shift is to high for even division.
+            if result.remainder >= shiftedDivisor {
+                result.remainder -= shiftedDivisor
+                result.quotient += adder
+            }
+            // Protect ourselves from shifting too far too fast.
+            if result.remainder.significantBits <= shiftedDivisor.significantBits {
+                // Continue to shift down until we've reached our final even division.
+                shiftedDivisor >>= 1
+                adder >>= 1
+            }
+        }
+        return result
     }
-    return result
-}
-// MARK: - Comparable
-extension UInt128: Comparable {}
-/// Comparable conforming operator that checks if the `lhs` UInt128 is
-/// less than the `rhs` UInt128.
-public func <(lhs: UInt128, rhs: UInt128) -> Bool {
-    if lhs.value.upperBits < rhs.value.upperBits {
-        return true
-    } else if lhs.value.upperBits == rhs.value.upperBits && lhs.value.lowerBits < rhs.value.lowerBits {
-        return true
+    /// Comparable conforming operator that checks if the `lhs` UInt128 is
+    /// less than the `rhs` UInt128.
+    static public func <(lhs: UInt128, rhs: UInt128) -> Bool {
+        if lhs.value.upperBits < rhs.value.upperBits {
+            return true
+        } else if lhs.value.upperBits == rhs.value.upperBits && lhs.value.lowerBits < rhs.value.lowerBits {
+            return true
+        }
+        return false
     }
-    return false
-}
-public func <=(lhs: UInt128, rhs: UInt128) -> Bool {
-    if lhs < rhs || lhs == rhs {
-        return true
+
+    /// Equatable conforming operator that checks if the lhs UInt128 is
+    /// equal to the rhs UInt128.
+    static public func ==(lhs: UInt128, rhs: UInt128) -> Bool {
+        return lhs.value.lowerBits == rhs.value.lowerBits && lhs.value.upperBits == rhs.value.upperBits
     }
-    return false
-}
-public func >(lhs: UInt128, rhs: UInt128) -> Bool {
-    if lhs.value.upperBits > rhs.value.upperBits {
-        return true
-    } else if lhs.value.upperBits == rhs.value.upperBits && lhs.value.lowerBits > rhs.value.lowerBits {
-        return true
-    }
-    return false
-}
-public func >=(lhs: UInt128, rhs: UInt128) -> Bool {
-    if lhs > rhs || lhs == rhs {
-        return true
-    }
-    return false
-}
-// MARK: - Equatable
-extension UInt128: Equatable {}
-/// Equatable conforming operator that checks if the lhs UInt128 is
-/// equal to the rhs UInt128.
-public func ==(lhs: UInt128, rhs: UInt128) -> Bool {
-    if lhs.value.lowerBits == rhs.value.lowerBits && lhs.value.upperBits == rhs.value.upperBits {
-        return true
-    }
-    return false
-}
-// MARK: - CustomStringConvertible
-extension UInt128: CustomStringConvertible {
+
     public var description: String {
-        return self.toString()
+        return toString()
     }
 }
+
 // MARK: - Extend SignedIntegerType for UInt128
 extension SignedInteger {
     public init(_ value: UInt128) {
