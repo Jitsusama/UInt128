@@ -346,7 +346,7 @@ extension UInt128: UnsignedInteger {
         self.init(value.toUIntMax())
     }
     public func toUIntMax() -> UIntMax {
-        return UIntMax(lo)
+        return lo.toUIntMax()
     }
     // MARK: Hashable Conformance
     public var hashValue: Int {
@@ -509,31 +509,20 @@ extension UInt128: IntegerArithmetic {
     public static func subtractWithOverflow(_ lhs: UInt128, _ rhs: UInt128) -> (UInt128, overflow: Bool) {
         var resultOverflow = false
         // Subtract lower bits and check for overflow.
-        let (lo, lowerOverflow) = UInt64.subtractWithOverflow(
-            lhs.lo, rhs.lo
-        )
+        let (lo, lowerOverflow) = UInt64.subtractWithOverflow(lhs.lo, rhs.lo)
         // Subtract upper bits and check for overflow.
-        var (hi, upperOverflow) = UInt64.subtractWithOverflow(
-            lhs.hi, rhs.hi
-        )
+        var (hi, upperOverflow) = UInt64.subtractWithOverflow(lhs.hi, rhs.hi)
         // If the lower bits overflowed, we need to subtract (borrow) 1 from the upper bits.
         if lowerOverflow {
             (hi, resultOverflow) = UInt64.subtractWithOverflow(hi, 1)
         }
-        return (
-            UInt128(hi: hi, lo: lo),
-            upperOverflow || resultOverflow
-        )
+        return (UInt128(hi: hi, lo: lo), upperOverflow || resultOverflow)
     }
     public static func divideWithOverflow(_ lhs: UInt128, _ rhs: UInt128) -> (UInt128, overflow: Bool) {
-        return (
-            (lhs /% rhs).quotient, false
-        )
+        return ((lhs /% rhs).quotient, false)
     }
     public static func remainderWithOverflow(_ lhs: UInt128, _ rhs: UInt128) -> (UInt128, overflow: Bool) {
-        return (
-            (lhs /% rhs).remainder, false
-        )
+        return ((lhs /% rhs).remainder, false)
     }
     public static func multiplyWithOverflow(_ lhs: UInt128, _ rhs: UInt128) -> (UInt128, overflow: Bool) {
         // Useful bitmasks to be used later.
@@ -562,19 +551,14 @@ extension UInt128: IntegerArithmetic {
                 // Depending upon which segments we're looking at, we'll want to
                 // check for overflow conditions and flag them when encountered.
                 switch (lhsSegment, rhsSegment) {
-                case (0, 0...2): // lhsSegment 1 * rhsSegment 1 to 3 shouldn't have a value.
+                case (0, 0...2), // lhsSegment 1 * rhsSegment 1 to 3 shouldn't have a value.
+                     (1, 0...1), // lhsSegment 2 * rhsSegment 1 or 2 shouldn't have a value.
+                     (2, 0):     // lhsSegment 3 * rhsSegment 1 shouldn't have a value.
                     if currentValue > 0 { overflow = true }
-                case (0, 3):     // lhsSegment 1 * rhsSegment 4 should only be 32 bits.
-                    if currentValue >> 32 > 0 { overflow = true }
-                case (1, 0...1): // lhsSegment 2 * rhsSegment 1 or 2 shouldn't have a value.
-                    if currentValue > 0 { overflow = true }
-                case (1, 2):     // lhsSegment 2 * rhsSegment 3 should only be 32 bits.
-                    if currentValue >> 32 > 0 { overflow = true }
-                case (2, 0):     // lhsSegment 3 * rhsSegment 1 shouldn't have a value.
-                    if currentValue > 0 { overflow = true }
-                case (2, 1):     // lhsSegment 3 * rhsSegment 2 should only be 32 bits.
-                    if currentValue >> 32 > 0 { overflow = true }
-                case (3, 0):     // lhsSegment 4 * rhsSegment 1 should only be 32 bits.
+                case (0, 3),     // lhsSegment 1 * rhsSegment 4 should only be 32 bits.
+                     (1, 2),     // lhsSegment 2 * rhsSegment 3 should only be 32 bits.
+                     (2, 1),     // lhsSegment 3 * rhsSegment 2 should only be 32 bits.
+                     (3, 0):     // lhsSegment 4 * rhsSegment 1 should only be 32 bits.
                     if currentValue >> 32 > 0 { overflow = true }
                 default: break // only 1 overflow condition still exists which will be checked later.
                 }
