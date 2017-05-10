@@ -395,27 +395,24 @@ extension UInt128 : ExpressibleByIntegerLiteral {
         self.init(UInt64(_builtinIntegerLiteral: value))
     }
 }
-// MARK: - StringLiteralConvertible
+// MARK: - ExpressibleByStringLiteral
 extension UInt128: ExpressibleByStringLiteral {
-    public typealias StringLiteralType = String
-    public init(stringLiteral value: StringLiteralType) {
+    public init(stringLiteral value: String) {
         self.init()
         do {
             try self = UInt128.fromUnparsedString(value)
         } catch { return }
     }
-    // MARK: UnicodeScalarLiteralConvertible
-    public typealias UnicodeScalarLiteralType = String
-    public init(unicodeScalarLiteral value: UnicodeScalarLiteralType)  {
+
+    public init(unicodeScalarLiteral value: String)  {
         self.init(stringLiteral: value)
     }
-    // MARK: ExtendedGraphemeClusterLiteralConvertible
-    public typealias ExtendedGraphemeClusterLiteralType = String
-    public init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
+
+    public init(extendedGraphemeClusterLiteral value: String) {
         self.init(stringLiteral: value)
     }
 }
-// MARK: - BitwiseOperationsType
+// MARK: - BitwiseOperations
 extension UInt128: BitwiseOperations {
     public static let allZeros: UInt128 = 0
 
@@ -425,27 +422,21 @@ extension UInt128: BitwiseOperations {
         let lo = lhs.lo & rhs.lo
         return UInt128(hi: hi, lo: lo)
     }
-    static public func &=(lhs: inout UInt128, rhs: UInt128) {
-        lhs = lhs & rhs
-    }
+
     /// Performs a bitwise OR operation on 2 UInt128 data types.
     static public func |(lhs: UInt128, rhs: UInt128) -> UInt128 {
         let hi = lhs.hi | rhs.hi
         let lo = lhs.lo | rhs.lo
         return UInt128(hi: hi, lo: lo)
     }
-    static public func |=(lhs: inout UInt128, rhs: UInt128) {
-        lhs = lhs | rhs
-    }
+
     /// Performs a bitwise XOR operation on 2 UInt128 data types.
     static public func ^(lhs: UInt128, rhs: UInt128) -> UInt128 {
         let hi = lhs.hi ^ rhs.hi
         let lo = lhs.lo ^ rhs.lo
         return UInt128(hi: hi, lo: lo)
     }
-    static public func ^=(lhs: inout UInt128, rhs: UInt128) {
-        lhs = lhs ^ rhs
-    }
+
     /// Performs bit inversion (complement) on the provided UInt128 data type
     /// and returns the result.
     static prefix public func ~(rhs: UInt128) -> UInt128 {
@@ -501,7 +492,7 @@ extension UInt128: BitwiseOperations {
     }
 }
 
-// MARK: IntegerArithmeticType Conformance
+// MARK: IntegerArithmetic Conformance
 extension UInt128: IntegerArithmetic {
     public func toIntMax() -> IntMax {
         precondition(lo <= UInt64(IntMax.max) && hi == 0, "Converting `self` to 'IntMax' causes an integer overflow")
@@ -733,12 +724,8 @@ extension UInt128 : Comparable, CustomStringConvertible {
     /// Comparable conforming operator that checks if the `lhs` UInt128 is
     /// less than the `rhs` UInt128.
     static public func <(lhs: UInt128, rhs: UInt128) -> Bool {
-        if lhs.hi < rhs.hi {
-            return true
-        } else if lhs.hi == rhs.hi && lhs.lo < rhs.lo {
-            return true
-        }
-        return false
+        return lhs.hi < rhs.hi ||
+               lhs.hi == rhs.hi && lhs.lo < rhs.lo
     }
 
     /// Equatable conforming operator that checks if the lhs UInt128 is
