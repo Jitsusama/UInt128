@@ -2,4 +2,15 @@
 
 import UInt128
 
-let integer: UInt128 = 0xf
+
+
+
+var integer: UInt128 = 0xf
+
+print(integer)
+
+
+//print(integer.byteSwapped.byteSwapped == integer)
+
+
+

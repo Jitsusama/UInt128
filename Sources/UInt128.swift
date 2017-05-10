@@ -331,12 +331,10 @@ extension UInt128: Strideable {
             return Stride(other - self)
         }
         return Stride(other) &- Stride(self)
-
     }
 }
 // MARK: - ExpressibleByIntegerLiteral
 extension UInt128 : ExpressibleByIntegerLiteral {
-
     public init(integerLiteral value: IntegerLiteralType) {
         self.init(value)
     }
