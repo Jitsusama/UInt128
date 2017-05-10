@@ -38,36 +38,6 @@ public enum UInt128Errors: Error {
     case stringInputOverflow
 }
 
-extension String {
-    var radix : UInt8 {
-        if hasPrefix("0b") { // binary
-            return 2
-        } else if hasPrefix("0o") { // octal
-            return 8
-        } else if hasPrefix("0x") { // hex
-            return 16
-        } else { // default to decimal.
-            return 10
-        }
-    }
-}
-
-extension MemoryLayout {
-    public static var bitSize : Int {
-        return size * 8
-    }
-}
-
-extension UInt64 {
-    var byteSwapped : UInt64 {
-        var a = self
-        a = (a & 0x00000000FFFFFFFF) << 32 | (a & 0xFFFFFFFF00000000) >> 32
-        a = (a & 0x0000FFFF0000FFFF) << 16 | (a & 0xFFFF0000FFFF0000) >> 16
-        a = (a & 0x00FF00FF00FF00FF) << 8  | (a & 0xFF00FF00FF00FF00) >> 8
-        return a
-    }
-}
-
 // MARK: Data Type
 /// A 128-bit unsigned integer value type.
 /// Storage is based upon a tuple of 2, 64-bit unsigned integers.
@@ -82,8 +52,8 @@ public struct UInt128 {
     // MARK: Instance Properties
     /// Internal value is presented as a tuple of 2 64-bit
     /// unsigned integers.
-    public fileprivate(set) var lo : UInt64
-    public fileprivate(set) var hi : UInt64
+    internal fileprivate(set) var lo, hi : UInt64
+
     /// Counts up the significant bits in stored data.
     public var significantBits: UInt128 {
         // Will turn into final result.
@@ -190,7 +160,7 @@ public struct UInt128 {
             }
         }
         // Pass parsed string to factory function.
-        return try UInt128.fromParsedString(builtString.utf16, radix: radix)
+        return try fromParsedString(builtString.utf16, radix: radix)
     }
     /// Returns a newly instantiated UInt128 type from a pre-parsed and safe string.
     /// This should not be called directly, refer to `fromUnparsedString` for a proper
@@ -226,13 +196,9 @@ public struct UInt128 {
             default: throw UInt128Errors.invalidStringCharacter
             }
             // Make room for current positional value.
-            let (multiplyResult, multiplyOverflow) = UInt128.multiplyWithOverflow(
-                result, UInt128(radix)
-            )
+            let (multiplyResult, multiplyOverflow) = multiplyWithOverflow(result, UInt128(radix))
             // Add current value to temporary result.
-            let (addResult, addOverflow) = UInt128.addWithOverflow(
-                multiplyResult, current
-            )
+            let (addResult, addOverflow) = addWithOverflow(multiplyResult, current)
             // We don't desire handling overflows during string conversion.
             guard !multiplyOverflow && !addOverflow else {
                 throw UInt128Errors.stringInputOverflow
@@ -592,7 +558,7 @@ infix operator /% : AssignmentPrecedence
 extension UInt128 : Comparable, CustomStringConvertible {
     static public func +(lhs: UInt128, rhs: UInt128) -> UInt128 {
         precondition(~lhs >= rhs, "Addition overflow!")
-        return UInt128.addWithOverflow(lhs, rhs).0
+        return addWithOverflow(lhs, rhs).0
     }
 
     static public func +=(lhs: inout UInt128, rhs: UInt128) {
@@ -601,7 +567,7 @@ extension UInt128 : Comparable, CustomStringConvertible {
 
     static public func -(lhs: UInt128, rhs: UInt128) -> UInt128 {
         precondition(lhs >= rhs, "Integer underflow")
-        return UInt128.subtractWithOverflow(lhs, rhs).0
+        return subtractWithOverflow(lhs, rhs).0
     }
 
     static public func -=(lhs: inout UInt128, rhs: UInt128) {
@@ -609,7 +575,7 @@ extension UInt128 : Comparable, CustomStringConvertible {
     }
 
     static public func /(lhs: UInt128, rhs: UInt128) -> UInt128 {
-        return UInt128.divideWithOverflow(lhs, rhs).0
+        return divideWithOverflow(lhs, rhs).0
     }
 
     static public func /=(lhs: inout UInt128, rhs: UInt128) {
@@ -617,7 +583,7 @@ extension UInt128 : Comparable, CustomStringConvertible {
     }
 
     static public func %(lhs: UInt128, rhs: UInt128) -> UInt128 {
-        return UInt128.remainderWithOverflow(lhs, rhs).0
+        return remainderWithOverflow(lhs, rhs).0
     }
 
     static public func %=(lhs: inout UInt128, rhs: UInt128) {
@@ -625,7 +591,7 @@ extension UInt128 : Comparable, CustomStringConvertible {
     }
 
     static public func *(lhs: UInt128, rhs: UInt128) -> UInt128 {
-        let result = UInt128.multiplyWithOverflow(lhs, rhs)
+        let result = multiplyWithOverflow(lhs, rhs)
         precondition(result.overflow == false, "Multiplication overflow!")
         return result.0
     }
@@ -719,5 +685,34 @@ extension String {
     }
     public init(_ value: UInt128, radix: Int, uppercase: Bool = true) {
         self = value.toString(radix: radix, uppercase: uppercase)
+    }
+
+    var radix : UInt8 {
+        if hasPrefix("0b") { // binary
+            return 2
+        } else if hasPrefix("0o") { // octal
+            return 8
+        } else if hasPrefix("0x") { // hex
+            return 16
+        } else { // default to decimal.
+            return 10
+        }
+    }
+
+}
+
+extension MemoryLayout {
+    public static var bitSize : Int {
+        return size * 8
+    }
+}
+
+extension UInt64 {
+    var byteSwapped : UInt64 {
+        var a = self
+        a = (a & 0x00000000FFFFFFFF) << 32 | (a & 0xFFFFFFFF00000000) >> 32
+        a = (a & 0x0000FFFF0000FFFF) << 16 | (a & 0xFFFF0000FFFF0000) >> 16
+        a = (a & 0x00FF00FF00FF00FF) << 8  | (a & 0xFF00FF00FF00FF00) >> 8
+        return a
     }
 }
