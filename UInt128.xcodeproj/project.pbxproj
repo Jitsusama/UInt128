@@ -23,6 +23,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		379654131EC3D59A00F5D053 /* Playground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = Playground.playground; sourceTree = "<group>"; };
 		OBJ_11 /* UInt128Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UInt128Tests.swift; sourceTree = "<group>"; };
 		OBJ_13 /* UInt128.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = UInt128.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		OBJ_14 /* UInt128Tests.xctest */ = {isa = PBXFileReference; lastKnownFileType = file; path = UInt128Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -70,6 +71,7 @@
 		OBJ_5 /*  */ = {
 			isa = PBXGroup;
 			children = (
+				379654131EC3D59A00F5D053 /* Playground.playground */,
 				OBJ_6 /* Package.swift */,
 				OBJ_7 /* Sources */,
 				OBJ_9 /* Tests */,

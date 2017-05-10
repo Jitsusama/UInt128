@@ -227,7 +227,7 @@ public struct UInt128 {
     }
 
     public init(_ value: String) throws {
-        try self = UInt128.fromUnparsedString(value)
+        try self = .fromUnparsedString(value)
     }
 
     /// Creates an integer from its big-endian representation, changing the
@@ -347,7 +347,7 @@ extension UInt128: ExpressibleByStringLiteral {
     public init(stringLiteral value: String) {
         self.init()
         do {
-            try self = UInt128.fromUnparsedString(value)
+            try self = .fromUnparsedString(value)
         } catch { return }
     }
 
