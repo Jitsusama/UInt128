@@ -58,6 +58,16 @@ extension MemoryLayout {
     }
 }
 
+extension UInt64 {
+    var byteSwapped : UInt64 {
+        var a = self
+        a = (a & 0x00000000FFFFFFFF) << 32 | (a & 0xFFFFFFFF00000000) >> 32
+        a = (a & 0x0000FFFF0000FFFF) << 16 | (a & 0xFFFF0000FFFF0000) >> 16
+        a = (a & 0x00FF00FF00FF00FF) << 8  | (a & 0xFF00FF00FF00FF00) >> 8
+        return a
+    }
+}
+
 // MARK: Data Type
 /// A 128-bit unsigned integer value type.
 /// Storage is based upon a tuple of 2, 64-bit unsigned integers.
@@ -113,34 +123,9 @@ public struct UInt128 {
 
     /// Returns the current integer with the byte order swapped.
     public var byteSwapped: UInt128 {
-        var result: UInt128 = 0
-        // Swap endian (big to little) or (little to big)
-        var bytes = [UInt128](repeating: 0, count: 16)
-        // Used in for loop to mask and shift our stored value.
-        var byteMask: UInt128 = 0xff
-        var byteShift: UInt128 = 120
-        // Loop through each of our 16 bytes.
-        for index in 0 ..< bytes.count {
-            if byteMask <= 0xff << 56 {
-                // The bottom 8 bytes will get masked and shifted to opposing byte.
-                bytes[index] = (self & byteMask) << byteShift
-                // Don't decrease the shifter on the bottom half's last byte, as this
-                // down shift will become the up shift during the next for loop run.
-                if byteMask != 0xff << 56 {
-                    byteShift -= 16
-                }
-                byteMask <<= 8
-            } else if byteMask >= (0xff << 63) << 1 {
-                // The top 8 bytes will get masked and shifted to opposing byte.
-                bytes[index] = (self & byteMask) >> byteShift
-                byteMask <<= 8
-                byteShift += 16
-            }
-            // Cheap way to add the results together.
-            result |= bytes[index]
-        }
-        return result
+        return UInt128(hi: lo.byteSwapped, lo: hi.byteSwapped)
     }
+
     // MARK: Type Methods
     /// Create a UInt128 instance from the supplied string.
     /// - requires:
@@ -261,22 +246,26 @@ public struct UInt128 {
         lo = 0
         hi = 0
     }
-    public init(_ value: UInt128) {
 
+    public init(_ value: UInt128) {
         lo = value.lo
         hi = value.hi
     }
+
     public init(hi: UInt64, lo: UInt64) {
         self.hi = hi
         self.lo = lo
     }
+
     public init(_ value: Int) {
         self.init()
         lo = UInt64(value)
     }
+
     public init(_ value: String) throws {
         try self = UInt128.fromUnparsedString(value)
     }
+
     /// Creates an integer from its big-endian representation, changing the
     /// byte order if necessary.
     public init(bigEndian value: UInt128) {
@@ -295,6 +284,7 @@ public struct UInt128 {
             self = value.byteSwapped
         #endif
     }
+
     // MARK: Instance Methods
     /// Converts the stored value into a string representation.
     /// - parameter radix:
@@ -483,6 +473,7 @@ extension UInt128: BitwiseOperations {
         default: return 0
         }
     }
+
     static public func >>=(lhs: inout UInt128, rhs: UInt128) {
         lhs = lhs >> rhs
     }
@@ -609,13 +600,12 @@ infix operator /% : AssignmentPrecedence
 /// [integer division with remainder]:
 ///     https://en.wikipedia.org/wiki/Division_algorithm#Integer_division_.28unsigned.29_with_remainder
 
-
 extension UInt128 : Comparable, CustomStringConvertible {
     static public func +(lhs: UInt128, rhs: UInt128) -> UInt128 {
         precondition(~lhs >= rhs, "Addition overflow!")
-        let (result, _) = UInt128.addWithOverflow(lhs, rhs)
-        return result
+        return UInt128.addWithOverflow(lhs, rhs).0
     }
+
     static public func +=(lhs: inout UInt128, rhs: UInt128) {
         lhs = lhs + rhs
     }
@@ -713,7 +703,7 @@ extension UInt128 : Comparable, CustomStringConvertible {
     /// Equatable conforming operator that checks if the lhs UInt128 is
     /// equal to the rhs UInt128.
     static public func ==(lhs: UInt128, rhs: UInt128) -> Bool {
-        return lhs.lo == rhs.lo && lhs.hi == rhs.hi
+        return lhs.hi == rhs.hi && lhs.lo == rhs.lo
     }
 
     public var description: String {
@@ -736,12 +726,9 @@ extension UnsignedInteger {
 // MARK: - Extend String for UInt128
 extension String {
     public init(_ value: UInt128) {
-        self.init()
-        self.append(value.toString())
+        self = value.toString()
     }
     public init(_ value: UInt128, radix: Int, uppercase: Bool = true) {
-        self.init()
-        let string = value.toString(radix: radix, uppercase: uppercase)
-        self.append(string)
+        self = value.toString(radix: radix, uppercase: uppercase)
     }
 }
