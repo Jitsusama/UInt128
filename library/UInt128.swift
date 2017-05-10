@@ -332,7 +332,7 @@ public struct UInt128 {
     }
 }
 // MARK: - UnsignedIntegerType
-extension UInt128: UnsignedInteger, ExpressibleByIntegerLiteral {
+extension UInt128: UnsignedInteger {
     public init(_ value: UIntMax) {
         assert(MemoryLayout<UIntMax>.size == MemoryLayout<UInt64>.size)
         self.init()
@@ -385,10 +385,10 @@ extension UInt128: Strideable {
 
     }
 }
-// MARK: - IntegerLiteralConvertible
-extension UInt128 {
-    public typealias IntegerLiteralType = Int
-    public init(integerLiteral value: UInt128.IntegerLiteralType) {
+// MARK: - ExpressibleByIntegerLiteral
+extension UInt128 : ExpressibleByIntegerLiteral {
+
+    public init(integerLiteral value: IntegerLiteralType) {
         self.init(value)
     }
     public init(_builtinIntegerLiteral value: _MaxBuiltinIntegerType) {
