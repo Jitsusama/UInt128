@@ -110,6 +110,7 @@ public struct UInt128 {
             return byteSwapped
         #endif
     }
+
     /// Returns the current integer with the byte order swapped.
     public var byteSwapped: UInt128 {
         var result: UInt128 = 0
@@ -439,11 +440,10 @@ extension UInt128: BitwiseOperations {
         let lo = ~rhs.lo
         return UInt128(hi: hi, lo: lo)
     }
+
     /// Shifts `lhs`' bits left by `rhs` bits and returns the result.
     static public func <<(lhs: UInt128, rhs: UInt128) -> UInt128 {
-        if rhs.hi > 0 || rhs.lo > 128 {
-            return 0
-        }
+        guard rhs <= 128 else { return 0 }
         switch rhs {
         case 0: return lhs // Do nothing shift.
         case 1...63:
@@ -459,14 +459,15 @@ extension UInt128: BitwiseOperations {
         default: return 0
         }
     }
+
     static public func <<=(lhs: inout UInt128, rhs: UInt128) {
         lhs = lhs << rhs
     }
+
     /// Shifts `lhs`' bits right by `rhs` bits and returns the result.
     static public func >>(lhs: UInt128, rhs: UInt128) -> UInt128 {
-        if rhs.hi > 0 || rhs.lo > 128 {
-            return 0
-        }
+        guard rhs <= 128 else { return 0 }
+
         switch rhs {
         case 0: return lhs // Do nothing shift.
         case 1...63:
@@ -553,15 +554,13 @@ extension UInt128: IntegerArithmetic {
                 switch (lhsSegment, rhsSegment) {
                 case (0, 0...2), // lhsSegment 1 * rhsSegment 1 to 3 shouldn't have a value.
                      (1, 0...1), // lhsSegment 2 * rhsSegment 1 or 2 shouldn't have a value.
-                     (2, 0)      // lhsSegment 3 * rhsSegment 1 shouldn't have a value.
-                        where currentValue > 0:
-                    overflow = true
+                     (2, 0):     // lhsSegment 3 * rhsSegment 1 shouldn't have a value.
+                    if currentValue > 0 { overflow = true }
                 case (0, 3),     // lhsSegment 1 * rhsSegment 4 should only be 32 bits.
                      (1, 2),     // lhsSegment 2 * rhsSegment 3 should only be 32 bits.
                      (2, 1),     // lhsSegment 3 * rhsSegment 2 should only be 32 bits.
-                     (3, 0)      // lhsSegment 4 * rhsSegment 1 should only be 32 bits.
-                        where currentValue >> 32 > 0:
-                    overflow = true
+                     (3, 0):     // lhsSegment 4 * rhsSegment 1 should only be 32 bits.
+                    if currentValue >> 32 > 0 { overflow = true }
                 default: break // only 1 overflow condition still exists which will be checked later.
                 }
                 // Save the current result into our two-dimensional result array.
