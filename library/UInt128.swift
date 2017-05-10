@@ -82,8 +82,8 @@ public struct UInt128 {
     // MARK: Instance Properties
     /// Internal value is presented as a tuple of 2 64-bit
     /// unsigned integers.
-    public fileprivate(set) var lo : UInt64 = 0
-    public fileprivate(set) var hi : UInt64 = 0
+    public fileprivate(set) var lo : UInt64
+    public fileprivate(set) var hi : UInt64
     /// Counts up the significant bits in stored data.
     public var significantBits: UInt128 {
         // Will turn into final result.
@@ -243,13 +243,11 @@ public struct UInt128 {
     }
     // MARK: Initialization
     public init() {
-        lo = 0
-        hi = 0
+        self = 0
     }
 
     public init(_ value: UInt128) {
-        lo = value.lo
-        hi = value.hi
+        self = value
     }
 
     public init(hi: UInt64, lo: UInt64) {
@@ -258,7 +256,7 @@ public struct UInt128 {
     }
 
     public init(_ value: Int) {
-        self.init()
+        hi = 0
         lo = UInt64(value)
     }
 
@@ -320,8 +318,7 @@ public struct UInt128 {
 // MARK: - UnsignedIntegerType
 extension UInt128: UnsignedInteger {
     public init(_ value: UIntMax) {
-        assert(MemoryLayout<UIntMax>.size == MemoryLayout<UInt64>.size)
-        self.init()
+        hi = 0
         lo = value
     }
     public init(_ value: UInt) {
@@ -404,31 +401,23 @@ extension UInt128: BitwiseOperations {
 
     /// Performs a bitwise AND operation on 2 UInt128 data types.
     static public func &(lhs: UInt128, rhs: UInt128) -> UInt128 {
-        let hi = lhs.hi & rhs.hi
-        let lo = lhs.lo & rhs.lo
-        return UInt128(hi: hi, lo: lo)
+        return UInt128(hi: lhs.hi & rhs.hi, lo: lhs.lo & rhs.lo)
     }
 
     /// Performs a bitwise OR operation on 2 UInt128 data types.
     static public func |(lhs: UInt128, rhs: UInt128) -> UInt128 {
-        let hi = lhs.hi | rhs.hi
-        let lo = lhs.lo | rhs.lo
-        return UInt128(hi: hi, lo: lo)
+        return UInt128(hi: lhs.hi | rhs.hi, lo: lhs.lo | rhs.lo)
     }
 
     /// Performs a bitwise XOR operation on 2 UInt128 data types.
     static public func ^(lhs: UInt128, rhs: UInt128) -> UInt128 {
-        let hi = lhs.hi ^ rhs.hi
-        let lo = lhs.lo ^ rhs.lo
-        return UInt128(hi: hi, lo: lo)
+        return UInt128(hi: lhs.hi ^ rhs.hi, lo: lhs.lo ^ rhs.lo)
     }
 
     /// Performs bit inversion (complement) on the provided UInt128 data type
     /// and returns the result.
-    static prefix public func ~(rhs: UInt128) -> UInt128 {
-        let hi = ~rhs.hi
-        let lo = ~rhs.lo
-        return UInt128(hi: hi, lo: lo)
+    static prefix public func ~(v: UInt128) -> UInt128 {
+        return UInt128(hi: ~v.hi, lo: ~v.lo)
     }
 
     /// Shifts `lhs`' bits left by `rhs` bits and returns the result.
