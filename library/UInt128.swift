@@ -52,11 +52,6 @@ extension String {
             return 10
         }
     }
-
-//    func trim(left charset : Set<Character>) -> String {
-//        let s = characters.first { !charset.contains($0) }.map { self.remove($0) }
-//        return self
-//    }
 }
 // MARK: Data Type
 /// A 128-bit unsigned integer value type.
@@ -74,8 +69,6 @@ public struct UInt128 {
     // MARK: Instance Properties
     /// Internal value is presented as a tuple of 2 64-bit
     /// unsigned integers.
-
-
     fileprivate var lo : UInt64 = 0
     fileprivate var hi : UInt64 = 0
     /// Counts up the significant bits in stored data.
@@ -198,7 +191,6 @@ public struct UInt128 {
                 throw UInt128Errors.invalidStringCharacter
             }
         }
-
 
         // Remove any leading 0s.
         for character in builtString.characters {
