@@ -25,6 +25,16 @@ let bizarreUInt128: UInt128 = "0xf1f3f5f7f9fbfdfffefcfaf0f8f6f4f2"
 /// This class' purpose in life is to test UInt128 like there's no tomorrow.
 class UInt128Tests: XCTestCase {
     let sanityValue = UInt128(upperBits: 1878316677920070929, lowerBits: 2022432965322149909)
+    static var allTests = {
+        return [
+            ("testMax", testMax),
+            ("testMin", testMin),
+            ("testSignificantBits", testSignificantBits),
+            ("testBigEndian", testBigEndian),
+            ("testLittleEndian", testLittleEndian),
+            ("testSize", testSize)
+        ]
+    }
     func testMax() {
         XCTAssertEqual(
             UInt128.max,
@@ -94,6 +104,15 @@ class UInt128Tests: XCTestCase {
 class UInt128StringTests: XCTestCase {
     let bizarreUInt128: UInt128 = "0xf1f3f5f7f9fbfdfffefcfaf0f8f6f4f2"
     let sanityValue = UInt128(upperBits: 1878316677920070929, lowerBits: 2022432965322149909)
+    static var allTests = {
+        return [
+            ("testFringeStringConversions", testFringeStringConversions),
+            ("testBinaryStringConversion", testBinaryStringConversion),
+            ("testOctalStringConversion", testOctalStringConversion),
+            ("testDecimalStringConversion", testDecimalStringConversion),
+            ("testHexadecimalStringConversion", testHexadecimalStringConversion)
+        ]
+    }
     func testFringeStringConversions() {
         // Test Empty String Input.
         do {
@@ -318,6 +337,14 @@ class UInt128StringTests: XCTestCase {
     }*/
 }
 class UInt128UnsignedIntegerTests: XCTestCase {
+    static var allTests = {
+        return [
+            ("testUIntInputs", testUIntInputs),
+            ("testToUIntMax", testToUIntMax),
+            ("testHashValues", testHashValues),
+            ("testIndexTypes", testIndexTypes)
+        ]
+    }
     func testUIntInputs() {
         // Test UInt8 Input
         XCTAssertEqual(
@@ -391,6 +418,12 @@ class UInt128UnsignedIntegerTests: XCTestCase {
     }
 }
 class UInt128StrideableTests: XCTestCase {
+    static var allTests = {
+        return [
+            ("testAdvancedBy", testAdvancedBy),
+            ("testDistanceTo", testDistanceTo)
+        ]
+    }
     func testAdvancedBy() {
         XCTAssertEqual(
             UInt128.min.advancedBy(1), UInt128(integerLiteral: 1),
@@ -435,6 +468,17 @@ class UInt128StrideableTests: XCTestCase {
 class UInt128BitwiseOperationsTests: XCTestCase {
     let allZeros = UInt128.allZeros
     let allOnes = UInt128.max
+    static var allTests = {
+        return [
+            ("testAllZeros", testAllZeros),
+            ("testAND", testAND),
+            ("testOR", testOR),
+            ("testXOR", testXOR),
+            ("testComplement", testComplement),
+            ("testShiftLeft", testShiftLeft),
+            ("testShiftRight", testShiftRight)
+        ]
+    }
     func testAllZeros() {
         XCTAssertEqual(
             allZeros.value.upperBits, 0,
@@ -613,6 +657,14 @@ class UInt128BitwiseOperationsTests: XCTestCase {
     }
 }
 class UInt128IntegerArithmeticTests: XCTestCase {
+    static var allTests = {
+        return [
+            ("testAddition", testAddition),
+            ("testSubtraction", testSubtraction),
+            ("testDivisionAndModulus", testDivisionAndModulus),
+            ("testMultiplication", testMultiplication)
+        ]
+    }
     func testAddition() {
         var mathOperation = UInt128.addWithOverflow(UInt128(UInt64.max), 1)
         XCTAssert(
@@ -805,6 +857,12 @@ class UInt128IntegerArithmeticTests: XCTestCase {
     }
 }
 class UInt128ComparableTests: XCTestCase {
+    static var allTests = {
+        return [
+            ("testComparable", testComparable),
+            ("testEquatable", testEquatable)
+        ]
+    }
     func testComparable() {
         XCTAssertGreaterThan(
             UInt128(UInt64.max) << 64, UInt128(UInt64.max),

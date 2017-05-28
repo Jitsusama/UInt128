@@ -2,5 +2,10 @@
 .DS_Store
 # Unimportant user state files from XCode
 *.xcuserstate
+xcuserdata
 # Vi swap files
 *.swp
+# SPM files
+/.build
+/Packages
+
