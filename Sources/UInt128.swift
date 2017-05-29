@@ -26,7 +26,7 @@
 /// for the 4 possible errors that can occur during string
 /// conversion, and 1 impossible error to satisfy a default
 /// case in a switch statement.
-public enum UInt128Errors: Error {
+public enum UInt128Errors : Error {
     /// Invalid character supplied in input string.
     case invalidStringCharacter
     /// Invalid radix given for conversion.
@@ -286,7 +286,7 @@ public struct UInt128 {
     }
 }
 // MARK: - UnsignedInteger
-extension UInt128: UnsignedInteger {
+extension UInt128 : UnsignedInteger {
     public init(_ value: UIntMax) {
         self.init(upperBits: 0, lowerBits: UInt64(value))
     }
@@ -321,7 +321,7 @@ extension UInt128: UnsignedInteger {
     }
 }
 // MARK: - Strideable
-extension UInt128: Strideable {
+extension UInt128 : Strideable {
     public typealias Stride = Int
     /// Returns an instance of UInt128 that is the current instance's
     /// value increased by `n` when `n` is positive or decreased
@@ -361,7 +361,7 @@ extension UInt128: Strideable {
     }
 }
 // MARK: - ExpressibleByIntegerLiteral
-extension UInt128: ExpressibleByIntegerLiteral {
+extension UInt128 : ExpressibleByIntegerLiteral {
     public init(integerLiteral value: IntegerLiteralType) {
         self.init(value)
     }
@@ -370,7 +370,7 @@ extension UInt128: ExpressibleByIntegerLiteral {
     }
 }
 // MARK: - ExpressibleByStringLiteral
-extension UInt128: ExpressibleByStringLiteral {
+extension UInt128 : ExpressibleByStringLiteral {
     public init(stringLiteral value: StringLiteralType) {
         self.init()
         do {
@@ -389,7 +389,7 @@ extension UInt128: ExpressibleByStringLiteral {
     }
 }
 // MARK: - BitwiseOperations
-extension UInt128: BitwiseOperations {
+extension UInt128 : BitwiseOperations {
     public static var allZeros: UInt128 = 0
 }
 /// Performs a bitwise AND operation on 2 UInt128 data types.
@@ -473,7 +473,7 @@ public func >>=(lhs: inout UInt128, rhs: UInt128) {
     lhs = lhs >> rhs
 }
 // MARK: IntegerArithmetic Conformance
-extension UInt128: IntegerArithmetic {
+extension UInt128 : IntegerArithmetic {
     public func toIntMax() -> IntMax {
         precondition(self.value.lowerBits <= UInt64(IntMax.max) && self.value.upperBits == 0, "Converting `self` to 'IntMax' causes an integer overflow")
         return IntMax(value.lowerBits)
@@ -720,7 +720,7 @@ public func /%(dividend: UInt128, divisor: UInt128) -> (quotient: UInt128, remai
     return result
 }
 // MARK: - Comparable
-extension UInt128: Comparable {}
+extension UInt128 : Comparable {}
 /// Comparable conforming operator that checks if the `lhs` UInt128 is
 /// less than the `rhs` UInt128.
 public func <(lhs: UInt128, rhs: UInt128) -> Bool {
@@ -752,7 +752,7 @@ public func >=(lhs: UInt128, rhs: UInt128) -> Bool {
     return false
 }
 // MARK: - Equatable
-extension UInt128: Equatable {}
+extension UInt128 : Equatable {}
 /// Equatable conforming operator that checks if the lhs UInt128 is
 /// equal to the rhs UInt128.
 public func ==(lhs: UInt128, rhs: UInt128) -> Bool {
@@ -762,7 +762,7 @@ public func ==(lhs: UInt128, rhs: UInt128) -> Bool {
     return false
 }
 // MARK: - CustomStringConvertible
-extension UInt128: CustomStringConvertible {
+extension UInt128 : CustomStringConvertible {
     public var description: String {
         return self.toString()
     }
