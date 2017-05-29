@@ -303,7 +303,7 @@ extension UInt128: UnsignedInteger {
         self.init(value.toUIntMax())
     }
     public func toUIntMax() -> UIntMax {
-        return UIntMax(value.lowerBits)
+        return value.lowerBits.toUIntMax()
     }
     // MARK: Hashable Conformance
     public var hashValue: Int {
