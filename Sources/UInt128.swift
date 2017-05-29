@@ -218,20 +218,19 @@ public struct UInt128 {
         return result
     }
     // MARK: Initialization
-    public init() {
-        value.lowerBits = 0
-        value.upperBits = 0
-    }
-    public init(_ value: UInt128) {
-        self.value = value.value
-    }
+    /// Designated initializer for the UInt128 type.
     public init(upperBits: UInt64, lowerBits: UInt64) {
         value.upperBits = upperBits
         value.lowerBits = lowerBits
     }
+    public init() {
+        self.init(upperBits: 0, lowerBits: 0)
+    }
+    public init(_ value: UInt128) {
+        self.value = value.value
+    }
     public init(_ value: Int) {
-        self.init()
-        self.value.lowerBits = UInt64(value)
+        self.init(upperBits: 0, lowerBits: UInt64(value))
     }
     public init(_ value: String) throws {
         try self = UInt128.fromUnparsedString(value)
@@ -289,8 +288,7 @@ public struct UInt128 {
 // MARK: - UnsignedInteger
 extension UInt128: UnsignedInteger {
     public init(_ value: UIntMax) {
-        self.init()
-        self.value.lowerBits = value
+        self.init(upperBits: 0, lowerBits: UInt64(value))
     }
     public init(_ value: UInt) {
         self.init(value.toUIntMax())
