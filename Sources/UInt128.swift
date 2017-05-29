@@ -96,33 +96,7 @@ public struct UInt128 {
     }
     /// Returns the current integer with the byte order swapped.
     public var byteSwapped: UInt128 {
-        var result: UInt128 = 0
-        // Swap endian (big to little) or (little to big)
-        var bytes = [UInt128].init(repeating: 0, count: 16)
-        // Used in for loop to mask and shift our stored value.
-        var byteMask: UInt128 = 0xff
-        var byteShift: UInt128 = 120
-        // Loop through each of our 16 bytes.
-        for index in 0 ..< bytes.count {
-            if byteMask <= 0xff << 56 {
-                // The bottom 8 bytes will get masked and shifted to opposing byte.
-                bytes[index] = (self & byteMask) << byteShift
-                // Don't decrease the shifter on the bottom half's last byte, as this
-                // down shift will become the up shift during the next for loop run.
-                if byteMask != 0xff << 56 {
-                    byteShift -= 16
-                }
-                byteMask <<= 8
-            } else if byteMask >= (0xff << 63) << 1 {
-                // The top 8 bytes will get masked and shifted to opposing byte.
-                bytes[index] = (self & byteMask) >> byteShift
-                byteMask <<= 8
-                byteShift += 16
-            }
-            // Cheap way to add the results together.
-            result |= bytes[index]
-        }
-        return result
+        return UInt128(upperBits: self.value.lowerBits.byteSwapped, lowerBits: self.value.upperBits.byteSwapped)
     }
     // MARK: Type Methods
     /// Create a UInt128 instance from the supplied string.
