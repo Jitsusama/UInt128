@@ -374,7 +374,7 @@ extension UInt128: ExpressibleByStringLiteral {
 }
 // MARK: - BitwiseOperations
 extension UInt128: BitwiseOperations {
-    public static var allZeros = UInt128(0)
+    public static var allZeros: UInt128 = 0
 }
 /// Performs a bitwise AND operation on 2 UInt128 data types.
 public func &(lhs: UInt128, rhs: UInt128) -> UInt128 {
@@ -413,7 +413,7 @@ prefix public func ~(rhs: UInt128) -> UInt128 {
 /// Shifts `lhs`' bits left by `rhs` bits and returns the result.
 public func <<(lhs: UInt128, rhs: UInt128) -> UInt128 {
     if rhs.value.upperBits > 0 || rhs.value.lowerBits > 128 {
-        return UInt128(0)
+        return 0
     }
     switch rhs {
     case 0: return lhs // Do nothing shift.
@@ -427,7 +427,7 @@ public func <<(lhs: UInt128, rhs: UInt128) -> UInt128 {
     case 65...127:
         let upperBits = lhs.value.lowerBits << UInt64(rhs - 64)
         return UInt128(upperBits: upperBits, lowerBits: 0)
-    default: return UInt128(0)
+    default: return 0
     }
 }
 public func <<=(lhs: inout UInt128, rhs: UInt128) {
@@ -436,7 +436,7 @@ public func <<=(lhs: inout UInt128, rhs: UInt128) {
 /// Shifts `lhs`' bits right by `rhs` bits and returns the result.
 public func >>(lhs: UInt128, rhs: UInt128) -> UInt128 {
     if rhs.value.upperBits > 0 || rhs.value.lowerBits > 128 {
-        return UInt128(0)
+        return 0
     }
     switch rhs {
     case 0: return lhs // Do nothing shift.
@@ -450,7 +450,7 @@ public func >>(lhs: UInt128, rhs: UInt128) -> UInt128 {
     case 65...127:
         let lowerBits = lhs.value.upperBits >> (rhs.value.lowerBits - 64)
         return UInt128(upperBits: 0, lowerBits: lowerBits)
-    default: return UInt128(0)
+    default: return 0
     }
 }
 public func >>=(lhs: inout UInt128, rhs: UInt128) {
@@ -678,11 +678,11 @@ public func /%(dividend: UInt128, divisor: UInt128) -> (quotient: UInt128, remai
     }
     // Prime the result making the remainder equal the dividend. This will get
     // decremented until no further even divisions can be made.
-    var result = (quotient: UInt128(0), remainder: dividend)
+    var result: (quotient: UInt128, remainder: UInt128) = (0, dividend)
     // Initially shift the divisor left by significant bit difference so that quicker
     // division can take place. IE: Discover GCD (Greatest Common Divisor).
     // This value will get shifted right as the algorithm gets closer to the final solution.
-    var shiftedDivisor: UInt128 = divisor << (dividend.significantBits - divisor.significantBits)
+    var shiftedDivisor = divisor << (dividend.significantBits - divisor.significantBits)
     // Initially shift 1 by the same amount as shiftedDivisor. Subtracting shiftedDivisor
     // from dividend will be equal to that many subtractions of divisor from dividend.
     var adder: UInt128 = 1 << (dividend.significantBits - divisor.significantBits)
