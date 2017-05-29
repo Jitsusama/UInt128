@@ -378,9 +378,7 @@ extension UInt128: ExpressibleByStringLiteral {
 }
 // MARK: - BitwiseOperationsType
 extension UInt128: BitwiseOperations {
-    public static var allZeros: UInt128 {
-        return UInt128(0)
-    }
+    public static var allZeros = UInt128(0)
 }
 /// Performs a bitwise AND operation on 2 UInt128 data types.
 public func &(lhs: UInt128, rhs: UInt128) -> UInt128 {
