@@ -424,6 +424,21 @@ class UInt128StrideableTests: XCTestCase {
             ("testDistanceTo", testDistanceTo)
         ]
     }
+    func testAdvanced() {
+        XCTAssertEqual(
+            UInt128.min.advanced(by: 1), UInt128(integerLiteral: 1),
+            "0 Advanced by 1 Does Not Equal 1"
+        )
+        XCTAssertEqual(
+            UInt128.min.advanced(by: -1), UInt128.max,
+            "0 Advanced by -1 Does Not Equal UInt128.max"
+        )
+        XCTAssertEqual(
+            UInt128.max.advanced(by: 1), UInt128.min,
+            "UInt128.max Advanced by 1 Does not Equal UInt128.min"
+        )
+    }
+    /// This is currently deprecated.
     func testAdvancedBy() {
         XCTAssertEqual(
             UInt128.min.advancedBy(1), UInt128(integerLiteral: 1),
@@ -438,6 +453,33 @@ class UInt128StrideableTests: XCTestCase {
             "UInt128.max Advanced by 1 Does not Equal UInt128.min"
         )
     }
+    func testDistance() {
+        XCTAssertEqual(
+            UInt128.min.distance(to: UInt128(Int.max)), Int.max,
+            "0 Advanced by Int.max Does Not Equal Int.max"
+        )
+        XCTAssertEqual(
+            UInt128(Int.max).distance(to: 0), -Int.max,
+            "Distance to 0 from Int.max Doesn't Equal -Int.max"
+        )
+        XCTAssertEqual(
+            UInt128(integerLiteral: 0).distance(to: UInt128(Int.max)), Int.max,
+            "Distance to Int.max from 0 Doesn't Equal Int.max"
+        )
+        /*
+         These tests need to wait for such a time that preconditions can be properly checked
+         without requiring magical wizardry.
+         XCTAssertEqual(
+         UInt128(0).distanceTo(UInt128(Int.max) + 2), 0,
+         "Distance to Int.max + 1 from 0 Doesn't Equal 0"
+         )
+         XCTAssertEqual(
+         UInt128.max.distanceTo(UInt128(1) << 70), 1,
+         "Things happened"
+         )
+         */
+    }
+    /// This is currently deprecated.
     func testDistanceTo() {
         XCTAssertEqual(
             UInt128.min.distanceTo(UInt128(Int.max)), Int.max,

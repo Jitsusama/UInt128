@@ -310,10 +310,12 @@ extension UInt128: UnsignedInteger {
         return self.value.lowerBits.hashValue ^ self.value.upperBits.hashValue
     }
     // MARK: ForwardIndexType Conformance
+    @available(*, deprecated)
     public func successor() -> UInt128 {
         return self &+ 1
     }
     // MARK: BidirectionalIndexType Conformance
+    @available(*, deprecated)
     public func predecessor() -> UInt128 {
         return self &- 1
     }
@@ -324,28 +326,43 @@ extension UInt128: Strideable {
     /// Returns an instance of UInt128 that is the current instance's
     /// value increased by `n` when `n` is positive or decreased
     /// by `n` when `n` is negative.
-    public func advancedBy(_ n: Stride) -> UInt128 {
+    public func advanced(by n: Int) -> UInt128 {
         if n < 0 {
             return self &- UInt128(n * -1)
         }
         return self &+ UInt128(n)
+    }
+    /// Returns an instance of UInt128 that is the current instance's
+    /// value increased by `n` when `n` is positive or decreased
+    /// by `n` when `n` is negative.
+    @available(*, deprecated)
+    public func advancedBy(_ n: Stride) -> UInt128 {
+        return self.advanced(by: n)
     }
     /// Returns the distance from the current UInt128 value to the supplied
     /// UInt128 value. This implementation is limited since a signed Int128
     /// data type does not exist, so it has to fall back to an IntMax
     /// representation which lacks half of the storage space when end
     /// is less than the value of self.
-    public func distanceTo(_ end: UInt128) -> Stride {
-        if end >= self {
-            return Stride(end - self)
+    public func distance(to other: UInt128) -> Int {
+        if other >= self {
+            return Stride(other - self)
         }
-        return Stride(end) &- Stride(self)
+        return Stride(other) &- Stride(self)
+    }
+    /// Returns the distance from the current UInt128 value to the supplied
+    /// UInt128 value. This implementation is limited since a signed Int128
+    /// data type does not exist, so it has to fall back to an IntMax
+    /// representation which lacks half of the storage space when end
+    /// is less than the value of self.
+    @available(*, deprecated)
+    public func distanceTo(_ end: UInt128) -> Stride {
+        return self.distance(to: end)
     }
 }
 // MARK: - ExpressibleByIntegerLiteral
 extension UInt128: ExpressibleByIntegerLiteral {
-    public typealias IntegerLiteralType = Int
-    public init(integerLiteral value: UInt128.IntegerLiteralType) {
+    public init(integerLiteral value: IntegerLiteralType) {
         self.init(value)
     }
     public init(_builtinIntegerLiteral value: _MaxBuiltinIntegerType) {
@@ -354,7 +371,6 @@ extension UInt128: ExpressibleByIntegerLiteral {
 }
 // MARK: - ExpressibleByStringLiteral
 extension UInt128: ExpressibleByStringLiteral {
-    public typealias StringLiteralType = String
     public init(stringLiteral value: StringLiteralType) {
         self.init()
         do {
