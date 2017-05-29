@@ -43,21 +43,17 @@ public enum UInt128Errors: Error {
 public struct UInt128 {
     // MARK: Type Properties
     /// The largest value a UInt128 can hold.
-    public static var max: UInt128 {
-        return UInt128(upperBits: UInt64.max, lowerBits: UInt64.max)
-    }
+    public static var max = UInt128(upperBits: .max, lowerBits: .max)
+
     /// The smallest value a UInt128 can hold.
-    public static var min: UInt128 {
-        return UInt128(upperBits: 0, lowerBits: 0)
-    }
+    public static var min = UInt128(upperBits: 0, lowerBits: 0)
+
     /// Returns size of data type in bits.
-    public static var _sizeInBits: Int32 {
-        return 128
-    }
+    public static var _sizeInBits: Int32 = 128
+
     /// Returns size of data type in bytes.
-    public static var _sizeInBytes: Int32 {
-        return 128 / 8
-    }
+    public static var _sizeInBytes: Int32 = 128 / 8
+
     // MARK: Instance Properties
     /// Internal value is presented as a tuple of 2 64-bit
     /// unsigned integers.
