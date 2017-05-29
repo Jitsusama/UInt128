@@ -81,7 +81,7 @@ public struct UInt128 {
     /// Returns the big-endian representation of the integer, changing the byte order if necessary.
     public var bigEndian: UInt128 {
         #if arch(i386) || arch(x86_64) || arch(arm) || arch(arm64)
-            return byteSwapped
+            return self.byteSwapped
         #else
             return self
         #endif
@@ -91,7 +91,7 @@ public struct UInt128 {
         #if arch(i386) || arch(x86_64) || arch(arm) || arch(arm64)
             return self
         #else
-            return byteSwapped
+            return self.byteSwapped
         #endif
     }
     /// Returns the current integer with the byte order swapped.
@@ -309,9 +309,7 @@ extension UInt128: UnsignedInteger {
     }
     // MARK: Hashable Conformance
     public var hashValue: Int {
-        return Int(
-            value.lowerBits.hashValue ^ value.upperBits.hashValue
-        )
+        return self.value.lowerBits.hashValue ^ self.value.upperBits.hashValue
     }
     // MARK: ForwardIndexType Conformance
     public func successor() -> UInt128 {
