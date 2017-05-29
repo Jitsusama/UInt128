@@ -170,7 +170,7 @@ public struct UInt128 {
             }
         }
         // Pass parsed string to factory function.
-        return try UInt128.fromParsedString(builtString.utf16, radix: radix)
+        return try fromParsedString(builtString.utf16, radix: radix)
     }
     /// Returns a newly instantiated UInt128 type from a pre-parsed and safe string.
     /// This should not be called directly, refer to `fromUnparsedString` for a proper
@@ -206,13 +206,9 @@ public struct UInt128 {
             default: throw UInt128Errors.invalidStringCharacter
             }
             // Make room for current positional value.
-            let (multiplyResult, multiplyOverflow) = UInt128.multiplyWithOverflow(
-                result, UInt128(radix)
-            )
+            let (multiplyResult, multiplyOverflow) = multiplyWithOverflow(result, UInt128(radix))
             // Add current value to temporary result.
-            let (addResult, addOverflow) = UInt128.addWithOverflow(
-                multiplyResult, current
-            )
+            let (addResult, addOverflow) = addWithOverflow(multiplyResult, current)
             // We don't desire handling overflows during string conversion.
             guard !multiplyOverflow && !addOverflow else {
                 throw UInt128Errors.stringInputOverflow
