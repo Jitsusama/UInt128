@@ -286,7 +286,7 @@ public struct UInt128 {
         return result
     }
 }
-// MARK: - UnsignedIntegerType
+// MARK: - UnsignedInteger
 extension UInt128: UnsignedInteger {
     public init(_ value: UIntMax) {
         self.init()
@@ -344,7 +344,7 @@ extension UInt128: Strideable {
         return Stride(end) &- Stride(self)
     }
 }
-// MARK: - IntegerLiteralConvertible
+// MARK: - ExpressibleByIntegerLiteral
 extension UInt128: ExpressibleByIntegerLiteral {
     public typealias IntegerLiteralType = Int
     public init(integerLiteral value: UInt128.IntegerLiteralType) {
@@ -354,7 +354,7 @@ extension UInt128: ExpressibleByIntegerLiteral {
         self.init(UInt64(_builtinIntegerLiteral: value))
     }
 }
-// MARK: - StringLiteralConvertible
+// MARK: - ExpressibleByStringLiteral
 extension UInt128: ExpressibleByStringLiteral {
     public typealias StringLiteralType = String
     public init(stringLiteral value: StringLiteralType) {
@@ -374,7 +374,7 @@ extension UInt128: ExpressibleByStringLiteral {
         self.init(stringLiteral: value)
     }
 }
-// MARK: - BitwiseOperationsType
+// MARK: - BitwiseOperations
 extension UInt128: BitwiseOperations {
     public static var allZeros = UInt128(0)
 }
@@ -458,7 +458,7 @@ public func >>(lhs: UInt128, rhs: UInt128) -> UInt128 {
 public func >>=(lhs: inout UInt128, rhs: UInt128) {
     lhs = lhs >> rhs
 }
-// MARK: IntegerArithmeticType Conformance
+// MARK: IntegerArithmetic Conformance
 extension UInt128: IntegerArithmetic {
     public func toIntMax() -> IntMax {
         precondition(self.value.lowerBits <= UInt64(IntMax.max) && self.value.upperBits == 0, "Converting `self` to 'IntMax' causes an integer overflow")
@@ -753,13 +753,13 @@ extension UInt128: CustomStringConvertible {
         return self.toString()
     }
 }
-// MARK: - Extend SignedIntegerType for UInt128
+// MARK: - Extend SignedInteger for UInt128
 extension SignedInteger {
     public init(_ value: UInt128) {
         self.init(value.toIntMax())
     }
 }
-// MARK: - Extend UnsignedIntegerType for UInt128
+// MARK: - Extend UnsignedInteger for UInt128
 extension UnsignedInteger {
     public init (_ value: UInt128) {
         self.init(value.toUIntMax())
