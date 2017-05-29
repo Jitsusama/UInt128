@@ -326,7 +326,7 @@ extension UInt128: Strideable {
     /// Returns an instance of UInt128 that is the current instance's
     /// value increased by `n` when `n` is positive or decreased
     /// by `n` when `n` is negative.
-    public func advanced(by n: Int) -> UInt128 {
+    public func advanced(by n: Stride) -> UInt128 {
         if n < 0 {
             return self &- UInt128(n * -1)
         }
