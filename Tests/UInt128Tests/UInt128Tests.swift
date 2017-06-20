@@ -36,7 +36,7 @@ class SystemTests : XCTestCase {
     
     func testCanBeSentToAnInt() {
         let expectedResult: Int = 1
-        let testResult = Int(UInt128(1))
+        let testResult = Int(UInt128(upperBits: 0, lowerBits: 1))
         XCTAssertEqual(testResult, expectedResult)
     }
     
@@ -60,7 +60,7 @@ class SystemTests : XCTestCase {
     
     func testCanBeSentToAFloat() {
         let expectedResult: Float = 1
-        let testResult = Float(UInt128(1))
+        let testResult = Float(UInt128(upperBits: 0, lowerBits: 1))
         XCTAssertEqual(testResult, expectedResult)
     }
 }
@@ -298,13 +298,13 @@ class BinaryIntegerTests : XCTestCase {
     
     func testMaskingRightShiftEqualOperator() {
         var thing = UInt128()
-        thing &>>= UInt128(1)
+        thing &>>= UInt128(upperBits: 0, lowerBits: 1)
         XCTFail("Test not written yet.")
     }
     
     func testMaskingLeftShiftEqualOperator() {
         var thing = UInt128()
-        thing &<<= UInt128(1)
+        thing &<<= UInt128(upperBits: 0, lowerBits: 1)
         XCTFail("Test not written yet.")
     }
 }
@@ -421,7 +421,7 @@ class FloatingPointInterworkingTests : XCTestCase {
     
     func testSignBitIndex() {
         let tests = [
-            (input: UInt128(0), output: Int(127)),
+            (input: UInt128(), output: Int(127)),
             (input: UInt128.max, output: Int(0))]
         
         tests.forEach { test in
