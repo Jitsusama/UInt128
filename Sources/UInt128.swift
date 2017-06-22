@@ -410,9 +410,25 @@ extension UInt128 : BinaryInteger {
     public static func &>>=(_ lhs: inout UInt128, _ rhs: UInt128) {
         fatalError("Not implemented!")
     }
-    // TODO: Implement Me!
     public static func &<<=(_ lhs: inout UInt128, _ rhs: UInt128) {
-        fatalError("Not implemented!")
+        let shiftWidth = rhs.value.lowerBits & UInt64(UInt128.bitWidth - 1)
+        if shiftWidth == UInt64(UInt128.bitWidth) {
+            lhs = UInt128()
+        }
+        switch shiftWidth {
+        case 0: return // Do nothing shift.
+        case 1...63:
+            let upperBits = (lhs.value.upperBits << shiftWidth) + (lhs.value.lowerBits >> (64 - shiftWidth))
+            let lowerBits = lhs.value.lowerBits << shiftWidth
+            lhs = UInt128(upperBits: upperBits, lowerBits: lowerBits)
+        case 64:
+            // Shift 64 means move lower bits to upper bits.
+            lhs = UInt128(upperBits: lhs.value.lowerBits, lowerBits: 0)
+        case 65...127:
+            let upperBits = lhs.value.lowerBits << (shiftWidth - 64)
+            lhs = UInt128(upperBits: upperBits, lowerBits: 0)
+        default: lhs = UInt128()
+        }
     }
 }
 
