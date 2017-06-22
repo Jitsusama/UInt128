@@ -187,7 +187,8 @@ class FixedWidthIntegerTests : XCTestCase {
     }
     
     func testInitWithTruncatingBits() {
-        XCTFail("Test not written yet.")
+        let testResult = UInt128(_truncatingBits: UInt.max)
+        XCTAssertEqual(testResult, UInt128(upperBits: 0, lowerBits: UInt64(UInt.max)))
     }
     
     func testInitWithBigEndian() {
