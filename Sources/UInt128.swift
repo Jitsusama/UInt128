@@ -128,8 +128,12 @@ extension UInt128 : FixedWidthInteger {
     }
     
     // MARK: Initializers
+    /// Creates a UInt128 from a given value, with the input's value
+    /// truncated to a size no larger than what UInt128 can handle.
+    /// Since the input is constrained to an UInt, no truncation needs
+    /// to occur, as a UInt is currently 64 bits at the maximum.
     public init(_truncatingBits bits: UInt) {
-        fatalError("Not implemented!")
+        self.init(upperBits: 0, lowerBits: UInt64(bits))
     }
     
     /// Creates an integer from its big-endian representation, changing the
