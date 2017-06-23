@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		167CA9BD1EFCF3E50091689C /* UInt128.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_8 /* UInt128.swift */; };
 		OBJ_21 /* UInt128.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_8 /* UInt128.swift */; };
 		OBJ_28 /* UInt128Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* UInt128Tests.swift */; };
 		OBJ_30 /* UInt128.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = OBJ_14 /* UInt128.framework */; };
@@ -23,7 +24,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		48389B601EDB9F78008C1177 /* Playground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = Playground.playground; sourceTree = "<group>"; };
+		167CA9C21EFCF3E50091689C /* UInt128.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = UInt128.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		167CA9C41EFCF7EF0091689C /* Info-iOS.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-iOS.plist"; sourceTree = "<group>"; };
+		48389B601EDB9F78008C1177 /* Playground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = Playground.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		OBJ_11 /* UInt128Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UInt128Tests.swift; sourceTree = "<group>"; };
 		OBJ_12 /* bin */ = {isa = PBXFileReference; lastKnownFileType = folder; path = bin; sourceTree = SOURCE_ROOT; };
 		OBJ_14 /* UInt128.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = UInt128.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -33,6 +36,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		167CA9BE1EFCF3E50091689C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		OBJ_22 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 0;
@@ -65,6 +75,7 @@
 			children = (
 				OBJ_14 /* UInt128.framework */,
 				OBJ_15 /* UInt128Tests.xctest */,
+				167CA9C21EFCF3E50091689C /* UInt128.framework */,
 			);
 			name = Products;
 			sourceTree = BUILT_PRODUCTS_DIR;
@@ -72,6 +83,7 @@
 		OBJ_5 = {
 			isa = PBXGroup;
 			children = (
+				167CA9C41EFCF7EF0091689C /* Info-iOS.plist */,
 				48389B601EDB9F78008C1177 /* Playground.playground */,
 				OBJ_6 /* Package.swift */,
 				OBJ_12 /* bin */,
@@ -100,9 +112,25 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		OBJ_16 /* UInt128 */ = {
+		167CA9BB1EFCF3E50091689C /* UInt128-iOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = OBJ_17 /* Build configuration list for PBXNativeTarget "UInt128" */;
+			buildConfigurationList = 167CA9BF1EFCF3E50091689C /* Build configuration list for PBXNativeTarget "UInt128-iOS" */;
+			buildPhases = (
+				167CA9BC1EFCF3E50091689C /* Sources */,
+				167CA9BE1EFCF3E50091689C /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "UInt128-iOS";
+			productName = UInt128;
+			productReference = 167CA9C21EFCF3E50091689C /* UInt128.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		OBJ_16 /* UInt128-macOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = OBJ_17 /* Build configuration list for PBXNativeTarget "UInt128-macOS" */;
 			buildPhases = (
 				OBJ_20 /* Sources */,
 				OBJ_22 /* Frameworks */,
@@ -111,7 +139,7 @@
 			);
 			dependencies = (
 			);
-			name = UInt128;
+			name = "UInt128-macOS";
 			productName = UInt128;
 			productReference = OBJ_14 /* UInt128.framework */;
 			productType = "com.apple.product-type.framework";
@@ -153,13 +181,22 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				OBJ_16 /* UInt128 */,
+				OBJ_16 /* UInt128-macOS */,
 				OBJ_23 /* UInt128Tests */,
+				167CA9BB1EFCF3E50091689C /* UInt128-iOS */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
+		167CA9BC1EFCF3E50091689C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 0;
+			files = (
+				167CA9BD1EFCF3E50091689C /* UInt128.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		OBJ_20 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
@@ -181,12 +218,62 @@
 /* Begin PBXTargetDependency section */
 		OBJ_31 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = OBJ_16 /* UInt128 */;
+			target = OBJ_16 /* UInt128-macOS */;
 			targetProxy = 48389B5F1EDB9E90008C1177 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		167CA9C01EFCF3E50091689C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+				);
+				HEADER_SEARCH_PATHS = "$(inherited)";
+				INFOPLIST_FILE = "$(SRCROOT)/Info-iOS.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "";
+				OTHER_LDFLAGS = "$(inherited)";
+				OTHER_SWIFT_FLAGS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = UInt128;
+				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGET_NAME = UInt128;
+			};
+			name = Debug;
+		};
+		167CA9C11EFCF3E50091689C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+				);
+				HEADER_SEARCH_PATHS = "$(inherited)";
+				INFOPLIST_FILE = "$(SRCROOT)/Info-iOS.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "";
+				OTHER_LDFLAGS = "$(inherited)";
+				OTHER_SWIFT_FLAGS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = UInt128;
+				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGET_NAME = UInt128;
+			};
+			name = Release;
+		};
 		OBJ_18 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -204,6 +291,7 @@
 				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = macosx;
 				TARGET_NAME = UInt128;
 			};
 			name = Debug;
@@ -225,6 +313,7 @@
 				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = macosx;
 				TARGET_NAME = UInt128;
 			};
 			name = Release;
@@ -310,7 +399,16 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		OBJ_17 /* Build configuration list for PBXNativeTarget "UInt128" */ = {
+		167CA9BF1EFCF3E50091689C /* Build configuration list for PBXNativeTarget "UInt128-iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				167CA9C01EFCF3E50091689C /* Debug */,
+				167CA9C11EFCF3E50091689C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		OBJ_17 /* Build configuration list for PBXNativeTarget "UInt128-macOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				OBJ_18 /* Debug */,
