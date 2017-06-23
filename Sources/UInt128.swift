@@ -406,10 +406,36 @@ extension UInt128 : BinaryInteger {
         let lowerBits = lhs.value.lowerBits ^ rhs.value.lowerBits
         lhs = UInt128(upperBits: upperBits, lowerBits: lowerBits)
     }
-    // TODO: Implement Me!
+    
+    /// Perform a masked right SHIFT operation self.
+    ///
+    /// The masking operation will mask `rhs` against the highest
+    /// shift value that will not cause an overflowing shift before
+    /// performing the shift. IE: `rhs = 128` will become `rhs = 0`
+    /// and `rhs = 129` will become `rhs = 1`.
     public static func &>>=(_ lhs: inout UInt128, _ rhs: UInt128) {
-        fatalError("Not implemented!")
+        let shiftWidth = rhs.value.lowerBits & 127
+        switch shiftWidth {
+        case 0: return // Do nothing shift.
+        case 1...63:
+            let upperBits = lhs.value.upperBits >> shiftWidth
+            let lowerBits = (lhs.value.lowerBits >> shiftWidth) + (lhs.value.upperBits << (64 - shiftWidth))
+            lhs = UInt128(upperBits: upperBits, lowerBits: lowerBits)
+        case 64:
+            // Shift 64 means move upper bits to lower bits.
+            lhs = UInt128(upperBits: 0, lowerBits: lhs.value.upperBits)
+        default:
+            let lowerBits = lhs.value.upperBits >> (shiftWidth - 64)
+            lhs = UInt128(upperBits: 0, lowerBits: lowerBits)
+        }
     }
+    
+    /// Perform a masked left SHIFT operation on self.
+    ///
+    /// The masking operation will mask `rhs` against the highest
+    /// shift value that will not cause an overflowing shift before
+    /// performing the shift. IE: `rhs = 128` will become `rhs = 0`
+    /// and `rhs = 129` will become `rhs = 1`.
     public static func &<<=(_ lhs: inout UInt128, _ rhs: UInt128) {
         let shiftWidth = rhs.value.lowerBits & 127
         switch shiftWidth {

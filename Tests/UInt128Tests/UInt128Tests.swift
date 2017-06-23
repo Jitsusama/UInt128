@@ -297,22 +297,74 @@ class BinaryIntegerTests : XCTestCase {
         XCTFail("Test not written yet.")
     }
     
-    func testMaskingRightShiftEqualOperator() {
-        var thing = UInt128()
-        thing &>>= UInt128(upperBits: 0, lowerBits: 1)
-        XCTFail("Test not written yet.")
+    func testMaskingRightShiftEqualOperatorStandardCases() {
+        let tests = [
+            (input: UInt128(upperBits: UInt64.max, lowerBits: 0),
+             shiftWidth: UInt64(127),
+             expected: UInt128(upperBits: 0, lowerBits: 1)),
+            (input: UInt128(upperBits: 1, lowerBits: 0),
+             shiftWidth: UInt64(64),
+             expected: UInt128(upperBits: 0, lowerBits: 1)),
+            (input: UInt128(upperBits: 0, lowerBits: 1),
+             shiftWidth: UInt64(1),
+             expected: UInt128())
+        ]
+        
+        tests.forEach { test in
+            var testValue = test.input
+            testValue &>>= UInt128(upperBits: 0, lowerBits: test.shiftWidth)
+            XCTAssertEqual(testValue, test.expected)
+        }
     }
     
-    func testMaskingLeftShiftEqualOperator() {
+    func testMaskingRightShiftEqualOperatorEdgeCases() {
+        let tests = [
+            (input: UInt128(upperBits: 0, lowerBits: 2),
+             shiftWidth: UInt64(129),
+             expected: UInt128(upperBits: 0, lowerBits: 1)),
+            (input: UInt128(upperBits: UInt64.max, lowerBits: 0),
+             shiftWidth: UInt64(128),
+             expected: UInt128(upperBits: UInt64.max, lowerBits: 0)),
+            (input: UInt128(upperBits: 0, lowerBits: 1),
+             shiftWidth: UInt64(0),
+             expected: UInt128(upperBits: 0, lowerBits: 1))
+        ]
+        
+        tests.forEach { test in
+            var testValue = test.input
+            testValue &>>= UInt128(upperBits: 0, lowerBits: test.shiftWidth)
+            XCTAssertEqual(testValue, test.expected)
+        }
+    }
+    
+    func testMaskingLeftShiftEqualOperatorStandardCases() {
+        let uint64_1_in_msb: UInt64 = 2 << 62
         let tests = [
             (input: UInt128(upperBits: 0, lowerBits: 1),
              shiftWidth: UInt64(127),
-             expected: UInt128(upperBits: 9223372036854775808, lowerBits: 0)),
+             expected: UInt128(upperBits: uint64_1_in_msb, lowerBits: 0)),
             (input: UInt128(upperBits: 0, lowerBits: 1),
              shiftWidth: UInt64(64),
              expected: UInt128(upperBits: 1, lowerBits: 0)),
             (input: UInt128(upperBits: 0, lowerBits: 1),
              shiftWidth: UInt64(1),
+             expected: UInt128(upperBits: 0, lowerBits: 2))
+        ]
+        
+        tests.forEach { test in
+            var testValue = test.input
+            testValue &<<= UInt128(upperBits: 0, lowerBits: test.shiftWidth)
+            XCTAssertEqual(testValue, test.expected)
+        }
+    }
+    
+    func testMaskingLeftShiftEqualOperatorEdgeCases() {
+        let tests = [
+            (input: UInt128(upperBits: 0, lowerBits: 2),
+             shiftWidth: UInt64(129),
+             expected: UInt128(upperBits: 0, lowerBits: 4)),
+            (input: UInt128(upperBits: 0, lowerBits: 2),
+             shiftWidth: UInt64(128),
              expected: UInt128(upperBits: 0, lowerBits: 2)),
             (input: UInt128(upperBits: 0, lowerBits: 1),
              shiftWidth: UInt64(0),
