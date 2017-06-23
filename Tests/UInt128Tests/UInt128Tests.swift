@@ -305,17 +305,23 @@ class BinaryIntegerTests : XCTestCase {
     
     func testMaskingLeftShiftEqualOperator() {
         let tests = [
-            (input: (value: UInt128(upperBits: 0, lowerBits: 1),
-                     shiftWidth: UInt64(0)),
-             expected: UInt128(upperBits: 0, lowerBits: 1)),
-            (input: (value: UInt128(upperBits: 0, lowerBits: 1),
-                     shiftWidth: UInt64(1)),
-             expected: UInt128(upperBits: 0, lowerBits: 2))
+            (input: UInt128(upperBits: 0, lowerBits: 1),
+             shiftWidth: UInt64(127),
+             expected: UInt128(upperBits: 9223372036854775808, lowerBits: 0)),
+            (input: UInt128(upperBits: 0, lowerBits: 1),
+             shiftWidth: UInt64(64),
+             expected: UInt128(upperBits: 1, lowerBits: 0)),
+            (input: UInt128(upperBits: 0, lowerBits: 1),
+             shiftWidth: UInt64(1),
+             expected: UInt128(upperBits: 0, lowerBits: 2)),
+            (input: UInt128(upperBits: 0, lowerBits: 1),
+             shiftWidth: UInt64(0),
+             expected: UInt128(upperBits: 0, lowerBits: 1))
         ]
         
         tests.forEach { test in
-            var testValue = test.input.value
-            testValue &<<= UInt128(upperBits: 0, lowerBits: test.input.shiftWidth)
+            var testValue = test.input
+            testValue &<<= UInt128(upperBits: 0, lowerBits: test.shiftWidth)
             XCTAssertEqual(testValue, test.expected)
         }
     }
