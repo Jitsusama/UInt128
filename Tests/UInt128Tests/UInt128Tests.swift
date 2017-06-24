@@ -253,8 +253,19 @@ class BinaryIntegerTests : XCTestCase {
     }
     
     func test_word() {
-        let _ = UInt128()._word(at: 0)
-        XCTFail("Test not written yet.")
+        let lowerBits = UInt64("100000000000000000000000000000001", radix: 2)!
+        let upperBits = UInt64("100000000000000000000000000000001", radix: 2)!
+        let testResult = UInt128(upperBits: upperBits, lowerBits: lowerBits)
+
+        for index in 0 ... UInt128.bitWidth / UInt.bitWidth {
+            let currentWord = testResult._word(at: index)
+            if UInt.bitWidth == 64 {
+                XCTAssertEqual(currentWord, 4294967297)
+            }
+            else if UInt.bitWidth == 32 {
+                XCTAssertEqual(currentWord, 1)
+            }
+        }
     }
     
     func testDivideOperator() {

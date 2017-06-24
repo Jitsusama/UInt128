@@ -368,9 +368,24 @@ extension UInt128 : BinaryInteger {
     }
     
     // MARK: Instance Methods
-    // TODO: Implement Me!
+    
+    /// Return the word at position `n` in self.
     public func _word(at n: Int) -> UInt {
-        fatalError("Not implemented!")
+        if self == UInt128() {
+            return UInt()
+        }
+        
+        let shiftAmount: UInt64 = UInt64(UInt.bitWidth) * UInt64(n)
+        let mask = UInt64(UInt.max)
+        
+        var shifted = self
+        if shiftAmount > 0 {
+            shifted &>>= UInt128(upperBits: 0, lowerBits: shiftAmount)
+        }
+        
+        let masked: UInt128 = shifted & UInt128(upperBits: 0, lowerBits: mask)
+        
+        return UInt(masked.value.lowerBits)
     }
     
     // MARK: Type Methods
