@@ -38,6 +38,110 @@
                BlueprintName = "UInt128Tests"
                ReferencedContainer = "container:UInt128.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "BinaryIntegerTests/testBooleanAndEqualOperator()">
+               </Test>
+               <Test
+                  Identifier = "BinaryIntegerTests/testBooleanOrEqualOperator()">
+               </Test>
+               <Test
+                  Identifier = "BinaryIntegerTests/testBooleanXorEqualOperator()">
+               </Test>
+               <Test
+                  Identifier = "BinaryIntegerTests/testDivideEqualOperator()">
+               </Test>
+               <Test
+                  Identifier = "BinaryIntegerTests/testDivideOperator()">
+               </Test>
+               <Test
+                  Identifier = "BinaryIntegerTests/testInitFailableFloatingPointExactly()">
+               </Test>
+               <Test
+                  Identifier = "BinaryIntegerTests/testInitFloatingPoint()">
+               </Test>
+               <Test
+                  Identifier = "BinaryIntegerTests/testModuleEqualOperator()">
+               </Test>
+               <Test
+                  Identifier = "BinaryIntegerTests/testModuloOperator()">
+               </Test>
+               <Test
+                  Identifier = "ComparableTests/testLessThanOperator()">
+               </Test>
+               <Test
+                  Identifier = "CustomStringConvertibleTests/testDescriptionProperty()">
+               </Test>
+               <Test
+                  Identifier = "EquatableTests/testBooleanEqualsOperator()">
+               </Test>
+               <Test
+                  Identifier = "ExpressibleByIntegerLiteralTests/testInitWithIntegerLiteral()">
+               </Test>
+               <Test
+                  Identifier = "ExpressibleByStringLiteralTests/testInitWithStringLiteral()">
+               </Test>
+               <Test
+                  Identifier = "FixedWidthIntegerTests/testAddingReportingOverflow()">
+               </Test>
+               <Test
+                  Identifier = "FixedWidthIntegerTests/testByteSwapped()">
+               </Test>
+               <Test
+                  Identifier = "FixedWidthIntegerTests/testDividedReportingOverflow()">
+               </Test>
+               <Test
+                  Identifier = "FixedWidthIntegerTests/testDividingFullWidth()">
+               </Test>
+               <Test
+                  Identifier = "FixedWidthIntegerTests/testInitWithBigEndian()">
+               </Test>
+               <Test
+                  Identifier = "FixedWidthIntegerTests/testInitWithLittleEndian()">
+               </Test>
+               <Test
+                  Identifier = "FixedWidthIntegerTests/testLeadingZeroBitCount()">
+               </Test>
+               <Test
+                  Identifier = "FixedWidthIntegerTests/testMultipliedFullWidth()">
+               </Test>
+               <Test
+                  Identifier = "FixedWidthIntegerTests/testMultipliedReportingOverflow()">
+               </Test>
+               <Test
+                  Identifier = "FixedWidthIntegerTests/testQuotientAndRemainder()">
+               </Test>
+               <Test
+                  Identifier = "FixedWidthIntegerTests/testRemainderReportingOverflow()">
+               </Test>
+               <Test
+                  Identifier = "FixedWidthIntegerTests/testSubtractingReportingOverflow()">
+               </Test>
+               <Test
+                  Identifier = "FloatingPointInterworkingTests/testSignBitIndex()">
+               </Test>
+               <Test
+                  Identifier = "HashableTests/testHashValueProperty()">
+               </Test>
+               <Test
+                  Identifier = "NumericTests/testAdditionEqualOperator()">
+               </Test>
+               <Test
+                  Identifier = "NumericTests/testAdditionOperator()">
+               </Test>
+               <Test
+                  Identifier = "NumericTests/testMultiplicationEqualOperator()">
+               </Test>
+               <Test
+                  Identifier = "NumericTests/testMultiplicationOperator()">
+               </Test>
+               <Test
+                  Identifier = "NumericTests/testSubtractionEqualOperator()">
+               </Test>
+               <Test
+                  Identifier = "NumericTests/testSubtractionOperator()">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
       <AdditionalOptions>
