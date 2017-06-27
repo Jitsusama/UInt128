@@ -24,19 +24,11 @@
 
 // MARK: Error Type
 /// An `ErrorType` for `UInt128` data types. It includes cases
-/// for the 4 possible errors that can occur during string
-/// conversion, and 1 impossible error to satisfy a default
-/// case in a switch statement.
+/// for errors that can occur during string
+/// conversion.
 public enum UInt128Errors : Error {
-    /// Invalid character supplied in input string.
-    case invalidStringCharacter
-    /// Invalid radix given for conversion.
-    case invalidRadix
-    /// Cannot convert an empty string into a UInt128 value.
-    case emptyString
-    /// The unsigned integer representation of string exceeds
-    /// 128 bits.
-    case stringInputOverflow
+    /// Input cannot be converted to a UInt128 value.
+    case invalidString
 }
 
 // MARK: - Data Type
@@ -86,7 +78,12 @@ public struct UInt128 {
     }
     
     public init(_ source: String) throws {
-        self.init(stringLiteral: source)
+        if let result = UInt128._valueFromString(source) {
+            self = result
+        }
+        else {
+            throw UInt128Errors.invalidString
+        }
     }
 }
 
@@ -581,14 +578,18 @@ extension UInt128 : Comparable {
 // MARK: - ExpressibleByStringLiteral Conformance
 extension UInt128 : ExpressibleByStringLiteral {
     public init(stringLiteral value: StringLiteralType) {
+        self.init()
+        
+        if let result = UInt128._valueFromString(value) {
+            self = result
+        }
+    }
+    
+    internal static func _valueFromString(_ value: String) -> UInt128? {
         let radix = UInt128._determineRadixFromString(value)
         let inputString = radix == 10 ? value : String(value.dropFirst(2))
         
-        self.init()
-        
-        if let result = UInt128(inputString, radix: radix) {
-            self = result
-        }
+        return UInt128(inputString, radix: radix)
     }
     
     internal static func _determineRadixFromString(_ string: String) -> Int {
