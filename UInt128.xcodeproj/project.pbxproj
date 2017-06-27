@@ -47,7 +47,6 @@
 		481A30AF1F02FB9F00C4438A /* UInt128.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = UInt128.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		48389B601EDB9F78008C1177 /* Playground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = Playground.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		OBJ_11 /* UInt128Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UInt128Tests.swift; sourceTree = "<group>"; };
-		OBJ_12 /* bin */ = {isa = PBXFileReference; lastKnownFileType = folder; path = bin; sourceTree = SOURCE_ROOT; };
 		OBJ_14 /* UInt128.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = UInt128.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		OBJ_15 /* UInt128Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = UInt128Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
@@ -122,7 +121,6 @@
 			children = (
 				48389B601EDB9F78008C1177 /* Playground.playground */,
 				OBJ_6 /* Package.swift */,
-				OBJ_12 /* bin */,
 				OBJ_7 /* Sources */,
 				OBJ_9 /* Tests */,
 				OBJ_13 /* Products */,
