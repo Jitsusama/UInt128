@@ -345,12 +345,23 @@ extension UInt128 : FixedWidthInteger {
 
 // MARK: - BinaryInteger Conformance
 extension UInt128 : BinaryInteger {
+    
     // MARK: Instance Properties
+    
     public static var bitWidth : Int { return 128 }
     
-    // TODO: Implement Me!
     public var trailingZeroBitCount: Int {
-        fatalError("Not implemented!")
+        let mask: UInt128 = 1
+        var bitsToWalk = self
+        
+        for currentPosition in 0...128 {
+            if bitsToWalk & mask == 1 {
+                return currentPosition
+            }
+            bitsToWalk >>= 1
+        }
+        
+        return 128
     }
     
     // MARK: Initializers

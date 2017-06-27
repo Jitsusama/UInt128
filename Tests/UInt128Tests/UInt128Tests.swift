@@ -238,8 +238,14 @@ class BinaryIntegerTests : XCTestCase {
     }
     
     func testTrailingZeroBitCount() {
-        let _ = UInt128().trailingZeroBitCount
-        XCTFail("Test not written yet.")
+        let tests = [
+            (input: UInt128(), expected: 128),
+            (input: UInt128(1), expected: 0),
+            (input: UInt128(upperBits: 1, lowerBits: 0), expected: 64)
+        ]
+        
+        tests.forEach { test in
+            XCTAssertEqual(test.input.trailingZeroBitCount, test.expected)}
     }
     
     func testInitFailableFloatingPointExactly() {
