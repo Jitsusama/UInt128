@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "481A309F1F02F8A000C4438A"
+               BlueprintIdentifier = "481A30AE1F02FB9F00C4438A"
                BuildableName = "UInt128.framework"
-               BlueprintName = "UInt128-watchOS"
+               BlueprintName = "UInt128-tvOS"
                ReferencedContainer = "container:UInt128.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -26,15 +26,26 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES">
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      codeCoverageEnabled = "YES">
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "OBJ_23"
+               BuildableName = "UInt128Tests.xctest"
+               BlueprintName = "UInt128Tests"
+               ReferencedContainer = "container:UInt128.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "481A309F1F02F8A000C4438A"
+            BlueprintIdentifier = "481A30AE1F02FB9F00C4438A"
             BuildableName = "UInt128.framework"
-            BlueprintName = "UInt128-watchOS"
+            BlueprintName = "UInt128-tvOS"
             ReferencedContainer = "container:UInt128.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -54,9 +65,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "481A309F1F02F8A000C4438A"
+            BlueprintIdentifier = "481A30AE1F02FB9F00C4438A"
             BuildableName = "UInt128.framework"
-            BlueprintName = "UInt128-watchOS"
+            BlueprintName = "UInt128-tvOS"
             ReferencedContainer = "container:UInt128.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -72,9 +83,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "481A309F1F02F8A000C4438A"
+            BlueprintIdentifier = "481A30AE1F02FB9F00C4438A"
             BuildableName = "UInt128.framework"
-            BlueprintName = "UInt128-watchOS"
+            BlueprintName = "UInt128-tvOS"
             ReferencedContainer = "container:UInt128.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
