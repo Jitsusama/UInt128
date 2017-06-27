@@ -8,12 +8,20 @@
 
 /* Begin PBXBuildFile section */
 		167CA9BD1EFCF3E50091689C /* UInt128.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_8 /* UInt128.swift */; };
+		481A30731F02E82B00C4438A /* UInt128.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 167CA9C21EFCF3E50091689C /* UInt128.framework */; };
 		OBJ_21 /* UInt128.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_8 /* UInt128.swift */; };
 		OBJ_28 /* UInt128Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* UInt128Tests.swift */; };
 		OBJ_30 /* UInt128.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = OBJ_14 /* UInt128.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		481A30741F02E89900C4438A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = OBJ_1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 167CA9BB1EFCF3E50091689C;
+			remoteInfo = "UInt128-iOS";
+		};
 		48389B5F1EDB9E90008C1177 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = OBJ_1 /* Project object */;
@@ -25,7 +33,6 @@
 
 /* Begin PBXFileReference section */
 		167CA9C21EFCF3E50091689C /* UInt128.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = UInt128.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		167CA9C41EFCF7EF0091689C /* Info-iOS.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-iOS.plist"; sourceTree = "<group>"; };
 		48389B601EDB9F78008C1177 /* Playground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = Playground.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		OBJ_11 /* UInt128Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UInt128Tests.swift; sourceTree = "<group>"; };
 		OBJ_12 /* bin */ = {isa = PBXFileReference; lastKnownFileType = folder; path = bin; sourceTree = SOURCE_ROOT; };
@@ -54,6 +61,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 0;
 			files = (
+				481A30731F02E82B00C4438A /* UInt128.framework in Frameworks */,
 				OBJ_30 /* UInt128.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -83,7 +91,6 @@
 		OBJ_5 = {
 			isa = PBXGroup;
 			children = (
-				167CA9C41EFCF7EF0091689C /* Info-iOS.plist */,
 				48389B601EDB9F78008C1177 /* Playground.playground */,
 				OBJ_6 /* Package.swift */,
 				OBJ_12 /* bin */,
@@ -154,6 +161,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				481A30751F02E89900C4438A /* PBXTargetDependency */,
 				OBJ_31 /* PBXTargetDependency */,
 			);
 			name = UInt128Tests;
@@ -181,9 +189,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
+				167CA9BB1EFCF3E50091689C /* UInt128-iOS */,
 				OBJ_16 /* UInt128-macOS */,
 				OBJ_23 /* UInt128Tests */,
-				167CA9BB1EFCF3E50091689C /* UInt128-iOS */,
 			);
 		};
 /* End PBXProject section */
@@ -216,6 +224,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		481A30751F02E89900C4438A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 167CA9BB1EFCF3E50091689C /* UInt128-iOS */;
+			targetProxy = 481A30741F02E89900C4438A /* PBXContainerItemProxy */;
+		};
 		OBJ_31 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = OBJ_16 /* UInt128-macOS */;
@@ -233,7 +246,7 @@
 					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
 				);
 				HEADER_SEARCH_PATHS = "$(inherited)";
-				INFOPLIST_FILE = "$(SRCROOT)/Info-iOS.plist";
+				INFOPLIST_FILE = UInt128.xcodeproj/UInt128_Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "";
 				OTHER_LDFLAGS = "$(inherited)";
@@ -258,7 +271,7 @@
 					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
 				);
 				HEADER_SEARCH_PATHS = "$(inherited)";
-				INFOPLIST_FILE = "$(SRCROOT)/Info-iOS.plist";
+				INFOPLIST_FILE = UInt128.xcodeproj/UInt128_Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "";
 				OTHER_LDFLAGS = "$(inherited)";
