@@ -516,8 +516,8 @@ class FloatingPointInterworkingTests : XCTestCase {
     
     func testSignBitIndex() {
         let tests = [
-            (input: UInt128(), output: Int(127)),
-            (input: UInt128.max, output: Int(0))]
+            (input: UInt128.min, output: Int(-1)),
+            (input: UInt128.max, output: Int(127))]
         
         tests.forEach { test in
             XCTAssertEqual(test.input.signBitIndex, test.output)
