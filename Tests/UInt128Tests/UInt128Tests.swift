@@ -137,10 +137,21 @@ class FixedWidthIntegerTests : XCTestCase {
     func testNonzeroBitCount() {
         let thing = String.init(UInt128(), radix: 2, uppercase: true)
         XCTAssertEqual(thing, "0")
+        XCTFail("Test not written yet.")
     }
     
     func testLeadingZeroBitCount() {
-        XCTFail("Test not written yet.")
+        let tests = [
+            (input: UInt128(), result: 128),
+            (input: UInt128(1), result: 127),
+            (input: UInt128(UInt64.max), result: 64),
+            (input: UInt128(upperBits: 1, lowerBits: 0), result: 63),
+            (input: UInt128.max, result: 0),
+        ]
+        
+        tests.forEach { test in
+            XCTAssertEqual(test.input.leadingZeroBitCount, test.result)
+        }
     }
     
     func testBigEndian() {
@@ -267,9 +278,6 @@ class BinaryIntegerTests : XCTestCase {
             let currentWord = testResult._word(at: index)
             if UInt.bitWidth == 64 {
                 XCTAssertEqual(currentWord, 4294967297)
-            }
-            else if UInt.bitWidth == 32 {
-                XCTAssertEqual(currentWord, 1)
             }
         }
     }

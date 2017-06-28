@@ -100,13 +100,13 @@
                   Identifier = "FixedWidthIntegerTests/testInitWithLittleEndian()">
                </Test>
                <Test
-                  Identifier = "FixedWidthIntegerTests/testLeadingZeroBitCount()">
-               </Test>
-               <Test
                   Identifier = "FixedWidthIntegerTests/testMultipliedFullWidth()">
                </Test>
                <Test
                   Identifier = "FixedWidthIntegerTests/testMultipliedReportingOverflow()">
+               </Test>
+               <Test
+                  Identifier = "FixedWidthIntegerTests/testNonzeroBitCount()">
                </Test>
                <Test
                   Identifier = "FixedWidthIntegerTests/testQuotientAndRemainder()">

@@ -96,9 +96,18 @@ extension UInt128 : FixedWidthInteger {
         fatalError("Not implemented!")
     }
     
-    // TODO: Implement Me!
     public var leadingZeroBitCount: Int {
-        fatalError("Not implemented!")
+        var zeroCount = 0
+        var shiftWidth = 127
+        
+        while shiftWidth >= 0 {
+            let currentBit = self &>> shiftWidth
+            guard currentBit == 0 else { break }
+            zeroCount += 1
+            shiftWidth -= 1
+        }
+        
+        return zeroCount
     }
     
     /// Returns the big-endian representation of the integer, changing the byte order if necessary.
