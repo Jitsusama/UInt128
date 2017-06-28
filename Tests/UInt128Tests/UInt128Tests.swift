@@ -76,8 +76,7 @@ class BaseTypeTests : XCTestCase {
             (input: UInt128(upperBits: 0, lowerBits: UInt64.max),
              expected: UInt128(upperBits: 0, lowerBits: 64)),
             (input: UInt128.max,
-             expected: UInt128(upperBits: 0, lowerBits: 128)),
-        ]
+             expected: UInt128(upperBits: 0, lowerBits: 128))]
         
         tests.forEach { test in
             XCTAssertEqual(test.input.significantBits, test.expected)
@@ -89,8 +88,7 @@ class BaseTypeTests : XCTestCase {
             (input: (upperBits: 0, lowerBits: 0),
              output: (upperBits: 0, lowerBits: 0)),
             (input: (upperBits: UInt64.max, lowerBits: UInt64.max),
-             output: (upperBits: UInt64.max, lowerBits: UInt64.max))
-        ]
+             output: (upperBits: UInt64.max, lowerBits: UInt64.max))]
         
         tests.forEach { test in
             let result = UInt128(upperBits: test.input.upperBits,
@@ -142,12 +140,11 @@ class FixedWidthIntegerTests : XCTestCase {
     
     func testLeadingZeroBitCount() {
         let tests = [
-            (input: UInt128(), result: 128),
+            (input: UInt128.min, result: 128),
             (input: UInt128(1), result: 127),
             (input: UInt128(UInt64.max), result: 64),
             (input: UInt128(upperBits: 1, lowerBits: 0), result: 63),
-            (input: UInt128.max, result: 0),
-        ]
+            (input: UInt128.max, result: 0)]
         
         tests.forEach { test in
             XCTAssertEqual(test.input.leadingZeroBitCount, test.result)
@@ -250,10 +247,10 @@ class BinaryIntegerTests : XCTestCase {
     
     func testTrailingZeroBitCount() {
         let tests = [
-            (input: UInt128(), expected: 128),
+            (input: UInt128.min, expected: 128),
             (input: UInt128(1), expected: 0),
-            (input: UInt128(upperBits: 1, lowerBits: 0), expected: 64)
-        ]
+            (input: UInt128(upperBits: 1, lowerBits: 0), expected: 64),
+            (input: UInt128.max, expected: 0)]
         
         tests.forEach { test in
             XCTAssertEqual(test.input.trailingZeroBitCount, test.expected)}
@@ -332,8 +329,7 @@ class BinaryIntegerTests : XCTestCase {
              expected: UInt128(upperBits: 0, lowerBits: 1)),
             (input: UInt128(upperBits: 0, lowerBits: 1),
              shiftWidth: UInt64(1),
-             expected: UInt128())
-        ]
+             expected: UInt128())]
         
         tests.forEach { test in
             var testValue = test.input
@@ -352,8 +348,7 @@ class BinaryIntegerTests : XCTestCase {
              expected: UInt128(upperBits: UInt64.max, lowerBits: 0)),
             (input: UInt128(upperBits: 0, lowerBits: 1),
              shiftWidth: UInt64(0),
-             expected: UInt128(upperBits: 0, lowerBits: 1))
-        ]
+             expected: UInt128(upperBits: 0, lowerBits: 1))]
         
         tests.forEach { test in
             var testValue = test.input
@@ -373,8 +368,7 @@ class BinaryIntegerTests : XCTestCase {
              expected: UInt128(upperBits: 1, lowerBits: 0)),
             (input: UInt128(upperBits: 0, lowerBits: 1),
              shiftWidth: UInt64(1),
-             expected: UInt128(upperBits: 0, lowerBits: 2))
-        ]
+             expected: UInt128(upperBits: 0, lowerBits: 2))]
         
         tests.forEach { test in
             var testValue = test.input
@@ -393,8 +387,7 @@ class BinaryIntegerTests : XCTestCase {
              expected: UInt128(upperBits: 0, lowerBits: 2)),
             (input: UInt128(upperBits: 0, lowerBits: 1),
              shiftWidth: UInt64(0),
-             expected: UInt128(upperBits: 0, lowerBits: 1))
-        ]
+             expected: UInt128(upperBits: 0, lowerBits: 1))]
         
         tests.forEach { test in
             var testValue = test.input
