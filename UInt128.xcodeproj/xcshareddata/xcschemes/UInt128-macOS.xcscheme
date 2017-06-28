@@ -106,9 +106,6 @@
                   Identifier = "FixedWidthIntegerTests/testMultipliedReportingOverflow()">
                </Test>
                <Test
-                  Identifier = "FixedWidthIntegerTests/testNonzeroBitCount()">
-               </Test>
-               <Test
                   Identifier = "FixedWidthIntegerTests/testQuotientAndRemainder()">
                </Test>
                <Test
@@ -116,9 +113,6 @@
                </Test>
                <Test
                   Identifier = "FixedWidthIntegerTests/testSubtractingReportingOverflow()">
-               </Test>
-               <Test
-                  Identifier = "FloatingPointInterworkingTests/testSignBitIndex()">
                </Test>
                <Test
                   Identifier = "HashableTests/testHashValueProperty()">
