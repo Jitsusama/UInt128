@@ -88,12 +88,25 @@ public struct UInt128 {
 }
 
 // MARK: - FixedWidthInteger Conformance
+
 extension UInt128 : FixedWidthInteger {
+    
     // MARK: Instance Properties
     
-    // TODO: Implement Me!
     public var nonzeroBitCount: Int {
-        fatalError("Not implemented!")
+        var nonZeroCount = 0
+        var shiftWidth = 0
+        
+        while shiftWidth < 128 {
+            let shiftedSelf = self &>> shiftWidth
+            let currentBit = shiftedSelf & 1
+            if currentBit == 1 {
+                nonZeroCount += 1
+            }
+            shiftWidth += 1
+        }
+        
+        return nonZeroCount
     }
     
     public var leadingZeroBitCount: Int {

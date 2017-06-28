@@ -133,9 +133,18 @@ class BaseTypeTests : XCTestCase {
 
 class FixedWidthIntegerTests : XCTestCase {
     func testNonzeroBitCount() {
-        let thing = String.init(UInt128(), radix: 2, uppercase: true)
-        XCTAssertEqual(thing, "0")
-        XCTFail("Test not written yet.")
+        let tests = [
+            (input: UInt128.min, result: 0),
+            (input: UInt128(1), result: 1),
+            (input: UInt128(3), result: 2),
+            (input: UInt128(UInt64.max), result: 64),
+            (input: UInt128(upperBits: 1, lowerBits: 0), result: 1),
+            (input: UInt128(upperBits: 3, lowerBits: 0), result: 2),
+            (input: UInt128.max, result: 128),]
+        
+        tests.forEach { test in
+            XCTAssertEqual(test.input.nonzeroBitCount, test.result)
+        }
     }
     
     func testLeadingZeroBitCount() {
