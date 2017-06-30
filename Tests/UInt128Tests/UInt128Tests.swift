@@ -485,9 +485,31 @@ class ComparableTests : XCTestCase {
 
 class ExpressibleByStringLiteralTests : XCTestCase {
     func testInitWithStringLiteral() {
-        let _ = UInt128(stringLiteral: "0")
-        let _ : UInt128 = "0"
-        XCTFail("Test not written yet.")
+        let tests = [
+            (input: "0", result: UInt128()),
+            (input: "1", result: UInt128(1)),
+            (input: "99", result: UInt128(99)),
+            (input: "0b0101", result: UInt128(5)),
+            (input: "0o11", result: UInt128(9)),
+            (input: "0xFF", result: UInt128(255))]
+        
+        tests.forEach { test in
+            XCTAssertEqual(UInt128(stringLiteral: test.input), test.result)
+        }
+    }
+    
+    func testEvaluatedWithStringLiteral() {
+        let binaryTest: UInt128 = "0b11"
+        XCTAssertEqual(binaryTest, UInt128(3))
+        
+        let octalTest: UInt128 = "0o11"
+        XCTAssertEqual(octalTest, UInt128(9))
+        
+        let decimalTest: UInt128 = "11"
+        XCTAssertEqual(decimalTest, UInt128(11))
+        
+        let hexTest: UInt128 = "0x11"
+        XCTAssertEqual(hexTest, UInt128(17))
     }
     
     func testFailingInputs() {
