@@ -457,9 +457,14 @@ class EquatableTests : XCTestCase {
 
 class ExpressibleByIntegerLiteralTests : XCTestCase {
     func testInitWithIntegerLiteral() {
-        let _ = UInt128(integerLiteral: 0)
-        let _ : UInt128 = 0
-        XCTFail("Test not written yet.")
+        let tests = [
+            (input: 0, result: UInt128()),
+            (input: 1, result: UInt128(upperBits: 0, lowerBits: 1)),
+            (input: Int.max, result: UInt128(upperBits: 0, lowerBits: UInt64(Int.max)))]
+        
+        tests.forEach { test in
+            XCTAssertEqual(UInt128(integerLiteral: test.input), test.result)
+        }
     }
 }
 

@@ -76,9 +76,6 @@
                   Identifier = "EquatableTests/testBooleanEqualsOperator()">
                </Test>
                <Test
-                  Identifier = "ExpressibleByIntegerLiteralTests/testInitWithIntegerLiteral()">
-               </Test>
-               <Test
                   Identifier = "ExpressibleByStringLiteralTests/testInitWithStringLiteral()">
                </Test>
                <Test
