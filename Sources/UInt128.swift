@@ -387,9 +387,17 @@ extension UInt128 : BinaryInteger {
     }
     
     // MARK: Initializers
-    // TODO: Implement Me! Stub implementation only!
+    
     public init?<T : FloatingPoint>(exactly source: T) {
-        return nil
+        if source.isZero {
+            self = UInt128()
+        }
+        else if source.exponent < 0 || source.rounded() != source {
+            return nil
+        }
+        else {
+            self = UInt128(UInt64(source))
+        }
     }
     
     // TODO: Implement Me! Stub implementation only!

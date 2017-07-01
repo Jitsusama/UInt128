@@ -266,8 +266,24 @@ class BinaryIntegerTests : XCTestCase {
     }
     
     func testInitFailableFloatingPointExactly() {
-        let _ = UInt128(exactly: Float())
-        XCTFail("Test not written yet.")
+        let tests = [
+            (input: Float(), result: UInt128()),
+            (input: Float(1), result: UInt128(1)),
+            (input: Float(1.0), result: UInt128(1))]
+        
+        tests.forEach { test in
+            XCTAssertEqual(UInt128(exactly: test.input), test.result)
+        }
+    }
+    
+    func testInitFailableFloatingPointExactlyExpectedFailures() {
+        let testInputs = [
+            Float(1.1),
+            Float(0.1)]
+        
+        testInputs.forEach { testInput in
+            XCTAssertEqual(UInt128(exactly: testInput), nil)
+        }
     }
     
     func testInitFloatingPoint() {

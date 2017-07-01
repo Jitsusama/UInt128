@@ -55,9 +55,6 @@
                   Identifier = "BinaryIntegerTests/testDivideOperator()">
                </Test>
                <Test
-                  Identifier = "BinaryIntegerTests/testInitFailableFloatingPointExactly()">
-               </Test>
-               <Test
                   Identifier = "BinaryIntegerTests/testInitFloatingPoint()">
                </Test>
                <Test
