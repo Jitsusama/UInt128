@@ -400,9 +400,8 @@ extension UInt128 : BinaryInteger {
         }
     }
     
-    // TODO: Implement Me! Stub implementation only!
     public init<T : FloatingPoint>(_ source: T) {
-        self.init()
+        self.init(UInt64(source))
     }
     
     // MARK: Instance Methods

@@ -265,7 +265,7 @@ class BinaryIntegerTests : XCTestCase {
             XCTAssertEqual(test.input.trailingZeroBitCount, test.expected)}
     }
     
-    func testInitFailableFloatingPointExactly() {
+    func testInitFailableFloatingPointExactlyExpectedSuccesses() {
         let tests = [
             (input: Float(), result: UInt128()),
             (input: Float(1), result: UInt128(1)),
@@ -287,8 +287,17 @@ class BinaryIntegerTests : XCTestCase {
     }
     
     func testInitFloatingPoint() {
-        let _ = UInt128(Float())
-        XCTFail("Test not written yet.")
+        let tests = [
+            (input: Float80(), result: UInt128()),
+            (input: Float80(0.1), result: UInt128()),
+            (input: Float80(1.0), result: UInt128(1)),
+            (input: Float80(UInt64.max), result: UInt128(UInt64.max))]
+        
+        tests.forEach { test in
+            XCTAssertEqual(UInt128(test.input), test.result)
+        }
+//        let _ = UInt128(Float())
+//        XCTFail("Test not written yet.")
     }
     
     func test_word() {
