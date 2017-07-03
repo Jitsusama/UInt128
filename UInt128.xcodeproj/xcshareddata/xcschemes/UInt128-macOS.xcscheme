@@ -64,9 +64,6 @@
                   Identifier = "ComparableTests/testLessThanOperator()">
                </Test>
                <Test
-                  Identifier = "CustomStringConvertibleTests/testDescriptionProperty()">
-               </Test>
-               <Test
                   Identifier = "EquatableTests/testBooleanEqualsOperator()">
                </Test>
                <Test

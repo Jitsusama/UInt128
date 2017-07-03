@@ -494,11 +494,65 @@ class ExpressibleByIntegerLiteralTests : XCTestCase {
 }
 
 class CustomStringConvertibleTests : XCTestCase {
+    let tests = [
+        (input: UInt128(), result:[
+            2: "0", 8: "0", 10: "0", 16: "0", 18: "0", 36: "0"]),
+        (input: UInt128(1), result: [
+            2: "1", 8: "1", 10: "1", 16: "1", 18: "1", 36: "1"]),
+        (input: UInt128(UInt64.max), result: [
+            2: "1111111111111111111111111111111111111111111111111111111111111111",
+            8: "1777777777777777777777",
+            10: "18446744073709551615",
+            16: "ffffffffffffffff",
+            18: "2d3fgb0b9cg4bd2f",
+            36: "3w5e11264sgsf"]),
+        (input: UInt128(upperBits: 1, lowerBits: 0), result: [
+            2: "10000000000000000000000000000000000000000000000000000000000000000",
+            8: "2000000000000000000000",
+            10: "18446744073709551616",
+            16: "10000000000000000",
+            18: "2d3fgb0b9cg4bd2g",
+            36: "3w5e11264sgsg"]),
+        (input: UInt128.max, result: [
+            2: "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+            8: "3777777777777777777777777777777777777777777",
+            10: "340282366920938463463374607431768211455",
+            16: "ffffffffffffffffffffffffffffffff",
+            18: "78a399ccdeb5bd6ha3184c0fh64da63",
+            36: "f5lxx1zz5pnorynqglhzmsp33"])]
+    
     func testDescriptionProperty() {
-        let _ = UInt128().description
-        let _ = String(describing: UInt128())
-        XCTFail("Test not written yet.")
+        tests.forEach { test in
+            XCTAssertEqual(test.input.description, test.result[10])
+        }
     }
+    
+    func testStringDescribingInitializer() {
+        tests.forEach { test in
+            XCTAssertEqual(String(describing: test.input), test.result[10])
+        }
+    }
+    
+    func testStringUInt128InitializerLowercased() {
+        tests.forEach { test in
+            test.result.forEach { (result) in
+                let (radix, result) = result
+                let testOutput = String(test.input, radix: radix)
+                XCTAssertEqual(testOutput, result)
+            }
+        }
+    }
+    
+    func testStringUInt128InitializerUppercased() {
+        tests.forEach { test in
+            test.result.forEach { (result) in
+                let (radix, result) = result
+                let testOutput = String(test.input, radix: radix, uppercase: true)
+                XCTAssertEqual(testOutput, result.uppercased())
+            }
+        }
+    }
+    
 }
 
 class ComparableTests : XCTestCase {

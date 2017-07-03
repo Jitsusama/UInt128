@@ -565,10 +565,14 @@ extension UInt128 : ExpressibleByIntegerLiteral {
 
 // MARK: - CustomStringConvertible Conformance
 extension UInt128 : CustomStringConvertible {
+    
     // MARK: Instance Properties
+    
     public var description: String {
-        return self.toString()
+        return self._valueToString()
     }
+    
+    // MARK: Instance Methods
     
     /// Converts the stored value into a string representation.
     /// - parameter radix:
@@ -579,8 +583,8 @@ extension UInt128 : CustomStringConvertible {
     ///     uppercase format or not.
     /// - returns:
     ///     String representation of the stored UInt128 value.
-    internal func toString(radix: Int = 10, uppercase: Bool = true) -> String {
-        precondition(radix > 1 && radix < 17, "radix must be within the range of 2-16.")
+    internal func _valueToString(radix: Int = 10, uppercase: Bool = true) -> String {
+        precondition(radix > 1 && radix < 37, "radix must be within the range of 2-36.")
         // Will store the final string result.
         var result = String()
         // Simple case.
@@ -591,7 +595,7 @@ extension UInt128 : CustomStringConvertible {
         // Used as the check for indexing through UInt128 for string interpolation.
         var divmodResult = (quotient: self, remainder: UInt128(0))
         // Will hold the pool of possible values.
-        let characterPool = (uppercase) ? "0123456789ABCDEF" : "0123456789abcdef"
+        let characterPool = (uppercase) ? "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ" : "0123456789abcdefghijklmnopqrstuvwxyz"
         // Go through internal value until every base position is string(ed).
         repeat {
             divmodResult = divmodResult.quotient.quotientAndRemainder(dividingBy: UInt128(radix))
@@ -604,7 +608,9 @@ extension UInt128 : CustomStringConvertible {
 
 // MARK: - Comparable Conformance
 extension UInt128 : Comparable {
+    
     // MARK: Type Methods
+    
     public static func <(lhs: UInt128, rhs: UInt128) -> Bool {
         if lhs.value.upperBits < rhs.value.upperBits {
             return true
@@ -617,6 +623,9 @@ extension UInt128 : Comparable {
 
 // MARK: - ExpressibleByStringLiteral Conformance
 extension UInt128 : ExpressibleByStringLiteral {
+    
+    // MARK: Initializers
+    
     public init(stringLiteral value: StringLiteralType) {
         self.init()
         
@@ -624,6 +633,8 @@ extension UInt128 : ExpressibleByStringLiteral {
             self = result
         }
     }
+    
+    // MARK: Type Methods
     
     internal static func _valueFromString(_ value: String) -> UInt128? {
         let radix = UInt128._determineRadixFromString(value)
@@ -645,6 +656,7 @@ extension UInt128 : ExpressibleByStringLiteral {
 }
 
 // MARK: - FloatingPoint Interworking
+
 extension FloatingPoint {
     public init(_ value: UInt128) {
         precondition(value.value.upperBits == 0, "Value is too large to fit into a FloatingPoint until a 128bit FloatingPoint type is defined.")
@@ -656,6 +668,23 @@ extension FloatingPoint {
             return nil
         }
         self = Self(value.value.lowerBits)
+    }
+}
+
+// MARK: - String Interworking
+
+extension String {
+    /// Creates a string representing the given value in base 10, or some other
+    /// specified base.
+    ///
+    /// - Parameters:
+    ///   - value: The UInt128 value to convert to a string.
+    ///   - radix: The base to use for the string representation. `radix` must be
+    ///     at least 2 and at most 36. The default is 10.
+    ///   - uppercase: Pass `true` to use uppercase letters to represent numerals
+    ///     or `false` to use lowercase letters. The default is `false`.
+    public init(_ value: UInt128, radix: Int = 10, uppercase: Bool = false) {
+        self = value._valueToString(radix: radix, uppercase: uppercase)
     }
 }
 
