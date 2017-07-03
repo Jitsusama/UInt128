@@ -606,6 +606,17 @@ extension UInt128 : CustomStringConvertible {
     }
 }
 
+// MARK: - CustomDebugStringConvertible Conformance
+
+extension UInt128 : CustomDebugStringConvertible {
+    // MARK: Instance Properties
+    
+    public var debugDescription: String {
+        return self.description
+    }
+    
+}
+
 // MARK: - Comparable Conformance
 extension UInt128 : Comparable {
     

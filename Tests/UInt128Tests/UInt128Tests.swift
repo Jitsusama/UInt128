@@ -555,6 +555,28 @@ class CustomStringConvertibleTests : XCTestCase {
     
 }
 
+class CustomDebugStringConvertible : XCTestCase {
+    let tests = [
+        (input: UInt128(), result:"0"),
+        (input: UInt128(1), result: "1"),
+        (input: UInt128(UInt64.max), result: "18446744073709551615"),
+        (input: UInt128(upperBits: 1, lowerBits: 0), result: "18446744073709551616"),
+        (input: UInt128.max, result: "340282366920938463463374607431768211455")]
+    
+    
+    func testDebugDescriptionProperty() {
+        tests.forEach { test in
+            XCTAssertEqual(test.input.debugDescription, test.result)
+        }
+    }
+    
+    func testStringReflectingInitializer() {
+        tests.forEach { test in
+            XCTAssertEqual(String(reflecting: test.input), test.result)
+        }
+    }
+}
+
 class ComparableTests : XCTestCase {
     func testLessThanOperator() {
         let _ = UInt128() < UInt128()
