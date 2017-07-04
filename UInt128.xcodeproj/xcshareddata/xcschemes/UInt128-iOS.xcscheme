@@ -58,9 +58,6 @@
                   Identifier = "ComparableTests/testLessThanOperator()">
                </Test>
                <Test
-                  Identifier = "EquatableTests/testBooleanEqualsOperator()">
-               </Test>
-               <Test
                   Identifier = "FixedWidthIntegerTests/testAddingReportingOverflow()">
                </Test>
                <Test

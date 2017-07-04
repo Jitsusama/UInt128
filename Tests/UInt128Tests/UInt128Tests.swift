@@ -533,8 +533,17 @@ class NumericTests : XCTestCase {
 
 class EquatableTests : XCTestCase {
     func testBooleanEqualsOperator() {
-        let _ = UInt128() == UInt128()
-        XCTFail("Test not written yet.")
+        let tests = [
+            (lhs: UInt128.min, rhs: UInt128.min, result: true),
+            (lhs: UInt128.min, rhs: UInt128(1), result: false),
+            (lhs: UInt128.max, rhs: UInt128.max, result: true),
+            (lhs: UInt128(UInt64.max), rhs: UInt128(upperBits: UInt64.max, lowerBits: UInt64.min), result: false),
+            (lhs: UInt128(upperBits: 1, lowerBits: 0), rhs: UInt128(upperBits: 1, lowerBits: 0), result: true),
+            (lhs: UInt128(upperBits: 1, lowerBits: 0), rhs: UInt128(), result: false)]
+        
+        tests.forEach { test in
+            XCTAssertEqual(test.lhs == test.rhs, test.result)
+        }
     }
 }
 
