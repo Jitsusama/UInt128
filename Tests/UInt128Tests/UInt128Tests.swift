@@ -338,7 +338,7 @@ class BinaryIntegerTests : XCTestCase {
         XCTFail("Test not written yet.")
     }
     
-    func testModuleEqualOperator() {
+    func testModuloEqualOperator() {
         var thing = UInt128(upperBits: 0, lowerBits: 1)
         thing %= UInt128(upperBits: 0, lowerBits: 1)
         XCTFail("Test not written yet.")
