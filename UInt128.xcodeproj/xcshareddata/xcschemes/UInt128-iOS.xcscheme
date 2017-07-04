@@ -40,9 +40,6 @@
             </BuildableReference>
             <SkippedTests>
                <Test
-                  Identifier = "BinaryIntegerTests/testBooleanXorEqualOperator()">
-               </Test>
-               <Test
                   Identifier = "BinaryIntegerTests/testDivideEqualOperator()">
                </Test>
                <Test

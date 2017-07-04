@@ -385,9 +385,23 @@ class BinaryIntegerTests : XCTestCase {
     }
     
     func testBooleanXorEqualOperator() {
-        var thing = UInt128()
-        thing ^= UInt128()
-        XCTFail("Test not written yet.")
+        let tests = [
+            (lhs: UInt128.min, rhs: UInt128.min, result: UInt128.min),
+            (lhs: UInt128(1), rhs: UInt128(1), result: UInt128.min),
+            (lhs: UInt128.min, rhs: UInt128.max, result: UInt128.max),
+            (lhs: UInt128(upperBits: UInt64.min, lowerBits: UInt64.max),
+             rhs: UInt128(upperBits: UInt64.max, lowerBits: UInt64.min),
+             result: UInt128.max),
+            (lhs: UInt128(upperBits: 17434549027881090559, lowerBits: 18373836492640810226),
+             rhs: UInt128(upperBits: 17506889200551263486, lowerBits: 18446176699804939249),
+             result: UInt128(upperBits: 218146470061211905, lowerBits: 72340207432828675)),
+            (lhs: UInt128.max, rhs: UInt128.max, result: UInt128.min)]
+        
+        tests.forEach { test in
+            var result = test.lhs
+            result ^= test.rhs
+            XCTAssertEqual(result, test.result)
+        }
     }
     
     func testMaskingRightShiftEqualOperatorStandardCases() {
