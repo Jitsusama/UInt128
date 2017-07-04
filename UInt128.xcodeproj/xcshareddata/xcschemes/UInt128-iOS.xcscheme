@@ -40,9 +40,6 @@
             </BuildableReference>
             <SkippedTests>
                <Test
-                  Identifier = "BinaryIntegerTests/testBooleanOrEqualOperator()">
-               </Test>
-               <Test
                   Identifier = "BinaryIntegerTests/testBooleanXorEqualOperator()">
                </Test>
                <Test
