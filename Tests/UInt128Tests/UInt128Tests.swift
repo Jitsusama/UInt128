@@ -646,8 +646,18 @@ class CustomDebugStringConvertible : XCTestCase {
 
 class ComparableTests : XCTestCase {
     func testLessThanOperator() {
-        let _ = UInt128() < UInt128()
-        XCTFail("Test not written yet.")
+        let tests = [
+            (lhs: UInt128.min, rhs: UInt128(1), result: true),
+            (lhs: UInt128.min, rhs: UInt128(upperBits: 1, lowerBits: 0), result: true),
+            (lhs: UInt128(1), rhs: UInt128(upperBits: 1, lowerBits: 0), result: true),
+            (lhs: UInt128(UInt64.max), rhs: UInt128.max, result: true),
+            (lhs: UInt128.min, rhs: UInt128.min, result: false),
+            (lhs: UInt128.max, rhs: UInt128.max, result: false),
+            (lhs: UInt128.max, rhs: UInt128(UInt64.max), result: false)]
+        
+        tests.forEach { test in
+            XCTAssertEqual(test.lhs < test.rhs, test.result)
+        }
     }
 }
 

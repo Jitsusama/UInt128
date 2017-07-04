@@ -55,9 +55,6 @@
                   Identifier = "BinaryIntegerTests/testModuloOperator()">
                </Test>
                <Test
-                  Identifier = "ComparableTests/testLessThanOperator()">
-               </Test>
-               <Test
                   Identifier = "FixedWidthIntegerTests/testAddingReportingOverflow()">
                </Test>
                <Test
