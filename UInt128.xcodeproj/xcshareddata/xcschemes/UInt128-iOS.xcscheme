@@ -55,9 +55,6 @@
                   Identifier = "BinaryIntegerTests/testModuloOperator()">
                </Test>
                <Test
-                  Identifier = "FixedWidthIntegerTests/testAddingReportingOverflow()">
-               </Test>
-               <Test
                   Identifier = "FixedWidthIntegerTests/testDividedReportingOverflow()">
                </Test>
                <Test
