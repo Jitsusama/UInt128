@@ -40,9 +40,6 @@
             </BuildableReference>
             <SkippedTests>
                <Test
-                  Identifier = "BinaryIntegerTests/testBooleanAndEqualOperator()">
-               </Test>
-               <Test
                   Identifier = "BinaryIntegerTests/testBooleanOrEqualOperator()">
                </Test>
                <Test
@@ -74,12 +71,6 @@
                </Test>
                <Test
                   Identifier = "FixedWidthIntegerTests/testDividingFullWidth()">
-               </Test>
-               <Test
-                  Identifier = "FixedWidthIntegerTests/testInitWithBigEndian()">
-               </Test>
-               <Test
-                  Identifier = "FixedWidthIntegerTests/testInitWithLittleEndian()">
                </Test>
                <Test
                   Identifier = "FixedWidthIntegerTests/testMultipliedFullWidth()">
