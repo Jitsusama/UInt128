@@ -432,9 +432,16 @@ class BinaryIntegerTests : XCTestCase {
 }
 
 class HashableTests : XCTestCase {
+    let tests = [
+        (input: UInt128(), result: 0),
+        (input: UInt128(1), result: 1),
+        (input: UInt128(Int.max), result: Int.max),
+        (input: try! UInt128("85070591730234615862769194512323794261"), result: -1537228672809129302)]
+    
     func testHashValueProperty() {
-        let _ = UInt128().hashValue
-        XCTFail("Test not written yet.")
+        tests.forEach { test in
+            XCTAssertEqual(test.input.hashValue, test.result)
+        }
     }
 }
 
