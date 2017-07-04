@@ -296,8 +296,6 @@ class BinaryIntegerTests : XCTestCase {
         tests.forEach { test in
             XCTAssertEqual(UInt128(test.input), test.result)
         }
-//        let _ = UInt128(Float())
-//        XCTFail("Test not written yet.")
     }
     
     func test_word() {
@@ -592,15 +590,15 @@ class ComparableTests : XCTestCase {
 }
 
 class ExpressibleByStringLiteralTests : XCTestCase {
+    let tests = [
+        (input: "0", result: UInt128()),
+        (input: "1", result: UInt128(1)),
+        (input: "99", result: UInt128(99)),
+        (input: "0b0101", result: UInt128(5)),
+        (input: "0o11", result: UInt128(9)),
+        (input: "0xFF", result: UInt128(255))]
+    
     func testInitWithStringLiteral() {
-        let tests = [
-            (input: "0", result: UInt128()),
-            (input: "1", result: UInt128(1)),
-            (input: "99", result: UInt128(99)),
-            (input: "0b0101", result: UInt128(5)),
-            (input: "0o11", result: UInt128(9)),
-            (input: "0xFF", result: UInt128(255))]
-        
         tests.forEach { test in
             XCTAssertEqual(UInt128(stringLiteral: test.input), test.result)
         }
