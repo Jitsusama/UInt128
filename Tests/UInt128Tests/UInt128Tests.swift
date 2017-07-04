@@ -160,47 +160,66 @@ class FixedWidthIntegerTests : XCTestCase {
         }
     }
     
-    func testBigEndian() {
-        let testUInt128Native: UInt128 = bizarreUInt128
-        
-        // Test whether native value matches expected mutated value.
-        #if arch(i386) || arch (x86_64) || arch(arm) || arch(arm64)
-            XCTAssertFalse(testUInt128Native.bigEndian == testUInt128Native)
-        #else
-            XCTAssertTrue(testUInt128Native.bigEndian == testUInt128Native)
-        #endif
-        
-        // Test instantiation with bigEndian value matches expected value.
-        let testUInt128BigEndian = UInt128(bigEndian: testUInt128Native.bigEndian)
-        #if arch(i386) || arch (x86_64) || arch(arm) || arch(arm64)
-            XCTAssertTrue(testUInt128Native == testUInt128BigEndian)
-        #else
-            XCTAssertTrue(testUInt128Native.bigEndian == testUInt128BigEndian)
-        #endif
+    let endianTests = [
+        (input: UInt128(),
+         byteSwapped: UInt128()),
+        (input: UInt128(1),
+         byteSwapped: UInt128(upperBits: 72057594037927936, lowerBits: 0)),
+        (input: UInt128(upperBits: 17434549027881090559, lowerBits: 18373836492640810226),
+         byteSwapped: UInt128(upperBits: 17506889200551263486, lowerBits: 18446176699804939249))]
+    
+    func testBigEndianProperty() {
+        endianTests.forEach { test in
+            #if arch(i386) || arch(x86_64) || arch(arm) || arch(arm64)
+                let expectedResult = test.byteSwapped
+            #else
+                let expectedResult = test.input
+            #endif
+            
+            XCTAssertEqual(test.input.bigEndian, expectedResult)
+        }
     }
     
-    func testLittleEndian() {
-        let testUInt128Native = bizarreUInt128
-        
-        #if arch(i386) || arch (x86_64) || arch(arm) || arch(arm64)
-            XCTAssertTrue(testUInt128Native.littleEndian == testUInt128Native)
-        #else
-            XCTAssertFalse(testUInt128Native.bigEndian == testUInt128Native)
-        #endif
-        
-        let testUInt128LittleEndian = UInt128(littleEndian: testUInt128Native.littleEndian)
-        #if arch(i386) || arch (x86_64) || arch(arm) || arch(arm64)
-            XCTAssertTrue(
-                testUInt128Native.littleEndian == testUInt128LittleEndian,
-                "Result:\(testUInt128LittleEndian), Original: \(testUInt128Native)"
-            )
-        #else
-            XCTAssertTrue(testUInt128Native.littleEndian == testUInt128LittleEndian)
-        #endif
+    func testBigEndianInitializer() {
+        endianTests.forEach { test in
+            #if arch(i386) || arch(x86_64) || arch(arm) || arch(arm64)
+                let expectedResult = test.byteSwapped
+            #else
+                let expectedResult = test.input
+            #endif
+            
+            XCTAssertEqual(UInt128(bigEndian: test.input), expectedResult)
+        }
     }
     
-    func testByteSwapped() {
-        XCTFail("Test not written yet.")
+    func testLittleEndianProperty() {
+        endianTests.forEach { test in
+            #if arch(i386) || arch(x86_64) || arch(arm) || arch(arm64)
+                let expectedResult = test.input
+            #else
+                let expectedResult = test.byteSwapped
+            #endif
+            
+            XCTAssertEqual(test.input.littleEndian, expectedResult)
+        }
+    }
+    
+    func testLittleEndianInitializer() {
+        endianTests.forEach { test in
+            #if arch(i386) || arch(x86_64) || arch(arm) || arch(arm64)
+                let expectedResult = test.input
+            #else
+                let expectedResult = test.byteSwapped
+            #endif
+            
+            XCTAssertEqual(UInt128(littleEndian: test.input), expectedResult)
+        }
+    }
+    
+    func testByteSwappedProperty() {
+        endianTests.forEach { test in
+            XCTAssertEqual(test.input.byteSwapped, test.byteSwapped)
+        }
     }
     
     func testInitWithTruncatingBits() {
