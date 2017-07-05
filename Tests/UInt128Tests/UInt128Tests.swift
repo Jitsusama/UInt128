@@ -234,16 +234,16 @@ class FixedWidthIntegerTests : XCTestCase {
         let tests = [
             // 0 + 0 = 0
             (augend: UInt128.min, addend: UInt128.min,
-             sum: (partialValue: UInt128.min, overflow: ArithmeticOverflow(false))),
+             sum: (partialValue: UInt128.min, overflow: didNotOverflow)),
             // UInt128.max + 0 = UInt128.max
             (augend: UInt128.max, addend: UInt128.min,
-             sum: (partialValue: UInt128.max, overflow: ArithmeticOverflow(false))),
+             sum: (partialValue: UInt128.max, overflow: didNotOverflow)),
             // UInt128.max + 1 = 0, with overflow
             (augend: UInt128.max, addend: UInt128(1),
-             sum: (partialValue: UInt128.min, overflow: ArithmeticOverflow(true))),
+             sum: (partialValue: UInt128.min, overflow: didOverflow)),
             // UInt128.max + 2 = 1, with overflow
             (augend: UInt128.max, addend: UInt128(2),
-             sum: (partialValue: UInt128(1), overflow: ArithmeticOverflow(true))),
+             sum: (partialValue: UInt128(1), overflow: didOverflow)),
             // UInt64.max + 1 = UInt64.max + 1
             (augend: UInt128(UInt64.max), addend: UInt128(1),
              sum: (partialValue: UInt128(upperBits: 1, lowerBits: 0), overflow: ArithmeticOverflow(false)))]
@@ -259,22 +259,22 @@ class FixedWidthIntegerTests : XCTestCase {
         let tests = [
             // 0 - 0 = 0
             (minuend: UInt128.min, subtrahend: UInt128.min,
-             difference: (partialValue: UInt128.min, overflow: ArithmeticOverflow(false))),
+             difference: (partialValue: UInt128.min, overflow: didNotOverflow)),
             // Uint128.max - 0 = UInt128.max
             (minuend: UInt128.max, subtrahend: UInt128.min,
-             difference: (partialValue: UInt128.max, overflow: ArithmeticOverflow(false))),
+             difference: (partialValue: UInt128.max, overflow: didNotOverflow)),
             // UInt128.max - 1 = UInt128.max - 1
             (minuend: UInt128.max, subtrahend: UInt128(1),
-             difference: (partialValue: UInt128(upperBits: UInt64.max, lowerBits: (UInt64.max >> 1) << 1), overflow: ArithmeticOverflow(false))),
+             difference: (partialValue: UInt128(upperBits: UInt64.max, lowerBits: (UInt64.max >> 1) << 1), overflow: didNotOverflow)),
             // UInt64.max + 1 - 1 = UInt64.max
             (minuend: UInt128(upperBits: 1, lowerBits: 0), subtrahend: UInt128(1),
-             difference: (partialValue: UInt128(UInt64.max), overflow: ArithmeticOverflow(false))),
+             difference: (partialValue: UInt128(UInt64.max), overflow: didNotOverflow)),
             // 0 - 1 = UInt128.max, with overflow
             (minuend: UInt128.min, subtrahend: UInt128(1),
-             difference: (partialValue: UInt128.max, overflow: ArithmeticOverflow(true))),
+             difference: (partialValue: UInt128.max, overflow: didOverflow)),
             // 0 - 2 = UInt128.max - 1, with overflow
             (minuend: UInt128.min, subtrahend: UInt128(2),
-             difference: (partialValue: (UInt128.max >> 1) << 1, overflow: ArithmeticOverflow(true)))]
+             difference: (partialValue: (UInt128.max >> 1) << 1, overflow: didOverflow))]
         
         tests.forEach { test in
             let difference = test.minuend.subtractingReportingOverflow(test.subtrahend)
@@ -287,22 +287,22 @@ class FixedWidthIntegerTests : XCTestCase {
         let tests = [
             // 0 * 0 = 0
             (multiplier: UInt128.min, multiplicator: UInt128.min,
-             product: (partialValue: UInt128.min, overflow: ArithmeticOverflow(false))),
+             product: (partialValue: UInt128.min, overflow: didNotOverflow)),
             // UInt64.max * UInt64.max = UInt128.max - UInt64.max - 1
             (multiplier: UInt128(UInt64.max), multiplicator: UInt128(UInt64.max),
-             product: (partialValue: UInt128(upperBits: (UInt64.max >> 1) << 1, lowerBits: 1), overflow: ArithmeticOverflow(false))),
+             product: (partialValue: UInt128(upperBits: (UInt64.max >> 1) << 1, lowerBits: 1), overflow: didNotOverflow)),
             // UInt128.max * 0 = 0
             (multiplier: UInt128.max, multiplicator: UInt128.min,
-             product: (partialValue: UInt128.min, overflow: ArithmeticOverflow(false))),
+             product: (partialValue: UInt128.min, overflow: didNotOverflow)),
             // UInt128.max * 1 = UInt128.max
             (multiplier: UInt128.max, multiplicator: UInt128(1),
-             product: (partialValue: UInt128.max, overflow: ArithmeticOverflow(false))),
+             product: (partialValue: UInt128.max, overflow: didNotOverflow)),
             // UInt128.max * 2 = UInt128.max - 1, with overflow
             (multiplier: UInt128.max, multiplicator: UInt128(2),
-             product: (partialValue: (UInt128.max >> 1) << 1, overflow: ArithmeticOverflow(true))),
+             product: (partialValue: (UInt128.max >> 1) << 1, overflow: didOverflow)),
             // UInt128.max * UInt128.max = 1, with overflow
             (multiplier: UInt128.max, multiplicator: UInt128.max,
-             product: (partialValue: UInt128(1), overflow: ArithmeticOverflow(true)))]
+             product: (partialValue: UInt128(1), overflow: didOverflow))]
         
         tests.forEach { test in
             let product = test.multiplier.multipliedReportingOverflow(by: test.multiplicator)
