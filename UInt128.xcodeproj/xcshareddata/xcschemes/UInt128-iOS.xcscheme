@@ -73,9 +73,6 @@
                   Identifier = "FixedWidthIntegerTests/testRemainderReportingOverflow()">
                </Test>
                <Test
-                  Identifier = "FixedWidthIntegerTests/testSubtractingReportingOverflow()">
-               </Test>
-               <Test
                   Identifier = "NumericTests/testAdditionEqualOperator()">
                </Test>
                <Test

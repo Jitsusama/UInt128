@@ -248,7 +248,25 @@ class FixedWidthIntegerTests : XCTestCase {
     }
     
     func testSubtractingReportingOverflow() {
-        XCTFail("Test not written yet.")
+        let tests = [
+            (minuend: UInt128.min, subtrahend: UInt128.min,
+             difference: (partialValue: UInt128.min, overflow: ArithmeticOverflow(false))),
+            (minuend: UInt128.max, subtrahend: UInt128.min,
+             difference: (partialValue: UInt128.max, overflow: ArithmeticOverflow(false))),
+            (minuend: UInt128.max, subtrahend: UInt128(1),
+             difference: (partialValue: UInt128(upperBits: UInt64.max, lowerBits: (UInt64.max >> 1) << 1), overflow: ArithmeticOverflow(false))),
+            (minuend: UInt128(upperBits: 1, lowerBits: 0), subtrahend: UInt128(1),
+             difference: (partialValue: UInt128(UInt64.max), overflow: ArithmeticOverflow(false))),
+            (minuend: UInt128.min, subtrahend: UInt128(1),
+             difference: (partialValue: UInt128.max, overflow: ArithmeticOverflow(true))),
+            (minuend: UInt128.min, subtrahend: UInt128(2),
+             difference: (partialValue: (UInt128.max >> 1) << 1, overflow: ArithmeticOverflow(true)))]
+        
+        tests.forEach { test in
+            let difference = test.minuend.subtractingReportingOverflow(test.subtrahend)
+            XCTAssertEqual(difference.partialValue, test.difference.partialValue)
+            XCTAssertEqual(difference.overflow, test.difference.overflow)
+        }
     }
     
     func testMultipliedReportingOverflow() {
