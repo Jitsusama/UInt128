@@ -58,9 +58,6 @@
                   Identifier = "FixedWidthIntegerTests/testByteSwapped()">
                </Test>
                <Test
-                  Identifier = "FixedWidthIntegerTests/testDividedReportingOverflow()">
-               </Test>
-               <Test
                   Identifier = "FixedWidthIntegerTests/testDividingFullWidth()">
                </Test>
                <Test

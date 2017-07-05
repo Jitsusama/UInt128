@@ -291,9 +291,13 @@ extension UInt128 : FixedWidthInteger {
         fatalError("Not implemented!")
     }
     
-    // TODO: Implement Me!
     public func dividedReportingOverflow(by rhs: UInt128) -> (partialValue: UInt128, overflow: ArithmeticOverflow) {
-        fatalError("Not implemented!")
+        guard rhs != 0 else {
+            return (self, ArithmeticOverflow(true))
+        }
+        
+        let quotient = self.quotientAndRemainder(dividingBy: rhs).quotient
+        return (quotient, ArithmeticOverflow(false))
     }
     
     // TODO: Implement Me!

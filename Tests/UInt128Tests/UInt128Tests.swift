@@ -227,6 +227,9 @@ class FixedWidthIntegerTests : XCTestCase {
         XCTAssertEqual(testResult, UInt128(upperBits: 0, lowerBits: UInt64(UInt.max)))
     }
     
+    let didOverflow = ArithmeticOverflow(true)
+    let didNotOverflow = ArithmeticOverflow(false)
+    
     func testAddingReportingOverflow() {
         let tests = [
             // 0 + 0 = 0
@@ -313,7 +316,34 @@ class FixedWidthIntegerTests : XCTestCase {
     }
     
     func testDividedReportingOverflow() {
-        XCTFail("Test not written yet.")
+        let tests = [
+            // 0 / 0 = 0, with overflow
+            (dividend: UInt128.min, divisor: UInt128.min,
+             quotient: (partialValue: UInt128.min, overflow: didOverflow)),
+            // 0 / 1 = 0
+            (dividend: UInt128.min, divisor: UInt128(1),
+             quotient: (partialValue: UInt128.min, overflow: didNotOverflow)),
+            // 0 / UInt128.max = 0
+            (dividend: UInt128.min, divisor: UInt128.max,
+             quotient: (partialValue: UInt128.min, overflow: didNotOverflow)),
+            // 1 / 0 = 1, with overflow
+            (dividend: UInt128(1), divisor: UInt128.min,
+             quotient: (partialValue: UInt128(1), overflow: didOverflow)),
+            // UInt128.max / UInt64.max = UInt128.value = (1, 1)
+            (dividend: UInt128.max, divisor: UInt128(UInt64.max),
+             quotient: (partialValue: UInt128(upperBits: 1, lowerBits: 1), overflow: didNotOverflow)),
+            // UInt128.max / UInt128.max = 1
+            (dividend: UInt128.max, divisor: UInt128.max,
+             quotient: (partialValue: UInt128(1), overflow: didNotOverflow)),
+            // UInt64.max / UInt128.max = 0
+            (dividend: UInt128(UInt64.max), divisor: UInt128.max,
+             quotient: (partialValue: UInt128.min, overflow: didNotOverflow))]
+        
+        tests.forEach { test in
+            let quotient = test.dividend.dividedReportingOverflow(by: test.divisor)
+            XCTAssertEqual(quotient.partialValue, test.quotient.partialValue)
+            XCTAssertEqual(quotient.overflow, test.quotient.overflow)
+        }
     }
     
     func testDividingFullWidth() {
