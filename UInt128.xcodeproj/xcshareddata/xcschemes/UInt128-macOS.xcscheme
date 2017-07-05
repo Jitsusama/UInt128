@@ -73,9 +73,6 @@
                   Identifier = "FixedWidthIntegerTests/testMultipliedFullWidth()">
                </Test>
                <Test
-                  Identifier = "FixedWidthIntegerTests/testMultipliedReportingOverflow()">
-               </Test>
-               <Test
                   Identifier = "FixedWidthIntegerTests/testQuotientAndRemainder()">
                </Test>
                <Test

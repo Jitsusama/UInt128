@@ -270,7 +270,31 @@ class FixedWidthIntegerTests : XCTestCase {
     }
     
     func testMultipliedReportingOverflow() {
-        XCTFail("Test not written yet.")
+        let tests = [
+            // 0 * 0 = 0
+            (multiplier: UInt128.min, multiplicator: UInt128.min,
+             product: (partialValue: UInt128.min, overflow: ArithmeticOverflow(false))),
+            // UInt64.max * UInt64.max = 340,282,366,920,938,463,426,481,119,284,349,108,225
+            (multiplier: UInt128(UInt64.max), multiplicator: UInt128(UInt64.max),
+             product: (partialValue: UInt128(upperBits: (UInt64.max >> 1) << 1, lowerBits: 1), overflow: ArithmeticOverflow(false))),
+            // UInt128.max * 0 = 0
+            (multiplier: UInt128.max, multiplicator: UInt128.min,
+             product: (partialValue: UInt128.min, overflow: ArithmeticOverflow(false))),
+            // UInt128.max * 1 = UInt128.max
+            (multiplier: UInt128.max, multiplicator: UInt128(1),
+             product: (partialValue: UInt128.max, overflow: ArithmeticOverflow(false))),
+            // UInt128.max * 2 = UInt128.max - 1, with overflow
+            (multiplier: UInt128.max, multiplicator: UInt128(2),
+             product: (partialValue: (UInt128.max >> 1) << 1, overflow: ArithmeticOverflow(true))),
+            // UInt128.max * UInt128.max = 1, with overflow
+            (multiplier: UInt128.max, multiplicator: UInt128.max,
+             product: (partialValue: UInt128(1), overflow: ArithmeticOverflow(true)))]
+        
+        tests.forEach { test in
+            let product = test.multiplier.multipliedReportingOverflow(by: test.multiplicator)
+            XCTAssertEqual(product.partialValue, test.product.partialValue)
+            XCTAssertEqual(product.overflow, test.product.overflow)
+        }
     }
     
     func testMultipliedFullWidth() {
