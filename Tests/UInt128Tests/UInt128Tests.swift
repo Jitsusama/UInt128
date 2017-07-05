@@ -229,14 +229,19 @@ class FixedWidthIntegerTests : XCTestCase {
     
     func testAddingReportingOverflow() {
         let tests = [
+            // 0 + 0 = 0
             (augend: UInt128.min, addend: UInt128.min,
              sum: (partialValue: UInt128.min, overflow: ArithmeticOverflow(false))),
+            // UInt128.max + 0 = UInt128.max
             (augend: UInt128.max, addend: UInt128.min,
              sum: (partialValue: UInt128.max, overflow: ArithmeticOverflow(false))),
+            // UInt128.max + 1 = 0, with overflow
             (augend: UInt128.max, addend: UInt128(1),
              sum: (partialValue: UInt128.min, overflow: ArithmeticOverflow(true))),
+            // UInt128.max + 2 = 1, with overflow
             (augend: UInt128.max, addend: UInt128(2),
              sum: (partialValue: UInt128(1), overflow: ArithmeticOverflow(true))),
+            // UInt64.max + 1 = UInt64.max + 1
             (augend: UInt128(UInt64.max), addend: UInt128(1),
              sum: (partialValue: UInt128(upperBits: 1, lowerBits: 0), overflow: ArithmeticOverflow(false)))]
         
@@ -249,16 +254,22 @@ class FixedWidthIntegerTests : XCTestCase {
     
     func testSubtractingReportingOverflow() {
         let tests = [
+            // 0 - 0 = 0
             (minuend: UInt128.min, subtrahend: UInt128.min,
              difference: (partialValue: UInt128.min, overflow: ArithmeticOverflow(false))),
+            // Uint128.max - 0 = UInt128.max
             (minuend: UInt128.max, subtrahend: UInt128.min,
              difference: (partialValue: UInt128.max, overflow: ArithmeticOverflow(false))),
+            // UInt128.max - 1 = UInt128.max - 1
             (minuend: UInt128.max, subtrahend: UInt128(1),
              difference: (partialValue: UInt128(upperBits: UInt64.max, lowerBits: (UInt64.max >> 1) << 1), overflow: ArithmeticOverflow(false))),
+            // UInt64.max + 1 - 1 = UInt64.max
             (minuend: UInt128(upperBits: 1, lowerBits: 0), subtrahend: UInt128(1),
              difference: (partialValue: UInt128(UInt64.max), overflow: ArithmeticOverflow(false))),
+            // 0 - 1 = UInt128.max, with overflow
             (minuend: UInt128.min, subtrahend: UInt128(1),
              difference: (partialValue: UInt128.max, overflow: ArithmeticOverflow(true))),
+            // 0 - 2 = UInt128.max - 1, with overflow
             (minuend: UInt128.min, subtrahend: UInt128(2),
              difference: (partialValue: (UInt128.max >> 1) << 1, overflow: ArithmeticOverflow(true)))]
         
@@ -274,7 +285,7 @@ class FixedWidthIntegerTests : XCTestCase {
             // 0 * 0 = 0
             (multiplier: UInt128.min, multiplicator: UInt128.min,
              product: (partialValue: UInt128.min, overflow: ArithmeticOverflow(false))),
-            // UInt64.max * UInt64.max = 340,282,366,920,938,463,426,481,119,284,349,108,225
+            // UInt64.max * UInt64.max = UInt128.max - UInt64.max - 1
             (multiplier: UInt128(UInt64.max), multiplicator: UInt128(UInt64.max),
              product: (partialValue: UInt128(upperBits: (UInt64.max >> 1) << 1, lowerBits: 1), overflow: ArithmeticOverflow(false))),
             // UInt128.max * 0 = 0
