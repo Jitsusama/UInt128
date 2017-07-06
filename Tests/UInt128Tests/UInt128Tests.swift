@@ -131,6 +131,9 @@ class BaseTypeTests : XCTestCase {
     }
 }
 
+let didOverflow = ArithmeticOverflow(true)
+let didNotOverflow = ArithmeticOverflow(false)
+
 class FixedWidthIntegerTests : XCTestCase {
     func testNonzeroBitCount() {
         let tests = [
@@ -226,9 +229,6 @@ class FixedWidthIntegerTests : XCTestCase {
         let testResult = UInt128(_truncatingBits: UInt.max)
         XCTAssertEqual(testResult, UInt128(upperBits: 0, lowerBits: UInt64(UInt.max)))
     }
-    
-    let didOverflow = ArithmeticOverflow(true)
-    let didNotOverflow = ArithmeticOverflow(false)
     
     func testAddingReportingOverflow() {
         let tests = [
