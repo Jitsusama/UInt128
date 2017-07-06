@@ -61,12 +61,6 @@
                   Identifier = "FixedWidthIntegerTests/testMultipliedFullWidth()">
                </Test>
                <Test
-                  Identifier = "NumericTests/testAdditionEqualOperator()">
-               </Test>
-               <Test
-                  Identifier = "NumericTests/testAdditionOperator()">
-               </Test>
-               <Test
                   Identifier = "NumericTests/testMultiplicationEqualOperator()">
                </Test>
                <Test

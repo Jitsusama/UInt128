@@ -625,15 +625,33 @@ class HashableTests : XCTestCase {
 }
 
 class NumericTests : XCTestCase {
+    let additionTests = [
+        // 0 + 0 = 0
+        (augend: UInt128.min, addend: UInt128.min, sum: UInt128.min),
+        // 1 + 1 = 2
+        (augend: UInt128(1), addend: UInt128(1), sum: UInt128(2)),
+        // UInt128.max + 0 = UInt128.max
+        (augend: UInt128.max, addend: UInt128.min, sum: UInt128.max),
+        // UInt64.max + 1 = UInt64.max + 1
+        (augend: UInt128(UInt64.max), addend: UInt128(1), sum: UInt128(upperBits: 1, lowerBits: 0))]
+    
     func testAdditionOperator() {
-        let _ = UInt128() + UInt128()
-        XCTFail("Test not written yet.")
+        additionTests.forEach { test in
+            let sum = test.augend + test.addend
+            XCTAssertEqual(
+                sum, test.sum,
+                "\(test.augend) + \(test.addend) == \(test.sum)")
+        }
     }
     
     func testAdditionEqualOperator() {
-        var thing = UInt128()
-        thing += UInt128()
-        XCTFail("Test not written yet.")
+        additionTests.forEach { test in
+            var sum = test.augend
+            sum += test.addend
+            XCTAssertEqual(
+                sum, test.sum,
+                "\(test.augend) += \(test.addend) == \(test.sum)")
+        }
     }
     
     func testSubtractionOperator() {
