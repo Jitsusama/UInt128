@@ -351,7 +351,36 @@ class FixedWidthIntegerTests : XCTestCase {
     }
     
     func testRemainderReportingOverflow() {
-        XCTFail("Test not written yet.")
+        let tests = [
+            // 0 / 0 has a remainder of 0, with overflow
+            (dividend: UInt128.min, divisor: UInt128.min,
+             remainder: (partialValue: UInt128.min, overflow: didOverflow)),
+            // 0 / 1 has a remainder of 0
+            (dividend: UInt128.min, divisor: UInt128(1),
+             remainder: (partialValue: UInt128.min, overflow: didNotOverflow)),
+            // 0 / UInt128.max has a remainder of 0
+            (dividend: UInt128.min, divisor: UInt128.max,
+             remainder: (partialValue: UInt128.min, overflow: didNotOverflow)),
+            // 1 / 0 has a remainder of 1, with overflow
+            (dividend: UInt128(1), divisor: UInt128.min,
+             remainder: (partialValue: UInt128(1), overflow: didOverflow)),
+            // UInt128.max / UInt64.max has a remainder of 0
+            (dividend: UInt128.max, divisor: UInt128(UInt64.max),
+             remainder: (partialValue: UInt128.min, overflow: didNotOverflow)),
+            // UInt128.max / UInt128.max has remainder of 0
+            (dividend: UInt128.max, divisor: UInt128.max,
+             remainder: (partialValue: UInt128.min, overflow: didNotOverflow)),
+            // UInt64.max / UInt128.max has remainder of UInt64.max
+            (dividend: UInt128(UInt64.max), divisor: UInt128.max,
+             remainder: (partialValue: UInt128(UInt64.max), overflow: didNotOverflow))]
+        
+        tests.forEach { test in
+            let remainder = test.dividend.remainderReportingOverflow(dividingBy: test.divisor)
+            XCTAssertEqual(remainder.partialValue, test.remainder.partialValue,
+                           "\(test.dividend) / \(test.divisor) == \(test.remainder.partialValue)")
+            XCTAssertEqual(remainder.overflow, test.remainder.overflow,
+                           "\(test.dividend) / \(test.divisor) has overflow? \(test.remainder.overflow)")
+        }
     }
     
     func testQuotientAndRemainder() {
