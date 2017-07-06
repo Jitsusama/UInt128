@@ -315,34 +315,45 @@ class FixedWidthIntegerTests : XCTestCase {
         XCTFail("Test not written yet.")
     }
     
+    let divisionTests = [
+        // 0 / 0 = 0, remainder 0, with overflow
+        (dividend: UInt128.min, divisor: UInt128.min,
+         quotient: (partialValue: UInt128.min, overflow: didOverflow),
+         remainder: (partialValue: UInt128.min, overflow: didOverflow)),
+        // 0 / 1 = 0, remainder 0
+        (dividend: UInt128.min, divisor: UInt128(1),
+         quotient: (partialValue: UInt128.min, overflow: didNotOverflow),
+         remainder: (partialValue: UInt128.min, overflow: didNotOverflow)),
+        // 0 / UInt128.max = 0, remainder 0
+        (dividend: UInt128.min, divisor: UInt128.max,
+         quotient: (partialValue: UInt128.min, overflow: didNotOverflow),
+         remainder: (partialValue: UInt128.min, overflow: didNotOverflow)),
+        // 1 / 0 = 1, remainder 1, with overflow
+        (dividend: UInt128(1), divisor: UInt128.min,
+         quotient: (partialValue: UInt128(1), overflow: didOverflow),
+         remainder: (partialValue: UInt128(1), overflow: didOverflow)),
+        // UInt128.max / UInt64.max = UInt128(upperBits: 1, lowerBits: 1), remainder 0
+        (dividend: UInt128.max, divisor: UInt128(UInt64.max),
+         quotient: (partialValue: UInt128(upperBits: 1, lowerBits: 1), overflow: didNotOverflow),
+         remainder: (partialValue: UInt128.min, overflow: didNotOverflow)),
+        // UInt128.max / UInt128.max = 1, remainder 0
+        (dividend: UInt128.max, divisor: UInt128.max,
+         quotient: (partialValue: UInt128(1), overflow: didNotOverflow),
+         remainder: (partialValue: UInt128.min, overflow: didNotOverflow)),
+        // UInt64.max / UInt128.max = 0, remainder UInt64.max
+        (dividend: UInt128(UInt64.max), divisor: UInt128.max,
+         quotient: (partialValue: UInt128.min, overflow: didNotOverflow),
+         remainder: (partialValue: UInt128(UInt64.max), overflow: didNotOverflow))]
+    
     func testDividedReportingOverflow() {
-        let tests = [
-            // 0 / 0 = 0, with overflow
-            (dividend: UInt128.min, divisor: UInt128.min,
-             quotient: (partialValue: UInt128.min, overflow: didOverflow)),
-            // 0 / 1 = 0
-            (dividend: UInt128.min, divisor: UInt128(1),
-             quotient: (partialValue: UInt128.min, overflow: didNotOverflow)),
-            // 0 / UInt128.max = 0
-            (dividend: UInt128.min, divisor: UInt128.max,
-             quotient: (partialValue: UInt128.min, overflow: didNotOverflow)),
-            // 1 / 0 = 1, with overflow
-            (dividend: UInt128(1), divisor: UInt128.min,
-             quotient: (partialValue: UInt128(1), overflow: didOverflow)),
-            // UInt128.max / UInt64.max = UInt128.value = (1, 1)
-            (dividend: UInt128.max, divisor: UInt128(UInt64.max),
-             quotient: (partialValue: UInt128(upperBits: 1, lowerBits: 1), overflow: didNotOverflow)),
-            // UInt128.max / UInt128.max = 1
-            (dividend: UInt128.max, divisor: UInt128.max,
-             quotient: (partialValue: UInt128(1), overflow: didNotOverflow)),
-            // UInt64.max / UInt128.max = 0
-            (dividend: UInt128(UInt64.max), divisor: UInt128.max,
-             quotient: (partialValue: UInt128.min, overflow: didNotOverflow))]
-        
-        tests.forEach { test in
+        divisionTests.forEach { test in
             let quotient = test.dividend.dividedReportingOverflow(by: test.divisor)
-            XCTAssertEqual(quotient.partialValue, test.quotient.partialValue)
-            XCTAssertEqual(quotient.overflow, test.quotient.overflow)
+            XCTAssertEqual(
+                quotient.partialValue, test.quotient.partialValue,
+                "\(test.dividend) / \(test.divisor) == \(test.quotient.partialValue)")
+            XCTAssertEqual(
+                quotient.overflow, test.quotient.overflow,
+                "\(test.dividend) / \(test.divisor) has overflow? \(test.remainder.overflow)")
         }
     }
     
@@ -351,35 +362,14 @@ class FixedWidthIntegerTests : XCTestCase {
     }
     
     func testRemainderReportingOverflow() {
-        let tests = [
-            // 0 / 0 has a remainder of 0, with overflow
-            (dividend: UInt128.min, divisor: UInt128.min,
-             remainder: (partialValue: UInt128.min, overflow: didOverflow)),
-            // 0 / 1 has a remainder of 0
-            (dividend: UInt128.min, divisor: UInt128(1),
-             remainder: (partialValue: UInt128.min, overflow: didNotOverflow)),
-            // 0 / UInt128.max has a remainder of 0
-            (dividend: UInt128.min, divisor: UInt128.max,
-             remainder: (partialValue: UInt128.min, overflow: didNotOverflow)),
-            // 1 / 0 has a remainder of 1, with overflow
-            (dividend: UInt128(1), divisor: UInt128.min,
-             remainder: (partialValue: UInt128(1), overflow: didOverflow)),
-            // UInt128.max / UInt64.max has a remainder of 0
-            (dividend: UInt128.max, divisor: UInt128(UInt64.max),
-             remainder: (partialValue: UInt128.min, overflow: didNotOverflow)),
-            // UInt128.max / UInt128.max has remainder of 0
-            (dividend: UInt128.max, divisor: UInt128.max,
-             remainder: (partialValue: UInt128.min, overflow: didNotOverflow)),
-            // UInt64.max / UInt128.max has remainder of UInt64.max
-            (dividend: UInt128(UInt64.max), divisor: UInt128.max,
-             remainder: (partialValue: UInt128(UInt64.max), overflow: didNotOverflow))]
-        
-        tests.forEach { test in
+        divisionTests.forEach { test in
             let remainder = test.dividend.remainderReportingOverflow(dividingBy: test.divisor)
-            XCTAssertEqual(remainder.partialValue, test.remainder.partialValue,
-                           "\(test.dividend) / \(test.divisor) == \(test.remainder.partialValue)")
-            XCTAssertEqual(remainder.overflow, test.remainder.overflow,
-                           "\(test.dividend) / \(test.divisor) has overflow? \(test.remainder.overflow)")
+            XCTAssertEqual(
+                remainder.partialValue, test.remainder.partialValue,
+                "\(test.dividend) / \(test.divisor) has a remainder of \(test.remainder.partialValue)")
+            XCTAssertEqual(
+                remainder.overflow, test.remainder.overflow,
+                "\(test.dividend) / \(test.divisor) has overflow? \(test.remainder.overflow)")
         }
     }
     
