@@ -374,7 +374,17 @@ class FixedWidthIntegerTests : XCTestCase {
     }
     
     func testQuotientAndRemainder() {
-        XCTFail("Test not written yet.")
+        divisionTests.forEach { test in
+            guard test.divisor != 0 else { return }
+            
+            let result = test.dividend.quotientAndRemainder(dividingBy: test.divisor)
+            XCTAssertEqual(
+                result.quotient, test.quotient.partialValue,
+                "\(test.dividend) / \(test.divisor) == \(test.quotient.partialValue)")
+            XCTAssertEqual(
+                result.remainder, test.remainder.partialValue,
+                "\(test.dividend) / \(test.divisor) has a remainder of \(test.remainder.partialValue)")
+        }
     }
 }
 
