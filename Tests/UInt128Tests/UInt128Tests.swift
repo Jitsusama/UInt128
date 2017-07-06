@@ -687,15 +687,34 @@ class NumericTests : XCTestCase {
         }
     }
     
+    let multiplicationTests = [
+        // 0 * 0 = 0
+        (multiplier: UInt128.min, multiplicator: UInt128.min, product: UInt128.min),
+        // UInt64.max * UInt64.max = UInt128.max - UInt64.max - 1
+        (multiplier: UInt128(UInt64.max), multiplicator: UInt128(UInt64.max),
+         product: UInt128(upperBits: (UInt64.max >> 1) << 1, lowerBits: 1)),
+        // UInt128.max * 0 = 0
+        (multiplier: UInt128.max, multiplicator: UInt128.min, product: UInt128.min),
+        // UInt128.max * 1 = UInt128.max
+        (multiplier: UInt128.max, multiplicator: UInt128(1), product: UInt128.max)]
+    
     func testMultiplicationOperator() {
-        let _ = UInt128() * UInt128()
-        XCTFail("Test not written yet.")
+        multiplicationTests.forEach { test in
+            let product = test.multiplier * test.multiplicator
+            XCTAssertEqual(
+                product, test.product,
+                "\(test.multiplier) * \(test.multiplicator) == \(test.product)")
+        }
     }
     
     func testMultiplicationEqualOperator() {
-        var thing = UInt128()
-        thing *= UInt128()
-        XCTFail("Test not written yet.")
+        multiplicationTests.forEach { test in
+            var product = test.multiplier
+            product *= test.multiplicator
+            XCTAssertEqual(
+                product, test.product,
+                "\(test.multiplier) *= \(test.multiplicator) == \(test.product)")
+        }
     }
 }
 

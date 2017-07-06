@@ -60,12 +60,6 @@
                <Test
                   Identifier = "FixedWidthIntegerTests/testMultipliedFullWidth()">
                </Test>
-               <Test
-                  Identifier = "NumericTests/testMultiplicationEqualOperator()">
-               </Test>
-               <Test
-                  Identifier = "NumericTests/testMultiplicationOperator()">
-               </Test>
             </SkippedTests>
          </TestableReference>
       </Testables>
