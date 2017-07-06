@@ -66,12 +66,6 @@
                <Test
                   Identifier = "NumericTests/testMultiplicationOperator()">
                </Test>
-               <Test
-                  Identifier = "NumericTests/testSubtractionEqualOperator()">
-               </Test>
-               <Test
-                  Identifier = "NumericTests/testSubtractionOperator()">
-               </Test>
             </SkippedTests>
          </TestableReference>
       </Testables>

@@ -654,15 +654,37 @@ class NumericTests : XCTestCase {
         }
     }
     
+    let subtractionTests = [
+        // 0 - 0 = 0
+        (minuend: UInt128.min, subtrahend: UInt128.min,
+         difference: UInt128.min),
+        // Uint128.max - 0 = UInt128.max
+        (minuend: UInt128.max, subtrahend: UInt128.min,
+         difference: UInt128.max),
+        // UInt128.max - 1 = UInt128.max - 1
+        (minuend: UInt128.max, subtrahend: UInt128(1),
+         difference: UInt128(upperBits: UInt64.max, lowerBits: (UInt64.max >> 1) << 1)),
+        // UInt64.max + 1 - 1 = UInt64.max
+        (minuend: UInt128(upperBits: 1, lowerBits: 0), subtrahend: UInt128(1),
+         difference: UInt128(UInt64.max))]
+    
     func testSubtractionOperator() {
-        let _ = UInt128() - UInt128()
-        XCTFail("Test not written yet.")
+        subtractionTests.forEach { test in
+            let difference = test.minuend - test.subtrahend
+            XCTAssertEqual(
+                difference, test.difference,
+                "\(test.minuend) - \(test.subtrahend) == \(test.difference)")
+        }
     }
     
     func testSubtractionEqualOperator() {
-        var thing = UInt128()
-        thing -= UInt128()
-        XCTFail("Test not written yet.")
+        subtractionTests.forEach { test in
+            var difference = test.minuend
+            difference -= test.subtrahend
+            XCTAssertEqual(
+                difference, test.difference,
+                "\(test.minuend) -= \(test.subtrahend) == \(test.difference)")
+        }
     }
     
     func testMultiplicationOperator() {
