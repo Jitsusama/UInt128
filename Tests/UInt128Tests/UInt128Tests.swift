@@ -68,15 +68,14 @@ class SystemTests : XCTestCase {
 /// Test properties and methods that are not tied to protocol conformance.
 class BaseTypeTests : XCTestCase {
     func testSignificantBitsReturnsProperBitCount() {
-        let tests = [
-            (input: UInt128(),
-             expected: UInt128(upperBits: 0, lowerBits: 0)),
-            (input: UInt128(upperBits: 0, lowerBits: 1),
-             expected: UInt128(upperBits: 0, lowerBits: 1)),
-            (input: UInt128(upperBits: 0, lowerBits: UInt64.max),
-             expected: UInt128(upperBits: 0, lowerBits: 64)),
-            (input: UInt128.max,
-             expected: UInt128(upperBits: 0, lowerBits: 128))]
+        var tests = [(input: UInt128(),
+                      expected: UInt128(upperBits: 0, lowerBits: 0))]
+        tests.append((input: UInt128(upperBits: 0, lowerBits: 1),
+                      expected: UInt128(upperBits: 0, lowerBits: 1)))
+        tests.append((input: UInt128(upperBits: 0, lowerBits: UInt64.max),
+                      expected: UInt128(upperBits: 0, lowerBits: 64)))
+        tests.append((input: UInt128.max,
+                      expected: UInt128(upperBits: 0, lowerBits: 128)))
         
         tests.forEach { test in
             XCTAssertEqual(test.input.significantBits, test.expected)
@@ -84,11 +83,10 @@ class BaseTypeTests : XCTestCase {
     }
     
     func testDesignatedInitializerProperlySetsInternalValue() {
-        let tests = [
-            (input: (upperBits: 0, lowerBits: 0),
-             output: (upperBits: 0, lowerBits: 0)),
-            (input: (upperBits: UInt64.max, lowerBits: UInt64.max),
-             output: (upperBits: UInt64.max, lowerBits: UInt64.max))]
+        var tests = [(input: (upperBits: UInt64.min, lowerBits: UInt64.min),
+                      output: (upperBits: UInt64.min, lowerBits: UInt64.min))]
+        tests.append((input: (upperBits: UInt64.max, lowerBits: UInt64.max),
+                      output: (upperBits: UInt64.max, lowerBits: UInt64.max)))
         
         tests.forEach { test in
             let result = UInt128(upperBits: test.input.upperBits,
@@ -107,11 +105,10 @@ class BaseTypeTests : XCTestCase {
     }
     
     func testInitWithUInt128() {
-        let tests = [
-            UInt128(),
-            UInt128(upperBits: 0, lowerBits: 1),
-            UInt128(upperBits: 0, lowerBits: UInt64.max),
-            UInt128.max]
+        var tests = [UInt128()]
+        tests.append(UInt128(upperBits: 0, lowerBits: 1))
+        tests.append(UInt128(upperBits: 0, lowerBits: UInt64.max))
+        tests.append(UInt128.max)
         
         tests.forEach { test in
             XCTAssertEqual(UInt128(test), test)
@@ -123,7 +120,9 @@ class BaseTypeTests : XCTestCase {
     }
     
     func testStringInitializerWithSupportedNumberFormats() {
-        let tests = ["0b2", "0o8", "0xG"]
+        var tests = ["0b2"]
+        tests.append("0o8")
+        tests.append("0xG")
         
         try! tests.forEach { test in
             XCTAssertThrowsError(try UInt128(test))
@@ -136,14 +135,13 @@ let didNotOverflow = ArithmeticOverflow(false)
 
 class FixedWidthIntegerTests : XCTestCase {
     func testNonzeroBitCount() {
-        let tests = [
-            (input: UInt128.min, result: 0),
-            (input: UInt128(1), result: 1),
-            (input: UInt128(3), result: 2),
-            (input: UInt128(UInt64.max), result: 64),
-            (input: UInt128(upperBits: 1, lowerBits: 0), result: 1),
-            (input: UInt128(upperBits: 3, lowerBits: 0), result: 2),
-            (input: UInt128.max, result: 128),]
+        var tests = [(input: UInt128.min, result: 0)]
+        tests.append((input: UInt128(1), result: 1))
+        tests.append((input: UInt128(3), result: 2))
+        tests.append((input: UInt128(UInt64.max), result: 64))
+        tests.append((input: UInt128(upperBits: 1, lowerBits: 0), result: 1))
+        tests.append((input: UInt128(upperBits: 3, lowerBits: 0), result: 2))
+        tests.append((input: UInt128.max, result: 128))
         
         tests.forEach { test in
             XCTAssertEqual(test.input.nonzeroBitCount, test.result)
@@ -151,28 +149,28 @@ class FixedWidthIntegerTests : XCTestCase {
     }
     
     func testLeadingZeroBitCount() {
-        let tests = [
-            (input: UInt128.min, result: 128),
-            (input: UInt128(1), result: 127),
-            (input: UInt128(UInt64.max), result: 64),
-            (input: UInt128(upperBits: 1, lowerBits: 0), result: 63),
-            (input: UInt128.max, result: 0)]
+        var tests = [(input: UInt128.min, result: 128)]
+        tests.append((input: UInt128(1), result: 127))
+        tests.append((input: UInt128(UInt64.max), result: 64))
+        tests.append((input: UInt128(upperBits: 1, lowerBits: 0), result: 63))
+        tests.append((input: UInt128.max, result: 0))
         
         tests.forEach { test in
             XCTAssertEqual(test.input.leadingZeroBitCount, test.result)
         }
     }
     
-    let endianTests = [
-        (input: UInt128(),
-         byteSwapped: UInt128()),
-        (input: UInt128(1),
-         byteSwapped: UInt128(upperBits: 72057594037927936, lowerBits: 0)),
-        (input: UInt128(upperBits: 17434549027881090559, lowerBits: 18373836492640810226),
-         byteSwapped: UInt128(upperBits: 17506889200551263486, lowerBits: 18446176699804939249))]
+    func endianTests() -> [(input: UInt128, byteSwapped: UInt128)] {
+        var tests = [(input: UInt128(), byteSwapped: UInt128())]
+        tests.append((input: UInt128(1),
+                      byteSwapped: UInt128(upperBits: 72057594037927936, lowerBits: 0)))
+        tests.append((input: UInt128(upperBits: 17434549027881090559, lowerBits: 18373836492640810226),
+                      byteSwapped: UInt128(upperBits: 17506889200551263486, lowerBits: 18446176699804939249)))
+        return tests
+    }
     
     func testBigEndianProperty() {
-        endianTests.forEach { test in
+        endianTests().forEach { test in
             #if arch(i386) || arch(x86_64) || arch(arm) || arch(arm64)
                 let expectedResult = test.byteSwapped
             #else
@@ -184,7 +182,7 @@ class FixedWidthIntegerTests : XCTestCase {
     }
     
     func testBigEndianInitializer() {
-        endianTests.forEach { test in
+        endianTests().forEach { test in
             #if arch(i386) || arch(x86_64) || arch(arm) || arch(arm64)
                 let expectedResult = test.byteSwapped
             #else
@@ -196,7 +194,7 @@ class FixedWidthIntegerTests : XCTestCase {
     }
     
     func testLittleEndianProperty() {
-        endianTests.forEach { test in
+        endianTests().forEach { test in
             #if arch(i386) || arch(x86_64) || arch(arm) || arch(arm64)
                 let expectedResult = test.input
             #else
@@ -208,7 +206,7 @@ class FixedWidthIntegerTests : XCTestCase {
     }
     
     func testLittleEndianInitializer() {
-        endianTests.forEach { test in
+        endianTests().forEach { test in
             #if arch(i386) || arch(x86_64) || arch(arm) || arch(arm64)
                 let expectedResult = test.input
             #else
@@ -220,7 +218,7 @@ class FixedWidthIntegerTests : XCTestCase {
     }
     
     func testByteSwappedProperty() {
-        endianTests.forEach { test in
+        endianTests().forEach { test in
             XCTAssertEqual(test.input.byteSwapped, test.byteSwapped)
         }
     }
@@ -231,22 +229,21 @@ class FixedWidthIntegerTests : XCTestCase {
     }
     
     func testAddingReportingOverflow() {
-        let tests = [
-            // 0 + 0 = 0
-            (augend: UInt128.min, addend: UInt128.min,
-             sum: (partialValue: UInt128.min, overflow: didNotOverflow)),
-            // UInt128.max + 0 = UInt128.max
-            (augend: UInt128.max, addend: UInt128.min,
-             sum: (partialValue: UInt128.max, overflow: didNotOverflow)),
-            // UInt128.max + 1 = 0, with overflow
-            (augend: UInt128.max, addend: UInt128(1),
-             sum: (partialValue: UInt128.min, overflow: didOverflow)),
-            // UInt128.max + 2 = 1, with overflow
-            (augend: UInt128.max, addend: UInt128(2),
-             sum: (partialValue: UInt128(1), overflow: didOverflow)),
-            // UInt64.max + 1 = UInt64.max + 1
-            (augend: UInt128(UInt64.max), addend: UInt128(1),
-             sum: (partialValue: UInt128(upperBits: 1, lowerBits: 0), overflow: ArithmeticOverflow(false)))]
+        // 0 + 0 = 0
+        var tests = [(augend: UInt128.min, addend: UInt128.min,
+                      sum: (partialValue: UInt128.min, overflow: didNotOverflow))]
+        // UInt128.max + 0 = UInt128.max
+        tests.append((augend: UInt128.max, addend: UInt128.min,
+                      sum: (partialValue: UInt128.max, overflow: didNotOverflow)))
+        // UInt128.max + 1 = 0, with overflow
+        tests.append((augend: UInt128.max, addend: UInt128(1),
+                      sum: (partialValue: UInt128.min, overflow: didOverflow)))
+        // UInt128.max + 2 = 1, with overflow
+        tests.append((augend: UInt128.max, addend: UInt128(2),
+                      sum: (partialValue: UInt128(1), overflow: didOverflow)))
+        // UInt64.max + 1 = UInt64.max + 1
+        tests.append((augend: UInt128(UInt64.max), addend: UInt128(1),
+                      sum: (partialValue: UInt128(upperBits: 1, lowerBits: 0), overflow: didNotOverflow)))
         
         tests.forEach { test in
             let sum = test.augend.addingReportingOverflow(test.addend)
@@ -256,25 +253,24 @@ class FixedWidthIntegerTests : XCTestCase {
     }
     
     func testSubtractingReportingOverflow() {
-        let tests = [
-            // 0 - 0 = 0
-            (minuend: UInt128.min, subtrahend: UInt128.min,
-             difference: (partialValue: UInt128.min, overflow: didNotOverflow)),
-            // Uint128.max - 0 = UInt128.max
-            (minuend: UInt128.max, subtrahend: UInt128.min,
-             difference: (partialValue: UInt128.max, overflow: didNotOverflow)),
-            // UInt128.max - 1 = UInt128.max - 1
-            (minuend: UInt128.max, subtrahend: UInt128(1),
-             difference: (partialValue: UInt128(upperBits: UInt64.max, lowerBits: (UInt64.max >> 1) << 1), overflow: didNotOverflow)),
-            // UInt64.max + 1 - 1 = UInt64.max
-            (minuend: UInt128(upperBits: 1, lowerBits: 0), subtrahend: UInt128(1),
-             difference: (partialValue: UInt128(UInt64.max), overflow: didNotOverflow)),
-            // 0 - 1 = UInt128.max, with overflow
-            (minuend: UInt128.min, subtrahend: UInt128(1),
-             difference: (partialValue: UInt128.max, overflow: didOverflow)),
-            // 0 - 2 = UInt128.max - 1, with overflow
-            (minuend: UInt128.min, subtrahend: UInt128(2),
-             difference: (partialValue: (UInt128.max >> 1) << 1, overflow: didOverflow))]
+        // 0 - 0 = 0
+        var tests = [(minuend: UInt128.min, subtrahend: UInt128.min,
+                      difference: (partialValue: UInt128.min, overflow: didNotOverflow))]
+        // Uint128.max - 0 = UInt128.max
+        tests.append((minuend: UInt128.max, subtrahend: UInt128.min,
+                      difference: (partialValue: UInt128.max, overflow: didNotOverflow)))
+        // UInt128.max - 1 = UInt128.max - 1
+        tests.append((minuend: UInt128.max, subtrahend: UInt128(1),
+                      difference: (partialValue: UInt128(upperBits: UInt64.max, lowerBits: (UInt64.max >> 1) << 1), overflow: didNotOverflow)))
+        // UInt64.max + 1 - 1 = UInt64.max
+        tests.append((minuend: UInt128(upperBits: 1, lowerBits: 0), subtrahend: UInt128(1),
+                      difference: (partialValue: UInt128(UInt64.max), overflow: didNotOverflow)))
+        // 0 - 1 = UInt128.max, with overflow
+        tests.append((minuend: UInt128.min, subtrahend: UInt128(1),
+                      difference: (partialValue: UInt128.max, overflow: didOverflow)))
+        // 0 - 2 = UInt128.max - 1, with overflow
+        tests.append((minuend: UInt128.min, subtrahend: UInt128(2),
+                      difference: (partialValue: (UInt128.max >> 1) << 1, overflow: didOverflow)))
         
         tests.forEach { test in
             let difference = test.minuend.subtractingReportingOverflow(test.subtrahend)
@@ -284,25 +280,24 @@ class FixedWidthIntegerTests : XCTestCase {
     }
     
     func testMultipliedReportingOverflow() {
-        let tests = [
-            // 0 * 0 = 0
-            (multiplier: UInt128.min, multiplicator: UInt128.min,
-             product: (partialValue: UInt128.min, overflow: didNotOverflow)),
-            // UInt64.max * UInt64.max = UInt128.max - UInt64.max - 1
-            (multiplier: UInt128(UInt64.max), multiplicator: UInt128(UInt64.max),
-             product: (partialValue: UInt128(upperBits: (UInt64.max >> 1) << 1, lowerBits: 1), overflow: didNotOverflow)),
-            // UInt128.max * 0 = 0
-            (multiplier: UInt128.max, multiplicator: UInt128.min,
-             product: (partialValue: UInt128.min, overflow: didNotOverflow)),
-            // UInt128.max * 1 = UInt128.max
-            (multiplier: UInt128.max, multiplicator: UInt128(1),
-             product: (partialValue: UInt128.max, overflow: didNotOverflow)),
-            // UInt128.max * 2 = UInt128.max - 1, with overflow
-            (multiplier: UInt128.max, multiplicator: UInt128(2),
-             product: (partialValue: (UInt128.max >> 1) << 1, overflow: didOverflow)),
-            // UInt128.max * UInt128.max = 1, with overflow
-            (multiplier: UInt128.max, multiplicator: UInt128.max,
-             product: (partialValue: UInt128(1), overflow: didOverflow))]
+        // 0 * 0 = 0
+        var tests = [(multiplier: UInt128.min, multiplicator: UInt128.min,
+                      product: (partialValue: UInt128.min, overflow: didNotOverflow))]
+        // UInt64.max * UInt64.max = UInt128.max - UInt64.max - 1
+        tests.append((multiplier: UInt128(UInt64.max), multiplicator: UInt128(UInt64.max),
+                      product: (partialValue: UInt128(upperBits: (UInt64.max >> 1) << 1, lowerBits: 1), overflow: didNotOverflow)))
+        // UInt128.max * 0 = 0
+        tests.append((multiplier: UInt128.max, multiplicator: UInt128.min,
+                      product: (partialValue: UInt128.min, overflow: didNotOverflow)))
+        // UInt128.max * 1 = UInt128.max
+        tests.append((multiplier: UInt128.max, multiplicator: UInt128(1),
+                      product: (partialValue: UInt128.max, overflow: didNotOverflow)))
+        // UInt128.max * 2 = UInt128.max - 1, with overflow
+        tests.append((multiplier: UInt128.max, multiplicator: UInt128(2),
+                      product: (partialValue: (UInt128.max >> 1) << 1, overflow: didOverflow)))
+        // UInt128.max * UInt128.max = 1, with overflow
+        tests.append((multiplier: UInt128.max, multiplicator: UInt128.max,
+                      product: (partialValue: UInt128(1), overflow: didOverflow)))
         
         tests.forEach { test in
             let product = test.multiplier.multipliedReportingOverflow(by: test.multiplicator)
@@ -315,38 +310,40 @@ class FixedWidthIntegerTests : XCTestCase {
         XCTFail("Test not written yet.")
     }
     
-    let divisionTests = [
+    func divisionTests() -> [(dividend: UInt128, divisor: UInt128, quotient: (partialValue: UInt128, overflow: ArithmeticOverflow), remainder: (partialValue: UInt128, overflow: ArithmeticOverflow))] {
         // 0 / 0 = 0, remainder 0, with overflow
-        (dividend: UInt128.min, divisor: UInt128.min,
-         quotient: (partialValue: UInt128.min, overflow: didOverflow),
-         remainder: (partialValue: UInt128.min, overflow: didOverflow)),
+        var tests = [(dividend: UInt128.min, divisor: UInt128.min,
+                      quotient: (partialValue: UInt128.min, overflow: didOverflow),
+                      remainder: (partialValue: UInt128.min, overflow: didOverflow))]
         // 0 / 1 = 0, remainder 0
-        (dividend: UInt128.min, divisor: UInt128(1),
-         quotient: (partialValue: UInt128.min, overflow: didNotOverflow),
-         remainder: (partialValue: UInt128.min, overflow: didNotOverflow)),
+        tests.append((dividend: UInt128.min, divisor: UInt128(1),
+                      quotient: (partialValue: UInt128.min, overflow: didNotOverflow),
+                      remainder: (partialValue: UInt128.min, overflow: didNotOverflow)))
         // 0 / UInt128.max = 0, remainder 0
-        (dividend: UInt128.min, divisor: UInt128.max,
-         quotient: (partialValue: UInt128.min, overflow: didNotOverflow),
-         remainder: (partialValue: UInt128.min, overflow: didNotOverflow)),
+        tests.append((dividend: UInt128.min, divisor: UInt128.max,
+                      quotient: (partialValue: UInt128.min, overflow: didNotOverflow),
+                      remainder: (partialValue: UInt128.min, overflow: didNotOverflow)))
         // 1 / 0 = 1, remainder 1, with overflow
-        (dividend: UInt128(1), divisor: UInt128.min,
-         quotient: (partialValue: UInt128(1), overflow: didOverflow),
-         remainder: (partialValue: UInt128(1), overflow: didOverflow)),
+        tests.append((dividend: UInt128(1), divisor: UInt128.min,
+                      quotient: (partialValue: UInt128(1), overflow: didOverflow),
+                      remainder: (partialValue: UInt128(1), overflow: didOverflow)))
         // UInt128.max / UInt64.max = UInt128(upperBits: 1, lowerBits: 1), remainder 0
-        (dividend: UInt128.max, divisor: UInt128(UInt64.max),
-         quotient: (partialValue: UInt128(upperBits: 1, lowerBits: 1), overflow: didNotOverflow),
-         remainder: (partialValue: UInt128.min, overflow: didNotOverflow)),
+        tests.append((dividend: UInt128.max, divisor: UInt128(UInt64.max),
+                      quotient: (partialValue: UInt128(upperBits: 1, lowerBits: 1), overflow: didNotOverflow),
+                      remainder: (partialValue: UInt128.min, overflow: didNotOverflow)))
         // UInt128.max / UInt128.max = 1, remainder 0
-        (dividend: UInt128.max, divisor: UInt128.max,
-         quotient: (partialValue: UInt128(1), overflow: didNotOverflow),
-         remainder: (partialValue: UInt128.min, overflow: didNotOverflow)),
+        tests.append((dividend: UInt128.max, divisor: UInt128.max,
+                      quotient: (partialValue: UInt128(1), overflow: didNotOverflow),
+                      remainder: (partialValue: UInt128.min, overflow: didNotOverflow)))
         // UInt64.max / UInt128.max = 0, remainder UInt64.max
-        (dividend: UInt128(UInt64.max), divisor: UInt128.max,
-         quotient: (partialValue: UInt128.min, overflow: didNotOverflow),
-         remainder: (partialValue: UInt128(UInt64.max), overflow: didNotOverflow))]
+        tests.append((dividend: UInt128(UInt64.max), divisor: UInt128.max,
+                      quotient: (partialValue: UInt128.min, overflow: didNotOverflow),
+                      remainder: (partialValue: UInt128(UInt64.max), overflow: didNotOverflow)))
+        return tests
+    }
     
     func testDividedReportingOverflow() {
-        divisionTests.forEach { test in
+        divisionTests().forEach { test in
             let quotient = test.dividend.dividedReportingOverflow(by: test.divisor)
             XCTAssertEqual(
                 quotient.partialValue, test.quotient.partialValue,
@@ -362,7 +359,7 @@ class FixedWidthIntegerTests : XCTestCase {
     }
     
     func testRemainderReportingOverflow() {
-        divisionTests.forEach { test in
+        divisionTests().forEach { test in
             let remainder = test.dividend.remainderReportingOverflow(dividingBy: test.divisor)
             XCTAssertEqual(
                 remainder.partialValue, test.remainder.partialValue,
@@ -374,7 +371,7 @@ class FixedWidthIntegerTests : XCTestCase {
     }
     
     func testQuotientAndRemainder() {
-        divisionTests.forEach { test in
+        divisionTests().forEach { test in
             guard test.divisor != 0 else { return }
             
             let result = test.dividend.quotientAndRemainder(dividingBy: test.divisor)
@@ -394,21 +391,19 @@ class BinaryIntegerTests : XCTestCase {
     }
     
     func testTrailingZeroBitCount() {
-        let tests = [
-            (input: UInt128.min, expected: 128),
-            (input: UInt128(1), expected: 0),
-            (input: UInt128(upperBits: 1, lowerBits: 0), expected: 64),
-            (input: UInt128.max, expected: 0)]
+        var tests = [(input: UInt128.min, expected: 128)]
+        tests.append((input: UInt128(1), expected: 0))
+        tests.append((input: UInt128(upperBits: 1, lowerBits: 0), expected: 64))
+        tests.append((input: UInt128.max, expected: 0))
         
         tests.forEach { test in
             XCTAssertEqual(test.input.trailingZeroBitCount, test.expected)}
     }
     
     func testInitFailableFloatingPointExactlyExpectedSuccesses() {
-        let tests = [
-            (input: Float(), result: UInt128()),
-            (input: Float(1), result: UInt128(1)),
-            (input: Float(1.0), result: UInt128(1))]
+        var tests = [(input: Float(), result: UInt128())]
+        tests.append((input: Float(1), result: UInt128(1)))
+        tests.append((input: Float(1.0), result: UInt128(1)))
         
         tests.forEach { test in
             XCTAssertEqual(UInt128(exactly: test.input), test.result)
@@ -416,21 +411,19 @@ class BinaryIntegerTests : XCTestCase {
     }
     
     func testInitFailableFloatingPointExactlyExpectedFailures() {
-        let testInputs = [
-            Float(1.1),
-            Float(0.1)]
+        var tests = [Float(1.1)]
+        tests.append(Float(0.1))
         
-        testInputs.forEach { testInput in
-            XCTAssertEqual(UInt128(exactly: testInput), nil)
+        tests.forEach { test in
+            XCTAssertEqual(UInt128(exactly: test), nil)
         }
     }
     
     func testInitFloatingPoint() {
-        let tests = [
-            (input: Float80(), result: UInt128()),
-            (input: Float80(0.1), result: UInt128()),
-            (input: Float80(1.0), result: UInt128(1)),
-            (input: Float80(UInt64.max), result: UInt128(UInt64.max))]
+        var tests = [(input: Float80(), result: UInt128())]
+        tests.append((input: Float80(0.1), result: UInt128()))
+        tests.append((input: Float80(1.0), result: UInt128(1)))
+        tests.append((input: Float80(UInt64.max), result: UInt128(UInt64.max)))
         
         tests.forEach { test in
             XCTAssertEqual(UInt128(test.input), test.result)
@@ -451,31 +444,24 @@ class BinaryIntegerTests : XCTestCase {
     }
     
     func divisionTests() -> [(dividend: UInt128, divisor: UInt128, quotient: UInt128, remainder: UInt128)] {
-        var tests = [(dividend: UInt128, divisor: UInt128, quotient: UInt128, remainder: UInt128)]()
-        tests.append(
-            // 0 / 1 = 0, remainder 0
-            (dividend: UInt128.min, divisor: UInt128(1),
-             quotient: UInt128.min, remainder: UInt128.min))
-        tests.append(
-            // 2 / 1 = 2, remainder 0
-            (dividend: UInt128(2), divisor: UInt128(1),
-             quotient: UInt128(2), remainder: UInt128.min))
-        tests.append(
-            // 1 / 2 = 0, remainder 1
-            (dividend: UInt128(1), divisor: UInt128(2),
-             quotient: UInt128(0), remainder: UInt128(1)))
-        tests.append(
-            // UInt128.max / UInt64.max = UInt128(upperBits: 1, lowerBits: 1), remainder 0
-            (dividend: UInt128.max, divisor: UInt128(UInt64.max),
-             quotient: UInt128(upperBits: 1, lowerBits: 1), remainder: UInt128.min))
-        tests.append(
-            // UInt128.max / UInt128.max = 1, remainder 0
-            (dividend: UInt128.max, divisor: UInt128.max,
-             quotient: UInt128(1), remainder: UInt128.min))
-        tests.append(
-            // UInt64.max / UInt128.max = 0, remainder UInt64.max
-            (dividend: UInt128(UInt64.max), divisor: UInt128.max,
-             quotient: UInt128.min, remainder: UInt128(UInt64.max)))
+        // 0 / 1 = 0, remainder 0
+        var tests = [(dividend: UInt128.min, divisor: UInt128(1),
+                      quotient: UInt128.min, remainder: UInt128.min)]
+        // 2 / 1 = 2, remainder 0
+        tests.append((dividend: UInt128(2), divisor: UInt128(1),
+                      quotient: UInt128(2), remainder: UInt128.min))
+        // 1 / 2 = 0, remainder 1
+        tests.append((dividend: UInt128(1), divisor: UInt128(2),
+                      quotient: UInt128(0), remainder: UInt128(1)))
+        // UInt128.max / UInt64.max = UInt128(upperBits: 1, lowerBits: 1), remainder 0
+        tests.append((dividend: UInt128.max, divisor: UInt128(UInt64.max),
+                      quotient: UInt128(upperBits: 1, lowerBits: 1), remainder: UInt128.min))
+        // UInt128.max / UInt128.max = 1, remainder 0
+        tests.append((dividend: UInt128.max, divisor: UInt128.max,
+                      quotient: UInt128(1), remainder: UInt128.min))
+        // UInt64.max / UInt128.max = 0, remainder UInt64.max
+        tests.append((dividend: UInt128(UInt64.max), divisor: UInt128.max,
+                      quotient: UInt128.min, remainder: UInt128(UInt64.max)))
         return tests
     }
     
@@ -510,17 +496,16 @@ class BinaryIntegerTests : XCTestCase {
     }
     
     func testBooleanAndEqualOperator() {
-        let tests = [
-            (lhs: UInt128.min, rhs: UInt128.min, result: UInt128.min),
-            (lhs: UInt128(1), rhs: UInt128(1), result: UInt128(1)),
-            (lhs: UInt128.min, rhs: UInt128.max, result: UInt128.min),
-            (lhs: UInt128(upperBits: UInt64.min, lowerBits: UInt64.max),
-             rhs: UInt128(upperBits: UInt64.max, lowerBits: UInt64.min),
-             result: UInt128.min),
-            (lhs: UInt128(upperBits: 17434549027881090559, lowerBits: 18373836492640810226),
-             rhs: UInt128(upperBits: 17506889200551263486, lowerBits: 18446176699804939249),
-             result: UInt128(upperBits: 17361645879185571070, lowerBits: 18373836492506460400)),
-            (lhs: UInt128.max, rhs: UInt128.max, result: UInt128.max)]
+        var tests = [(lhs: UInt128.min, rhs: UInt128.min, result: UInt128.min)]
+        tests.append((lhs: UInt128(1), rhs: UInt128(1), result: UInt128(1)))
+        tests.append((lhs: UInt128.min, rhs: UInt128.max, result: UInt128.min))
+        tests.append((lhs: UInt128(upperBits: UInt64.min, lowerBits: UInt64.max),
+                      rhs: UInt128(upperBits: UInt64.max, lowerBits: UInt64.min),
+                      result: UInt128.min))
+        tests.append((lhs: UInt128(upperBits: 17434549027881090559, lowerBits: 18373836492640810226),
+                      rhs: UInt128(upperBits: 17506889200551263486, lowerBits: 18446176699804939249),
+                      result: UInt128(upperBits: 17361645879185571070, lowerBits: 18373836492506460400)))
+        tests.append((lhs: UInt128.max, rhs: UInt128.max, result: UInt128.max))
         
         tests.forEach { test in
             var result = test.lhs
@@ -530,17 +515,16 @@ class BinaryIntegerTests : XCTestCase {
     }
     
     func testBooleanOrEqualOperator() {
-        let tests = [
-            (lhs: UInt128.min, rhs: UInt128.min, result: UInt128.min),
-            (lhs: UInt128(1), rhs: UInt128(1), result: UInt128(1)),
-            (lhs: UInt128.min, rhs: UInt128.max, result: UInt128.max),
-            (lhs: UInt128(upperBits: UInt64.min, lowerBits: UInt64.max),
-             rhs: UInt128(upperBits: UInt64.max, lowerBits: UInt64.min),
-             result: UInt128.max),
-            (lhs: UInt128(upperBits: 17434549027881090559, lowerBits: 18373836492640810226),
-             rhs: UInt128(upperBits: 17506889200551263486, lowerBits: 18446176699804939249),
-             result: UInt128(upperBits: 17579792349246782975, lowerBits: 18446176699939289075)),
-            (lhs: UInt128.max, rhs: UInt128.max, result: UInt128.max)]
+        var tests = [(lhs: UInt128.min, rhs: UInt128.min, result: UInt128.min)]
+        tests.append((lhs: UInt128(1), rhs: UInt128(1), result: UInt128(1)))
+        tests.append((lhs: UInt128.min, rhs: UInt128.max, result: UInt128.max))
+        tests.append((lhs: UInt128(upperBits: UInt64.min, lowerBits: UInt64.max),
+                      rhs: UInt128(upperBits: UInt64.max, lowerBits: UInt64.min),
+                      result: UInt128.max))
+        tests.append((lhs: UInt128(upperBits: 17434549027881090559, lowerBits: 18373836492640810226),
+                      rhs: UInt128(upperBits: 17506889200551263486, lowerBits: 18446176699804939249),
+                      result: UInt128(upperBits: 17579792349246782975, lowerBits: 18446176699939289075)))
+        tests.append((lhs: UInt128.max, rhs: UInt128.max, result: UInt128.max))
         
         tests.forEach { test in
             var result = test.lhs
@@ -550,17 +534,16 @@ class BinaryIntegerTests : XCTestCase {
     }
     
     func testBooleanXorEqualOperator() {
-        let tests = [
-            (lhs: UInt128.min, rhs: UInt128.min, result: UInt128.min),
-            (lhs: UInt128(1), rhs: UInt128(1), result: UInt128.min),
-            (lhs: UInt128.min, rhs: UInt128.max, result: UInt128.max),
-            (lhs: UInt128(upperBits: UInt64.min, lowerBits: UInt64.max),
-             rhs: UInt128(upperBits: UInt64.max, lowerBits: UInt64.min),
-             result: UInt128.max),
-            (lhs: UInt128(upperBits: 17434549027881090559, lowerBits: 18373836492640810226),
-             rhs: UInt128(upperBits: 17506889200551263486, lowerBits: 18446176699804939249),
-             result: UInt128(upperBits: 218146470061211905, lowerBits: 72340207432828675)),
-            (lhs: UInt128.max, rhs: UInt128.max, result: UInt128.min)]
+        var tests = [(lhs: UInt128.min, rhs: UInt128.min, result: UInt128.min)]
+        tests.append((lhs: UInt128(1), rhs: UInt128(1), result: UInt128.min))
+        tests.append((lhs: UInt128.min, rhs: UInt128.max, result: UInt128.max))
+        tests.append((lhs: UInt128(upperBits: UInt64.min, lowerBits: UInt64.max),
+                      rhs: UInt128(upperBits: UInt64.max, lowerBits: UInt64.min),
+                      result: UInt128.max))
+        tests.append((lhs: UInt128(upperBits: 17434549027881090559, lowerBits: 18373836492640810226),
+                      rhs: UInt128(upperBits: 17506889200551263486, lowerBits: 18446176699804939249),
+                      result: UInt128(upperBits: 218146470061211905, lowerBits: 72340207432828675)))
+        tests.append((lhs: UInt128.max, rhs: UInt128.max, result: UInt128.min))
         
         tests.forEach { test in
             var result = test.lhs
@@ -570,16 +553,15 @@ class BinaryIntegerTests : XCTestCase {
     }
     
     func testMaskingRightShiftEqualOperatorStandardCases() {
-        let tests = [
-            (input: UInt128(upperBits: UInt64.max, lowerBits: 0),
-             shiftWidth: UInt64(127),
-             expected: UInt128(upperBits: 0, lowerBits: 1)),
-            (input: UInt128(upperBits: 1, lowerBits: 0),
-             shiftWidth: UInt64(64),
-             expected: UInt128(upperBits: 0, lowerBits: 1)),
-            (input: UInt128(upperBits: 0, lowerBits: 1),
-             shiftWidth: UInt64(1),
-             expected: UInt128())]
+        var tests = [(input: UInt128(upperBits: UInt64.max, lowerBits: 0),
+                      shiftWidth: UInt64(127),
+                      expected: UInt128(upperBits: 0, lowerBits: 1))]
+        tests.append((input: UInt128(upperBits: 1, lowerBits: 0),
+                      shiftWidth: UInt64(64),
+                      expected: UInt128(upperBits: 0, lowerBits: 1)))
+        tests.append((input: UInt128(upperBits: 0, lowerBits: 1),
+                      shiftWidth: UInt64(1),
+                      expected: UInt128()))
         
         tests.forEach { test in
             var testValue = test.input
@@ -589,16 +571,15 @@ class BinaryIntegerTests : XCTestCase {
     }
     
     func testMaskingRightShiftEqualOperatorEdgeCases() {
-        let tests = [
-            (input: UInt128(upperBits: 0, lowerBits: 2),
-             shiftWidth: UInt64(129),
-             expected: UInt128(upperBits: 0, lowerBits: 1)),
-            (input: UInt128(upperBits: UInt64.max, lowerBits: 0),
-             shiftWidth: UInt64(128),
-             expected: UInt128(upperBits: UInt64.max, lowerBits: 0)),
-            (input: UInt128(upperBits: 0, lowerBits: 1),
-             shiftWidth: UInt64(0),
-             expected: UInt128(upperBits: 0, lowerBits: 1))]
+        var tests = [(input: UInt128(upperBits: 0, lowerBits: 2),
+                      shiftWidth: UInt64(129),
+                      expected: UInt128(upperBits: 0, lowerBits: 1))]
+        tests.append((input: UInt128(upperBits: UInt64.max, lowerBits: 0),
+                      shiftWidth: UInt64(128),
+                      expected: UInt128(upperBits: UInt64.max, lowerBits: 0)))
+        tests.append((input: UInt128(upperBits: 0, lowerBits: 1),
+                      shiftWidth: UInt64(0),
+                      expected: UInt128(upperBits: 0, lowerBits: 1)))
         
         tests.forEach { test in
             var testValue = test.input
@@ -609,16 +590,15 @@ class BinaryIntegerTests : XCTestCase {
     
     func testMaskingLeftShiftEqualOperatorStandardCases() {
         let uint64_1_in_msb: UInt64 = 2 << 62
-        let tests = [
-            (input: UInt128(upperBits: 0, lowerBits: 1),
-             shiftWidth: UInt64(127),
-             expected: UInt128(upperBits: uint64_1_in_msb, lowerBits: 0)),
-            (input: UInt128(upperBits: 0, lowerBits: 1),
-             shiftWidth: UInt64(64),
-             expected: UInt128(upperBits: 1, lowerBits: 0)),
-            (input: UInt128(upperBits: 0, lowerBits: 1),
-             shiftWidth: UInt64(1),
-             expected: UInt128(upperBits: 0, lowerBits: 2))]
+        var tests = [(input: UInt128(upperBits: 0, lowerBits: 1),
+                      shiftWidth: UInt64(127),
+                      expected: UInt128(upperBits: uint64_1_in_msb, lowerBits: 0))]
+        tests.append((input: UInt128(upperBits: 0, lowerBits: 1),
+                      shiftWidth: UInt64(64),
+                      expected: UInt128(upperBits: 1, lowerBits: 0)))
+        tests.append((input: UInt128(upperBits: 0, lowerBits: 1),
+                      shiftWidth: UInt64(1),
+                      expected: UInt128(upperBits: 0, lowerBits: 2)))
         
         tests.forEach { test in
             var testValue = test.input
@@ -628,16 +608,15 @@ class BinaryIntegerTests : XCTestCase {
     }
     
     func testMaskingLeftShiftEqualOperatorEdgeCases() {
-        let tests = [
-            (input: UInt128(upperBits: 0, lowerBits: 2),
-             shiftWidth: UInt64(129),
-             expected: UInt128(upperBits: 0, lowerBits: 4)),
-            (input: UInt128(upperBits: 0, lowerBits: 2),
-             shiftWidth: UInt64(128),
-             expected: UInt128(upperBits: 0, lowerBits: 2)),
-            (input: UInt128(upperBits: 0, lowerBits: 1),
-             shiftWidth: UInt64(0),
-             expected: UInt128(upperBits: 0, lowerBits: 1))]
+        var tests = [(input: UInt128(upperBits: 0, lowerBits: 2),
+                      shiftWidth: UInt64(129),
+                      expected: UInt128(upperBits: 0, lowerBits: 4))]
+        tests.append((input: UInt128(upperBits: 0, lowerBits: 2),
+                      shiftWidth: UInt64(128),
+                      expected: UInt128(upperBits: 0, lowerBits: 2)))
+        tests.append((input: UInt128(upperBits: 0, lowerBits: 1),
+                      shiftWidth: UInt64(0),
+                      expected: UInt128(upperBits: 0, lowerBits: 1)))
         
         tests.forEach { test in
             var testValue = test.input
@@ -648,32 +627,38 @@ class BinaryIntegerTests : XCTestCase {
 }
 
 class HashableTests : XCTestCase {
-    let tests = [
-        (input: UInt128(), result: 0),
-        (input: UInt128(1), result: 1),
-        (input: UInt128(Int.max), result: Int.max),
-        (input: try! UInt128("85070591730234615862769194512323794261"), result: -1537228672809129302)]
-    
+    func tests() -> [(input: UInt128, result: Int)] {
+        var tests = [(input: UInt128(), result: 0)]
+        tests.append((input: UInt128(1), result: 1))
+        tests.append((input: UInt128(Int.max), result: Int.max))
+        tests.append((input: try! UInt128("85070591730234615862769194512323794261"),
+                      result: -1537228672809129302))
+        return tests
+    }
+        
     func testHashValueProperty() {
-        tests.forEach { test in
+        tests().forEach { test in
             XCTAssertEqual(test.input.hashValue, test.result)
         }
     }
 }
 
 class NumericTests : XCTestCase {
-    let additionTests = [
+    func additionTests() -> [(augend: UInt128, addend: UInt128, sum: UInt128)] {
         // 0 + 0 = 0
-        (augend: UInt128.min, addend: UInt128.min, sum: UInt128.min),
+        var tests = [(augend: UInt128.min, addend: UInt128.min, sum: UInt128.min)]
         // 1 + 1 = 2
-        (augend: UInt128(1), addend: UInt128(1), sum: UInt128(2)),
+        tests.append((augend: UInt128(1), addend: UInt128(1), sum: UInt128(2)))
         // UInt128.max + 0 = UInt128.max
-        (augend: UInt128.max, addend: UInt128.min, sum: UInt128.max),
+        tests.append((augend: UInt128.max, addend: UInt128.min, sum: UInt128.max))
         // UInt64.max + 1 = UInt64.max + 1
-        (augend: UInt128(UInt64.max), addend: UInt128(1), sum: UInt128(upperBits: 1, lowerBits: 0))]
+        tests.append((augend: UInt128(UInt64.max), addend: UInt128(1),
+                      sum: UInt128(upperBits: 1, lowerBits: 0)))
+        return tests
+    }
     
     func testAdditionOperator() {
-        additionTests.forEach { test in
+        additionTests().forEach { test in
             let sum = test.augend + test.addend
             XCTAssertEqual(
                 sum, test.sum,
@@ -682,7 +667,7 @@ class NumericTests : XCTestCase {
     }
     
     func testAdditionEqualOperator() {
-        additionTests.forEach { test in
+        additionTests().forEach { test in
             var sum = test.augend
             sum += test.addend
             XCTAssertEqual(
@@ -691,22 +676,24 @@ class NumericTests : XCTestCase {
         }
     }
     
-    let subtractionTests = [
+    func subtractionTests() -> [(minuend: UInt128, subtrahend: UInt128, difference: UInt128)] {
         // 0 - 0 = 0
-        (minuend: UInt128.min, subtrahend: UInt128.min,
-         difference: UInt128.min),
+        var tests = [(minuend: UInt128.min, subtrahend: UInt128.min,
+                      difference: UInt128.min)]
         // Uint128.max - 0 = UInt128.max
-        (minuend: UInt128.max, subtrahend: UInt128.min,
-         difference: UInt128.max),
+        tests.append((minuend: UInt128.max, subtrahend: UInt128.min,
+                      difference: UInt128.max))
         // UInt128.max - 1 = UInt128.max - 1
-        (minuend: UInt128.max, subtrahend: UInt128(1),
-         difference: UInt128(upperBits: UInt64.max, lowerBits: (UInt64.max >> 1) << 1)),
+        tests.append((minuend: UInt128.max, subtrahend: UInt128(1),
+                      difference: UInt128(upperBits: UInt64.max, lowerBits: (UInt64.max >> 1) << 1)))
         // UInt64.max + 1 - 1 = UInt64.max
-        (minuend: UInt128(upperBits: 1, lowerBits: 0), subtrahend: UInt128(1),
-         difference: UInt128(UInt64.max))]
+        tests.append((minuend: UInt128(upperBits: 1, lowerBits: 0), subtrahend: UInt128(1),
+                      difference: UInt128(UInt64.max)))
+        return tests
+    }
     
     func testSubtractionOperator() {
-        subtractionTests.forEach { test in
+        subtractionTests().forEach { test in
             let difference = test.minuend - test.subtrahend
             XCTAssertEqual(
                 difference, test.difference,
@@ -715,7 +702,7 @@ class NumericTests : XCTestCase {
     }
     
     func testSubtractionEqualOperator() {
-        subtractionTests.forEach { test in
+        subtractionTests().forEach { test in
             var difference = test.minuend
             difference -= test.subtrahend
             XCTAssertEqual(
@@ -724,19 +711,24 @@ class NumericTests : XCTestCase {
         }
     }
     
-    let multiplicationTests = [
+    func multiplicationTests() -> [(multiplier: UInt128, multiplicator: UInt128, product: UInt128)] {
         // 0 * 0 = 0
-        (multiplier: UInt128.min, multiplicator: UInt128.min, product: UInt128.min),
+        var tests = [(multiplier: UInt128.min, multiplicator: UInt128.min,
+                      product: UInt128.min)]
         // UInt64.max * UInt64.max = UInt128.max - UInt64.max - 1
-        (multiplier: UInt128(UInt64.max), multiplicator: UInt128(UInt64.max),
-         product: UInt128(upperBits: (UInt64.max >> 1) << 1, lowerBits: 1)),
+        tests.append((multiplier: UInt128(UInt64.max), multiplicator: UInt128(UInt64.max),
+                      product: UInt128(upperBits: (UInt64.max >> 1) << 1, lowerBits: 1)))
         // UInt128.max * 0 = 0
-        (multiplier: UInt128.max, multiplicator: UInt128.min, product: UInt128.min),
+        tests.append((multiplier: UInt128.max, multiplicator: UInt128.min,
+                      product: UInt128.min))
         // UInt128.max * 1 = UInt128.max
-        (multiplier: UInt128.max, multiplicator: UInt128(1), product: UInt128.max)]
+        tests.append((multiplier: UInt128.max, multiplicator: UInt128(1),
+                      product: UInt128.max))
+        return tests
+    }
     
     func testMultiplicationOperator() {
-        multiplicationTests.forEach { test in
+        multiplicationTests().forEach { test in
             let product = test.multiplier * test.multiplicator
             XCTAssertEqual(
                 product, test.product,
@@ -745,7 +737,7 @@ class NumericTests : XCTestCase {
     }
     
     func testMultiplicationEqualOperator() {
-        multiplicationTests.forEach { test in
+        multiplicationTests().forEach { test in
             var product = test.multiplier
             product *= test.multiplicator
             XCTAssertEqual(
@@ -757,13 +749,18 @@ class NumericTests : XCTestCase {
 
 class EquatableTests : XCTestCase {
     func testBooleanEqualsOperator() {
-        let tests = [
-            (lhs: UInt128.min, rhs: UInt128.min, result: true),
-            (lhs: UInt128.min, rhs: UInt128(1), result: false),
-            (lhs: UInt128.max, rhs: UInt128.max, result: true),
-            (lhs: UInt128(UInt64.max), rhs: UInt128(upperBits: UInt64.max, lowerBits: UInt64.min), result: false),
-            (lhs: UInt128(upperBits: 1, lowerBits: 0), rhs: UInt128(upperBits: 1, lowerBits: 0), result: true),
-            (lhs: UInt128(upperBits: 1, lowerBits: 0), rhs: UInt128(), result: false)]
+        var tests = [(lhs: UInt128.min,
+                      rhs: UInt128.min, result: true)]
+        tests.append((lhs: UInt128.min,
+                      rhs: UInt128(1), result: false))
+        tests.append((lhs: UInt128.max,
+                      rhs: UInt128.max, result: true))
+        tests.append((lhs: UInt128(UInt64.max),
+                      rhs: UInt128(upperBits: UInt64.max, lowerBits: UInt64.min), result: false))
+        tests.append((lhs: UInt128(upperBits: 1, lowerBits: 0),
+                      rhs: UInt128(upperBits: 1, lowerBits: 0), result: true))
+        tests.append((lhs: UInt128(upperBits: 1, lowerBits: 0),
+                      rhs: UInt128(), result: false))
         
         tests.forEach { test in
             XCTAssertEqual(test.lhs == test.rhs, test.result)
@@ -773,10 +770,9 @@ class EquatableTests : XCTestCase {
 
 class ExpressibleByIntegerLiteralTests : XCTestCase {
     func testInitWithIntegerLiteral() {
-        let tests = [
-            (input: 0, result: UInt128()),
-            (input: 1, result: UInt128(upperBits: 0, lowerBits: 1)),
-            (input: Int.max, result: UInt128(upperBits: 0, lowerBits: UInt64(Int.max)))]
+        var tests = [(input: 0, result: UInt128())]
+        tests.append((input: 1, result: UInt128(upperBits: 0, lowerBits: 1)))
+        tests.append((input: Int.max, result: UInt128(upperBits: 0, lowerBits: UInt64(Int.max))))
         
         tests.forEach { test in
             XCTAssertEqual(UInt128(integerLiteral: test.input), test.result)
@@ -785,48 +781,50 @@ class ExpressibleByIntegerLiteralTests : XCTestCase {
 }
 
 class CustomStringConvertibleTests : XCTestCase {
-    let tests = [
-        (input: UInt128(), result:[
-            2: "0", 8: "0", 10: "0", 16: "0", 18: "0", 36: "0"]),
-        (input: UInt128(1), result: [
-            2: "1", 8: "1", 10: "1", 16: "1", 18: "1", 36: "1"]),
-        (input: UInt128(UInt64.max), result: [
+    func tests() -> [(input: UInt128, result: [Int: String])] {
+        var tests = [(input: UInt128(), result:[
+            2: "0", 8: "0", 10: "0", 16: "0", 18: "0", 36: "0"])]
+        tests.append((input: UInt128(1), result: [
+            2: "1", 8: "1", 10: "1", 16: "1", 18: "1", 36: "1"]))
+        tests.append((input: UInt128(UInt64.max), result: [
             2: "1111111111111111111111111111111111111111111111111111111111111111",
             8: "1777777777777777777777",
             10: "18446744073709551615",
             16: "ffffffffffffffff",
             18: "2d3fgb0b9cg4bd2f",
-            36: "3w5e11264sgsf"]),
-        (input: UInt128(upperBits: 1, lowerBits: 0), result: [
+            36: "3w5e11264sgsf"]))
+        tests.append((input: UInt128(upperBits: 1, lowerBits: 0), result: [
             2: "10000000000000000000000000000000000000000000000000000000000000000",
             8: "2000000000000000000000",
             10: "18446744073709551616",
             16: "10000000000000000",
             18: "2d3fgb0b9cg4bd2g",
-            36: "3w5e11264sgsg"]),
-        (input: UInt128.max, result: [
+            36: "3w5e11264sgsg"]))
+        tests.append((input: UInt128.max, result: [
             2: "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
             8: "3777777777777777777777777777777777777777777",
             10: "340282366920938463463374607431768211455",
             16: "ffffffffffffffffffffffffffffffff",
             18: "78a399ccdeb5bd6ha3184c0fh64da63",
-            36: "f5lxx1zz5pnorynqglhzmsp33"])]
+            36: "f5lxx1zz5pnorynqglhzmsp33"]))
+        return tests
+    }
     
     func testDescriptionProperty() {
-        tests.forEach { test in
+        tests().forEach { test in
             XCTAssertEqual(test.input.description, test.result[10])
         }
     }
     
     func testStringDescribingInitializer() {
-        tests.forEach { test in
+        tests().forEach { test in
             XCTAssertEqual(String(describing: test.input), test.result[10])
         }
     }
     
     func testStringUInt128InitializerLowercased() {
-        tests.forEach { test in
-            test.result.forEach { (result) in
+        tests().forEach { test in
+            test.result.forEach { result in
                 let (radix, result) = result
                 let testOutput = String(test.input, radix: radix)
                 XCTAssertEqual(testOutput, result)
@@ -835,8 +833,8 @@ class CustomStringConvertibleTests : XCTestCase {
     }
     
     func testStringUInt128InitializerUppercased() {
-        tests.forEach { test in
-            test.result.forEach { (result) in
+        tests().forEach { test in
+            test.result.forEach { result in
                 let (radix, result) = result
                 let testOutput = String(test.input, radix: radix, uppercase: true)
                 XCTAssertEqual(testOutput, result.uppercased())
@@ -847,22 +845,29 @@ class CustomStringConvertibleTests : XCTestCase {
 }
 
 class CustomDebugStringConvertible : XCTestCase {
-    let tests = [
-        (input: UInt128(), result:"0"),
-        (input: UInt128(1), result: "1"),
-        (input: UInt128(UInt64.max), result: "18446744073709551615"),
-        (input: UInt128(upperBits: 1, lowerBits: 0), result: "18446744073709551616"),
-        (input: UInt128.max, result: "340282366920938463463374607431768211455")]
+    func tests() -> [(input: UInt128, result: String)] {
+        var tests = [(input: UInt128(),
+                      result:"0")]
+        tests.append((input: UInt128(1),
+                      result: "1"))
+        tests.append((input: UInt128(UInt64.max),
+                      result: "18446744073709551615"))
+        tests.append((input: UInt128(upperBits: 1, lowerBits: 0),
+                      result: "18446744073709551616"))
+        tests.append((input: UInt128.max,
+                      result: "340282366920938463463374607431768211455"))
+        return tests
+    }
     
     
     func testDebugDescriptionProperty() {
-        tests.forEach { test in
+        tests().forEach { test in
             XCTAssertEqual(test.input.debugDescription, test.result)
         }
     }
     
     func testStringReflectingInitializer() {
-        tests.forEach { test in
+        tests().forEach { test in
             XCTAssertEqual(String(reflecting: test.input), test.result)
         }
     }
@@ -870,14 +875,13 @@ class CustomDebugStringConvertible : XCTestCase {
 
 class ComparableTests : XCTestCase {
     func testLessThanOperator() {
-        let tests = [
-            (lhs: UInt128.min, rhs: UInt128(1), result: true),
-            (lhs: UInt128.min, rhs: UInt128(upperBits: 1, lowerBits: 0), result: true),
-            (lhs: UInt128(1), rhs: UInt128(upperBits: 1, lowerBits: 0), result: true),
-            (lhs: UInt128(UInt64.max), rhs: UInt128.max, result: true),
-            (lhs: UInt128.min, rhs: UInt128.min, result: false),
-            (lhs: UInt128.max, rhs: UInt128.max, result: false),
-            (lhs: UInt128.max, rhs: UInt128(UInt64.max), result: false)]
+        var tests = [(lhs: UInt128.min, rhs: UInt128(1), result: true)]
+        tests.append((lhs: UInt128.min, rhs: UInt128(upperBits: 1, lowerBits: 0), result: true))
+        tests.append((lhs: UInt128(1), rhs: UInt128(upperBits: 1, lowerBits: 0), result: true))
+        tests.append((lhs: UInt128(UInt64.max), rhs: UInt128.max, result: true))
+        tests.append((lhs: UInt128.min, rhs: UInt128.min, result: false))
+        tests.append((lhs: UInt128.max, rhs: UInt128.max, result: false))
+        tests.append((lhs: UInt128.max, rhs: UInt128(UInt64.max), result: false))
         
         tests.forEach { test in
             XCTAssertEqual(test.lhs < test.rhs, test.result)
@@ -886,16 +890,20 @@ class ComparableTests : XCTestCase {
 }
 
 class ExpressibleByStringLiteralTests : XCTestCase {
-    let tests = [
-        (input: "0", result: UInt128()),
-        (input: "1", result: UInt128(1)),
-        (input: "99", result: UInt128(99)),
-        (input: "0b0101", result: UInt128(5)),
-        (input: "0o11", result: UInt128(9)),
-        (input: "0xFF", result: UInt128(255))]
+    func tests() -> [(input: String, result: UInt128)] {
+        var tests = [(input: "", result: UInt128())]
+        tests.append((input: "0", result: UInt128()))
+        tests.append((input: "1", result: UInt128(1)))
+        tests.append((input: "99", result: UInt128(99)))
+        tests.append((input: "0b0101", result: UInt128(5)))
+        tests.append((input: "0o11", result: UInt128(9)))
+        tests.append((input: "0xFF", result: UInt128(255)))
+        tests.append((input: "0z1234", result: UInt128()))
+        return tests
+    }
     
     func testInitWithStringLiteral() {
-        tests.forEach { test in
+        tests().forEach { test in
             XCTAssertEqual(UInt128(stringLiteral: test.input), test.result)
         }
     }
@@ -913,21 +921,13 @@ class ExpressibleByStringLiteralTests : XCTestCase {
         let hexTest: UInt128 = "0x11"
         XCTAssertEqual(hexTest, UInt128(17))
     }
-    
-    func testFailingInputs() {
-        let tests = ["", "0z1234"]
-        
-        tests.forEach { test in
-            XCTAssertEqual(UInt128(stringLiteral: test), UInt128())
-        }
-    }
 }
 
 class FloatingPointInterworkingTests : XCTestCase {
     func testNonFailableInitializer() {
-        let tests = [
-            (input: UInt128(), output: Float(0)),
-            (input: UInt128(upperBits: 0, lowerBits: UInt64.max), output: Float(UInt64.max))]
+        var tests = [(input: UInt128(), output: Float(0))]
+        tests.append((input: UInt128(upperBits: 0, lowerBits: UInt64.max),
+                      output: Float(UInt64.max)))
         
         tests.forEach { test in
             XCTAssertEqual(Float(test.input), test.output)
@@ -935,10 +935,12 @@ class FloatingPointInterworkingTests : XCTestCase {
     }
     
     func testFailableInitializer() {
-        let tests = [
-            (input: UInt128(), output: Float(0)),
-            (input: UInt128(upperBits: 0, lowerBits: UInt64.max), output: Float(UInt64.max)),
-            (input: UInt128(upperBits: 1, lowerBits: 0), output: nil)]
+        var tests = [(input: UInt128(),
+                      output: Float(0) as Float?)]
+        tests.append((input: UInt128(upperBits: 0, lowerBits: UInt64.max),
+                      output: Float(UInt64.max) as Float?))
+        tests.append((input: UInt128(upperBits: 1, lowerBits: 0),
+                      output: nil))
         
         tests.forEach { test in
             XCTAssertEqual(Float(exactly: test.input), test.output)
@@ -946,9 +948,8 @@ class FloatingPointInterworkingTests : XCTestCase {
     }
     
     func testSignBitIndex() {
-        let tests = [
-            (input: UInt128.min, output: Int(-1)),
-            (input: UInt128.max, output: Int(127))]
+        var tests = [(input: UInt128.min, output: Int(-1))]
+        tests.append((input: UInt128.max, output: Int(127)))
         
         tests.forEach { test in
             XCTAssertEqual(test.input.signBitIndex, test.output)
