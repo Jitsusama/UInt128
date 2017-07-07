@@ -450,15 +450,52 @@ class BinaryIntegerTests : XCTestCase {
         }
     }
     
+    func divisionTests() -> [(dividend: UInt128, divisor: UInt128, quotient: UInt128, remainder: UInt128)] {
+        var tests = [(dividend: UInt128, divisor: UInt128, quotient: UInt128, remainder: UInt128)]()
+        tests.append(
+            // 0 / 1 = 0, remainder 0
+            (dividend: UInt128.min, divisor: UInt128(1),
+             quotient: UInt128.min, remainder: UInt128.min))
+        tests.append(
+            // 2 / 1 = 2, remainder 0
+            (dividend: UInt128(2), divisor: UInt128(1),
+             quotient: UInt128(2), remainder: UInt128.min))
+        tests.append(
+            // 1 / 2 = 0, remainder 1
+            (dividend: UInt128(1), divisor: UInt128(2),
+             quotient: UInt128(0), remainder: UInt128(1)))
+        tests.append(
+            // UInt128.max / UInt64.max = UInt128(upperBits: 1, lowerBits: 1), remainder 0
+            (dividend: UInt128.max, divisor: UInt128(UInt64.max),
+             quotient: UInt128(upperBits: 1, lowerBits: 1), remainder: UInt128.min))
+        tests.append(
+            // UInt128.max / UInt128.max = 1, remainder 0
+            (dividend: UInt128.max, divisor: UInt128.max,
+             quotient: UInt128(1), remainder: UInt128.min))
+        tests.append(
+            // UInt64.max / UInt128.max = 0, remainder UInt64.max
+            (dividend: UInt128(UInt64.max), divisor: UInt128.max,
+             quotient: UInt128.min, remainder: UInt128(UInt64.max)))
+        return tests
+    }
+    
     func testDivideOperator() {
-        let _ = UInt128(upperBits: 0, lowerBits: 1) / UInt128(upperBits: 0, lowerBits: 1)
-        XCTFail("Test not written yet.")
+        divisionTests().forEach { test in
+            let quotient = test.dividend / test.divisor
+            XCTAssertEqual(
+                quotient, test.quotient,
+                "\(test.dividend) / \(test.divisor) == \(test.quotient)")
+        }
     }
     
     func testDivideEqualOperator() {
-        var thing = UInt128(upperBits: 0, lowerBits: 1)
-        thing /= UInt128(upperBits: 0, lowerBits: 1)
-        XCTFail("Test not written yet.")
+        divisionTests().forEach { test in
+            var quotient = test.dividend
+            quotient /= test.divisor
+            XCTAssertEqual(
+                quotient, test.quotient,
+                "\(test.dividend) /= \(test.divisor) == \(test.quotient)")
+        }
     }
     
     func testModuloOperator() {
