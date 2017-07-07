@@ -484,15 +484,45 @@ class BinaryIntegerTests : XCTestCase {
         }
     }
     
+    func moduloTests() -> [(dividend: UInt128, divisor: UInt128, remainder: UInt128)] {
+        // 0 % 1 = 0
+        var tests = [(dividend: UInt128.min, divisor: UInt128(1),
+                      remainder: UInt128.min)]
+        // 1 % 2 = 1
+        tests.append((dividend: UInt128(1), divisor: UInt128(2),
+                      remainder: UInt128(1)))
+        // 0 % UInt128.max = 0
+        tests.append((dividend: UInt128.min, divisor: UInt128.max,
+                      remainder: UInt128.min))
+        // UInt128.max % UInt64.max = 0
+        tests.append((dividend: UInt128.max, divisor: UInt128(UInt64.max),
+                      remainder: UInt128.min))
+        // UInt128.max % UInt128.max = 0
+        tests.append((dividend: UInt128.max, divisor: UInt128.max,
+                      remainder: UInt128.min))
+        // UInt64.max % UInt128.max = UInt64.max
+        tests.append((dividend: UInt128(UInt64.max), divisor: UInt128.max,
+                      remainder: UInt128(UInt64.max)))
+        return tests
+    }
+    
     func testModuloOperator() {
-        let _ = UInt128(upperBits: 0, lowerBits: 1) % UInt128(upperBits: 0, lowerBits: 1)
-        XCTFail("Test not written yet.")
+        moduloTests().forEach { test in
+            let remainder = test.dividend % test.divisor
+            XCTAssertEqual(
+                remainder, test.remainder,
+                "\(test.dividend) % \(test.divisor) == \(test.remainder)")
+        }
     }
     
     func testModuloEqualOperator() {
-        var thing = UInt128(upperBits: 0, lowerBits: 1)
-        thing %= UInt128(upperBits: 0, lowerBits: 1)
-        XCTFail("Test not written yet.")
+        moduloTests().forEach { test in
+            var remainder = test.dividend
+            remainder %= test.divisor
+            XCTAssertEqual(
+                remainder, test.remainder,
+                "\(test.dividend) %= \(test.divisor) == \(test.remainder)")
+        }
     }
     
     func testBooleanAndEqualOperator() {

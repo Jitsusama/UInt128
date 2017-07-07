@@ -43,12 +43,6 @@
                   Identifier = "BinaryIntegerTests/testModuleEqualOperator()">
                </Test>
                <Test
-                  Identifier = "BinaryIntegerTests/testModuloEqualOperator()">
-               </Test>
-               <Test
-                  Identifier = "BinaryIntegerTests/testModuloOperator()">
-               </Test>
-               <Test
                   Identifier = "FixedWidthIntegerTests/testDividingFullWidth()">
                </Test>
                <Test
