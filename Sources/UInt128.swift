@@ -316,85 +316,95 @@ extension UInt128 : FixedWidthInteger {
             }
         }
         
-        // Perform multiplication similar to pen and paper in 32 bit increments.
+        // Perform multiplication similar to pen and paper in 64bit, 32bit masked increments.
         let bitSegment8 = resultArray[3][3] & lower32
         let bitSegment7 = UInt128._variadicAdditionWithOverflowCount(
             resultArray[2][3] & lower32,
             resultArray[3][2] & lower32,
-            resultArray[3][3] >> 32)
+            resultArray[3][3] >> 32) // overflow from bitSegment8
         let bitSegment6 = UInt128._variadicAdditionWithOverflowCount(
             resultArray[1][3] & lower32,
             resultArray[2][2] & lower32,
             resultArray[3][1] & lower32,
-            resultArray[2][3] >> 32,
-            resultArray[3][2] >> 32,
+            resultArray[2][3] >> 32, // overflow from bitSegment7
+            resultArray[3][2] >> 32, // overflow from bitSegment7
             bitSegment7.overflowCount)
         let bitSegment5 = UInt128._variadicAdditionWithOverflowCount(
             resultArray[0][3] & lower32,
             resultArray[1][2] & lower32,
             resultArray[2][1] & lower32,
             resultArray[3][0] & lower32,
-            resultArray[1][3] >> 32,
-            resultArray[2][2] >> 32,
-            resultArray[3][1] >> 32,
+            resultArray[1][3] >> 32, // overflow from bitSegment6
+            resultArray[2][2] >> 32, // overflow from bitSegment6
+            resultArray[3][1] >> 32, // overflow from bitSegment6
             bitSegment6.overflowCount)
         let bitSegment4 = UInt128._variadicAdditionWithOverflowCount(
             resultArray[0][2] & lower32,
             resultArray[1][1] & lower32,
             resultArray[2][0] & lower32,
-            resultArray[0][3] >> 32,
-            resultArray[1][2] >> 32,
-            resultArray[2][1] >> 32,
-            resultArray[3][0] >> 32,
+            resultArray[0][3] >> 32, // overflow from bitSegment5
+            resultArray[1][2] >> 32, // overflow from bitSegment5
+            resultArray[2][1] >> 32, // overflow from bitSegment5
+            resultArray[3][0] >> 32, // overflow from bitSegment5
             bitSegment5.overflowCount)
         let bitSegment3 = UInt128._variadicAdditionWithOverflowCount(
             resultArray[0][1] & lower32,
             resultArray[1][0] & lower32,
-            resultArray[0][2] >> 32,
-            resultArray[1][1] >> 32,
-            resultArray[2][0] >> 32,
+            resultArray[0][2] >> 32, // overflow from bitSegment4
+            resultArray[1][1] >> 32, // overflow from bitSegment4
+            resultArray[2][0] >> 32, // overflow from bitSegment4
             bitSegment4.overflowCount)
         let bitSegment1 = UInt128._variadicAdditionWithOverflowCount(
             resultArray[0][0],
-            resultArray[0][1] >> 32,
-            resultArray[1][0] >> 32,
+            resultArray[0][1] >> 32, // overflow from bitSegment3
+            resultArray[1][0] >> 32, // overflow from bitSegment3
             bitSegment3.overflowCount)
         
-        // Merge the results into 64 bit groups, adding in overflows as we go.
+        // Shift and merge the results into 64 bit groups, adding in overflows as we go.
         let lowerLowerBits = UInt128._variadicAdditionWithOverflowCount(
             bitSegment8,
-            bitSegment7.partialValue << 32)
+            bitSegment7.truncatedValue << 32)
         let upperLowerBits = UInt128._variadicAdditionWithOverflowCount(
-            bitSegment7.partialValue >> 32,
-            bitSegment6.partialValue,
-            bitSegment5.partialValue << 32,
+            bitSegment7.truncatedValue >> 32,
+            bitSegment6.truncatedValue,
+            bitSegment5.truncatedValue << 32,
             lowerLowerBits.overflowCount)
         let lowerUpperBits = UInt128._variadicAdditionWithOverflowCount(
-            bitSegment5.partialValue >> 32,
-            bitSegment4.partialValue,
-            bitSegment3.partialValue << 32,
+            bitSegment5.truncatedValue >> 32,
+            bitSegment4.truncatedValue,
+            bitSegment3.truncatedValue << 32,
             upperLowerBits.overflowCount)
         let upperUpperBits = UInt128._variadicAdditionWithOverflowCount(
-            bitSegment3.partialValue >> 32,
-            bitSegment1.partialValue,
+            bitSegment3.truncatedValue >> 32,
+            bitSegment1.truncatedValue,
             lowerUpperBits.overflowCount)
         
-        // Bring the 64 bits results together into a high and low 128 bit integer result.
-        return (high: UInt128(upperBits: upperUpperBits.partialValue, lowerBits: lowerUpperBits.partialValue),
-                low: UInt128(upperBits: upperLowerBits.partialValue, lowerBits: lowerLowerBits.partialValue))
+        // Bring the 64bit unsigned integer results together into a high and low 128bit unsigned integer result.
+        return (high: UInt128(upperBits: upperUpperBits.truncatedValue, lowerBits: lowerUpperBits.truncatedValue),
+                low: UInt128(upperBits: upperLowerBits.truncatedValue, lowerBits: lowerLowerBits.truncatedValue))
     }
     
-    private static func _variadicAdditionWithOverflowCount(_ addends: UInt64...) -> (partialValue: UInt64, overflowCount: UInt64) {
-        var result: UInt64 = 0
+    /// Takes a variable amount of 64bit Unsigned Integers and adds them together,
+    /// tracking the total amount of overflows that occurred during addition.
+    ///
+    /// - Parameter addends:
+    ///      Variably sized list of UInt64 values.
+    /// - Returns:
+    ///      A tuple containing the truncated result and a count of the total
+    ///      amount of overflows that occurred during addition.
+    private static func _variadicAdditionWithOverflowCount(_ addends: UInt64...) -> (truncatedValue: UInt64, overflowCount: UInt64) {
+        var sum: UInt64 = 0
         var overflowCount: UInt64 = 0
+        
         addends.forEach { addend in
-            let tempResult = result.addingReportingOverflow(addend)
-            if tempResult.overflow == .overflow {
+            let interimSum = sum.addingReportingOverflow(addend)
+            if interimSum.overflow == .overflow {
                 overflowCount += 1
             }
-            result = tempResult.partialValue
+            sum = interimSum.partialValue
         }
-        return (partialValue: result, overflowCount: overflowCount)
+        
+        return (truncatedValue: sum, overflowCount: overflowCount)
     }
     
     public func dividedReportingOverflow(by rhs: UInt128) -> (partialValue: UInt128, overflow: ArithmeticOverflow) {
