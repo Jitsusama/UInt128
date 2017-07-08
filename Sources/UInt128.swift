@@ -23,6 +23,7 @@
 //
 
 // MARK: Error Type
+
 /// An `ErrorType` for `UInt128` data types. It includes cases
 /// for errors that can occur during string
 /// conversion.
@@ -32,10 +33,12 @@ public enum UInt128Errors : Error {
 }
 
 // MARK: - Data Type
+
 /// A 128-bit unsigned integer value type.
 /// Storage is based upon a tuple of 2, 64-bit, unsigned integers.
 public struct UInt128 {
     // MARK: Instance Properties
+    
     /// Internal value is presented as a tuple of 2 64-bit
     /// unsigned integers.
     internal var value: (upperBits: UInt64, lowerBits: UInt64)
@@ -61,6 +64,15 @@ public struct UInt128 {
         
         return significantBits
     }
+    
+    /// Undocumented private variable required for passing this type
+    /// to a FloatingPoint type. See FloatingPointTypes.swift.gyb in
+    /// the Swift stdlib/public/core directory.
+    internal var signBitIndex: Int {
+        return 127 - leadingZeroBitCount
+    }
+    
+    // MARK: Initializers
     
     /// Designated initializer for the UInt128 type.
     public init(upperBits: UInt64, lowerBits: UInt64) {
@@ -90,7 +102,6 @@ public struct UInt128 {
 // MARK: - FixedWidthInteger Conformance
 
 extension UInt128 : FixedWidthInteger {
-    
     // MARK: Instance Properties
     
     public var nonzeroBitCount: Int {
@@ -147,6 +158,7 @@ extension UInt128 : FixedWidthInteger {
     }
     
     // MARK: Initializers
+    
     /// Creates a UInt128 from a given value, with the input's value
     /// truncated to a size no larger than what UInt128 can handle.
     /// Since the input is constrained to an UInt, no truncation needs
@@ -176,32 +188,35 @@ extension UInt128 : FixedWidthInteger {
     }
     
     // MARK: Instance Methods
+    
     public func addingReportingOverflow(_ rhs: UInt128) -> (partialValue: UInt128, overflow: ArithmeticOverflow) {
         var resultOverflow = ArithmeticOverflow.none
-        // Add lower bits and check for overflow.
         let (lowerBits, lowerOverflow) = self.value.lowerBits.addingReportingOverflow(rhs.value.lowerBits)
-        // Add upper bits and check for overflow.
         var (upperBits, upperOverflow) = self.value.upperBits.addingReportingOverflow(rhs.value.upperBits)
+        
         // If the lower bits overflowed, we need to add 1 to upper bits.
         if lowerOverflow == .overflow {
             (upperBits, resultOverflow) = upperBits.addingReportingOverflow(1)
         }
+        
         let hasOverflowed = (upperOverflow == .overflow) || (resultOverflow == .overflow)
+        
         return (partialValue: UInt128(upperBits: upperBits, lowerBits: lowerBits),
                 overflow: ArithmeticOverflow(hasOverflowed))
     }
     
     public func subtractingReportingOverflow(_ rhs: UInt128) -> (partialValue: UInt128, overflow: ArithmeticOverflow) {
         var resultOverflow = ArithmeticOverflow.none
-        // Subtract lower bits and check for overflow.
         let (lowerBits, lowerOverflow) = self.value.lowerBits.subtractingReportingOverflow(rhs.value.lowerBits)
-        // Subtract upper bits and check for overflow.
         var (upperBits, upperOverflow) = self.value.upperBits.subtractingReportingOverflow(rhs.value.upperBits)
+        
         // If the lower bits overflowed, we need to subtract (borrow) 1 from the upper bits.
         if lowerOverflow == .overflow {
             (upperBits, resultOverflow) = upperBits.subtractingReportingOverflow(1)
         }
+        
         let hasOverflowed = (upperOverflow == .overflow) || (resultOverflow == .overflow)
+        
         return (partialValue: UInt128(upperBits: upperBits, lowerBits: lowerBits),
                 overflow: ArithmeticOverflow(hasOverflowed))
     }
@@ -418,8 +433,8 @@ extension UInt128 : FixedWidthInteger {
 }
 
 // MARK: - BinaryInteger Conformance
+
 extension UInt128 : BinaryInteger {
-    
     // MARK: Instance Properties
     
     public static var bitWidth : Int { return 128 }
@@ -460,14 +475,14 @@ extension UInt128 : BinaryInteger {
     
     /// Return the word at position `n` in self.
     public func _word(at n: Int) -> UInt {
-        if self == UInt128() {
+        guard self != UInt128.min else {
             return UInt()
         }
         
         let shiftAmount: UInt64 = UInt64(UInt.bitWidth) * UInt64(n)
         let mask = UInt64(UInt.max)
-        
         var shifted = self
+        
         if shiftAmount > 0 {
             shifted &>>= UInt128(upperBits: 0, lowerBits: shiftAmount)
         }
@@ -478,36 +493,48 @@ extension UInt128 : BinaryInteger {
     }
     
     // MARK: Type Methods
+    
     public static func /(_ lhs: UInt128, _ rhs: UInt128) -> UInt128 {
         let result = lhs.dividedReportingOverflow(by: rhs)
+        
         return result.partialValue
     }
+    
     public static func /=(_ lhs: inout UInt128, _ rhs: UInt128) {
         lhs = lhs / rhs
     }
+    
     public static func %(_ lhs: UInt128, _ rhs: UInt128) -> UInt128 {
         let result = lhs.remainderReportingOverflow(dividingBy: rhs)
+        
         return result.partialValue
     }
+    
     public static func %=(_ lhs: inout UInt128, _ rhs: UInt128) {
         lhs = lhs % rhs
     }
+    
     /// Performs a bitwise AND operation on 2 UInt128 data types.
     public static func &=(_ lhs: inout UInt128, _ rhs: UInt128) {
         let upperBits = lhs.value.upperBits & rhs.value.upperBits
         let lowerBits = lhs.value.lowerBits & rhs.value.lowerBits
+        
         lhs = UInt128(upperBits: upperBits, lowerBits: lowerBits)
     }
+    
     /// Performs a bitwise OR operation on 2 UInt128 data types.
     public static func |=(_ lhs: inout UInt128, _ rhs: UInt128) {
         let upperBits = lhs.value.upperBits | rhs.value.upperBits
         let lowerBits = lhs.value.lowerBits | rhs.value.lowerBits
+        
         lhs = UInt128(upperBits: upperBits, lowerBits: lowerBits)
     }
+    
     /// Performs a bitwise XOR operation on 2 UInt128 data types.
     public static func ^=(_ lhs: inout UInt128, _ rhs: UInt128) {
         let upperBits = lhs.value.upperBits ^ rhs.value.upperBits
         let lowerBits = lhs.value.lowerBits ^ rhs.value.lowerBits
+        
         lhs = UInt128(upperBits: upperBits, lowerBits: lowerBits)
     }
     
@@ -519,6 +546,7 @@ extension UInt128 : BinaryInteger {
     /// and `rhs = 129` will become `rhs = 1`.
     public static func &>>=(_ lhs: inout UInt128, _ rhs: UInt128) {
         let shiftWidth = rhs.value.lowerBits & 127
+        
         switch shiftWidth {
         case 0: return // Do nothing shift.
         case 1...63:
@@ -542,6 +570,7 @@ extension UInt128 : BinaryInteger {
     /// and `rhs = 129` will become `rhs = 1`.
     public static func &<<=(_ lhs: inout UInt128, _ rhs: UInt128) {
         let shiftWidth = rhs.value.lowerBits & 127
+        
         switch shiftWidth {
         case 0: return // Do nothing shift.
         case 1...63:
@@ -559,9 +588,11 @@ extension UInt128 : BinaryInteger {
 }
 
 // MARK: - UnsignedInteger Conformance
+
 extension UInt128 : UnsignedInteger {}
 
 // MARK: - Hashable Conformance
+
 extension UInt128 : Hashable {
     public var hashValue: Int {
         return self.value.lowerBits.hashValue ^ self.value.upperBits.hashValue
@@ -569,6 +600,7 @@ extension UInt128 : Hashable {
 }
 
 // MARK: - Numeric Conformance
+
 extension UInt128 : Numeric {
     public static func +(_ lhs: UInt128, _ rhs: UInt128) -> UInt128 {
         precondition(~lhs >= rhs, "Addition overflow!")
@@ -597,6 +629,7 @@ extension UInt128 : Numeric {
 }
 
 // MARK: - Equatable Conformance
+
 extension UInt128 : Equatable {
     /// Checks if the `lhs` is equal to the `rhs`.
     public static func ==(lhs: UInt128, rhs: UInt128) -> Bool {
@@ -608,16 +641,16 @@ extension UInt128 : Equatable {
 }
 
 // MARK: - ExpressibleByIntegerLiteral Conformance
+
 extension UInt128 : ExpressibleByIntegerLiteral {
-    // MARK: Initializers
     public init(integerLiteral value: IntegerLiteralType) {
         self.init(upperBits: 0, lowerBits: UInt64(value))
     }
 }
 
 // MARK: - CustomStringConvertible Conformance
+
 extension UInt128 : CustomStringConvertible {
-    
     // MARK: Instance Properties
     
     public var description: String {
@@ -661,19 +694,14 @@ extension UInt128 : CustomStringConvertible {
 // MARK: - CustomDebugStringConvertible Conformance
 
 extension UInt128 : CustomDebugStringConvertible {
-    // MARK: Instance Properties
-    
     public var debugDescription: String {
         return self.description
     }
-    
 }
 
 // MARK: - Comparable Conformance
+
 extension UInt128 : Comparable {
-    
-    // MARK: Type Methods
-    
     public static func <(lhs: UInt128, rhs: UInt128) -> Bool {
         if lhs.value.upperBits < rhs.value.upperBits {
             return true
@@ -685,8 +713,8 @@ extension UInt128 : Comparable {
 }
 
 // MARK: - ExpressibleByStringLiteral Conformance
+
 extension UInt128 : ExpressibleByStringLiteral {
-    
     // MARK: Initializers
     
     public init(stringLiteral value: StringLiteralType) {
@@ -722,7 +750,9 @@ extension UInt128 : ExpressibleByStringLiteral {
 
 extension FloatingPoint {
     public init(_ value: UInt128) {
-        precondition(value.value.upperBits == 0, "Value is too large to fit into a FloatingPoint until a 128bit FloatingPoint type is defined.")
+        precondition(
+            value.value.upperBits == 0,
+            "Value is too large to fit into a FloatingPoint until a 128bit FloatingPoint type is defined.")
         self.init(value.value.lowerBits)
     }
     
@@ -748,14 +778,5 @@ extension String {
     ///     or `false` to use lowercase letters. The default is `false`.
     public init(_ value: UInt128, radix: Int = 10, uppercase: Bool = false) {
         self = value._valueToString(radix: radix, uppercase: uppercase)
-    }
-}
-
-extension UInt128 {
-    /// Undocumented private variable required for passing this type
-    /// to a FloatingPoint type. See FloatingPointTypes.swift.gyb in
-    /// the Swift stdlib/public/core directory.
-    var signBitIndex: Int {
-        return 127 - leadingZeroBitCount
     }
 }
