@@ -45,9 +45,6 @@
                <Test
                   Identifier = "FixedWidthIntegerTests/testDividingFullWidth()">
                </Test>
-               <Test
-                  Identifier = "FixedWidthIntegerTests/testMultipliedFullWidth()">
-               </Test>
             </SkippedTests>
          </TestableReference>
       </Testables>

@@ -54,9 +54,6 @@
                <Test
                   Identifier = "FixedWidthIntegerTests/testInitWithLittleEndian()">
                </Test>
-               <Test
-                  Identifier = "FixedWidthIntegerTests/testMultipliedFullWidth()">
-               </Test>
             </SkippedTests>
          </TestableReference>
       </Testables>

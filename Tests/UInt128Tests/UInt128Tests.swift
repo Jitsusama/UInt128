@@ -307,7 +307,24 @@ class FixedWidthIntegerTests : XCTestCase {
     }
     
     func testMultipliedFullWidth() {
-        XCTFail("Test not written yet.")
+        var tests = [(multiplier: UInt128.min, multiplicator: UInt128.min,
+                      product: (high: UInt128.min, low: UInt128.min))]
+        tests.append((multiplier: UInt128(1), multiplicator: UInt128(1),
+                      product: (high: UInt128.min, low: UInt128(1))))
+        tests.append((multiplier: UInt128(UInt64.max), multiplicator: UInt128(UInt64.max),
+                      product: (high: UInt128.min, low: UInt128(upperBits: UInt64.max - 1, lowerBits: 1))))
+        tests.append((multiplier: UInt128.max, multiplicator: UInt128.max,
+                      product: (high: UInt128.max ^ 1, low: UInt128(1))))
+        
+        tests.forEach { test in
+            let product = test.multiplier.multipliedFullWidth(by: test.multiplicator)
+            XCTAssertEqual(
+                product.high, test.product.high,
+                "\n\(test.multiplier) * \(test.multiplicator) == (high: \(test.product.high), low: \(test.product.low)) != (high: \(product.high), low: \(product.low))\n")
+            XCTAssertEqual(
+                product.low, test.product.low,
+                "\n\(test.multiplier) * \(test.multiplicator) == (high: \(test.product.high), low: \(test.product.low)) != (high: \(product.high), low: \(product.low))\n")
+        }
     }
     
     func divisionTests() -> [(dividend: UInt128, divisor: UInt128, quotient: (partialValue: UInt128, overflow: ArithmeticOverflow), remainder: (partialValue: UInt128, overflow: ArithmeticOverflow))] {
