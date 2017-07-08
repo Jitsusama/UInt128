@@ -207,83 +207,11 @@ extension UInt128 : FixedWidthInteger {
     }
     
     public func multipliedReportingOverflow(by rhs: UInt128) -> (partialValue: UInt128, overflow: ArithmeticOverflow) {
-        // Useful bitmasks to be used later.
-        let lower32 = UInt64(UInt32.max)
-        let upper32 = ~UInt64(UInt32.max)
-        // Decompose lhs into an array of 4, 32 significant bit UInt64s.
-        let lhsArray = [
-            self.value.upperBits >> 32, /*0*/ self.value.upperBits & lower32, /*1*/
-            self.value.lowerBits >> 32, /*2*/ self.value.lowerBits & lower32  /*3*/
-        ]
-        // Decompose rhs into an array of 4, 32 significant bit UInt64s.
-        let rhsArray = [
-            rhs.value.upperBits >> 32, /*0*/ rhs.value.upperBits & lower32, /*1*/
-            rhs.value.lowerBits >> 32, /*2*/ rhs.value.lowerBits & lower32  /*3*/
-        ]
-        // The future contents of this array will be used to store segment
-        // multiplication results.
-        var resultArray = [[UInt64]].init(
-            repeating: [UInt64].init(
-                repeating: 0, count: 4
-            ), count: 4
-        )
-        // Holds overflow status
-        var overflow = ArithmeticOverflow.none
-        // Loop through every combination of lhsArray[x] * rhsArray[y]
-        for rhsSegment in 0 ..< rhsArray.count {
-            for lhsSegment in 0 ..< lhsArray.count {
-                let currentValue = lhsArray[lhsSegment] * rhsArray[rhsSegment]
-                // Depending upon which segments we're looking at, we'll want to
-                // check for overflow conditions and flag them when encountered.
-                switch (lhsSegment, rhsSegment) {
-                case (0, 0...2): // lhsSegment 1 * rhsSegment 1 to 3 shouldn't have a value.
-                    if currentValue > 0 { overflow = .overflow }
-                case (0, 3):     // lhsSegment 1 * rhsSegment 4 should only be 32 bits.
-                    if currentValue >> 32 > 0 { overflow = .overflow }
-                case (1, 0...1): // lhsSegment 2 * rhsSegment 1 or 2 shouldn't have a value.
-                    if currentValue > 0 { overflow = .overflow }
-                case (1, 2):     // lhsSegment 2 * rhsSegment 3 should only be 32 bits.
-                    if currentValue >> 32 > 0 { overflow = .overflow }
-                case (2, 0):     // lhsSegment 3 * rhsSegment 1 shouldn't have a value.
-                    if currentValue > 0 { overflow = .overflow }
-                case (2, 1):     // lhsSegment 3 * rhsSegment 2 should only be 32 bits.
-                    if currentValue >> 32 > 0 { overflow = .overflow }
-                case (3, 0):     // lhsSegment 4 * rhsSegment 1 should only be 32 bits.
-                    if currentValue >> 32 > 0 { overflow = .overflow }
-                default: break // only 1 overflow condition still exists which will be checked later.
-                }
-                // Save the current result into our two-dimensional result array.
-                resultArray[lhsSegment][rhsSegment] = currentValue
-            }
-        }
-        // Perform multiplication similar to pen and paper, ignoring calculations
-        // that would definitely result in an overflow.
-        let fourthBitSegment =  resultArray[3][3] & lower32
-        var thirdBitSegment  =  resultArray[2][3] & lower32 +
-                                resultArray[3][2] & lower32
-        // Add overflow from 4th segment.
-        thirdBitSegment     += (resultArray[3][3] & upper32) >> 32
-        var secondBitSegment =  resultArray[1][3] & lower32 +
-                                resultArray[2][2] & lower32 +
-                                resultArray[3][1] & lower32
-        // Add overflows from 3rd segment.
-        secondBitSegment    += (resultArray[2][3] & upper32) >> 32
-        secondBitSegment    += (resultArray[3][2] & upper32) >> 32
-        var firstBitSegment  =  resultArray[0][3] & lower32 +
-                                resultArray[1][2] & lower32 +
-                                resultArray[2][1] & lower32 +
-                                resultArray[3][0] & lower32
-        // Add overflows from 2nd segment.
-        firstBitSegment     += (resultArray[1][3] & upper32) >> 32
-        firstBitSegment     += (resultArray[2][2] & upper32) >> 32
-        firstBitSegment     += (resultArray[3][1] & upper32) >> 32
-        // Slot the bit counts into the appropriate position with multiple adds.
-        let hasOverflowed = (overflow == .overflow) || (firstBitSegment >> 32 > 0)
-        let finalValue = UInt128(upperBits: firstBitSegment << 32, lowerBits: 0)
-            &+ UInt128(upperBits: secondBitSegment, lowerBits: 0)
-            &+ UInt128(upperBits: thirdBitSegment >> 32, lowerBits: thirdBitSegment << 32)
-            &+ UInt128(fourthBitSegment)
-        return (partialValue: finalValue, overflow: ArithmeticOverflow(hasOverflowed))
+        let multiplicationResult = self.multipliedFullWidth(by: rhs)
+        let overflowEncountered = multiplicationResult.high > 0
+        
+        return (partialValue: multiplicationResult.low,
+                overflow: ArithmeticOverflow(overflowEncountered))
     }
     
     public func multipliedFullWidth(by other: UInt128) -> (high: UInt128, low: UInt128.Magnitude) {
