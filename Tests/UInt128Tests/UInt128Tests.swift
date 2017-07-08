@@ -674,7 +674,7 @@ class BinaryIntegerTests : XCTestCase {
 }
 
 class HashableTests : XCTestCase {
-    func tests() -> [(input: UInt128, result: Int)] {
+    func hashableTests() -> [(input: UInt128, result: Int)] {
         var tests = [(input: UInt128(), result: 0)]
         tests.append((input: UInt128(1), result: 1))
         tests.append((input: UInt128(Int.max), result: Int.max))
@@ -684,7 +684,7 @@ class HashableTests : XCTestCase {
     }
         
     func testHashValueProperty() {
-        tests().forEach { test in
+        hashableTests().forEach { test in
             XCTAssertEqual(test.input.hashValue, test.result)
         }
     }
@@ -828,7 +828,7 @@ class ExpressibleByIntegerLiteralTests : XCTestCase {
 }
 
 class CustomStringConvertibleTests : XCTestCase {
-    func tests() -> [(input: UInt128, result: [Int: String])] {
+    func stringTests() -> [(input: UInt128, result: [Int: String])] {
         var tests = [(input: UInt128(), result:[
             2: "0", 8: "0", 10: "0", 16: "0", 18: "0", 36: "0"])]
         tests.append((input: UInt128(1), result: [
@@ -858,19 +858,19 @@ class CustomStringConvertibleTests : XCTestCase {
     }
     
     func testDescriptionProperty() {
-        tests().forEach { test in
+        stringTests().forEach { test in
             XCTAssertEqual(test.input.description, test.result[10])
         }
     }
     
     func testStringDescribingInitializer() {
-        tests().forEach { test in
+        stringTests().forEach { test in
             XCTAssertEqual(String(describing: test.input), test.result[10])
         }
     }
     
     func testStringUInt128InitializerLowercased() {
-        tests().forEach { test in
+        stringTests().forEach { test in
             test.result.forEach { result in
                 let (radix, result) = result
                 let testOutput = String(test.input, radix: radix)
@@ -880,7 +880,7 @@ class CustomStringConvertibleTests : XCTestCase {
     }
     
     func testStringUInt128InitializerUppercased() {
-        tests().forEach { test in
+        stringTests().forEach { test in
             test.result.forEach { result in
                 let (radix, result) = result
                 let testOutput = String(test.input, radix: radix, uppercase: true)
@@ -892,7 +892,7 @@ class CustomStringConvertibleTests : XCTestCase {
 }
 
 class CustomDebugStringConvertible : XCTestCase {
-    func tests() -> [(input: UInt128, result: String)] {
+    func stringTests() -> [(input: UInt128, result: String)] {
         var tests = [(input: UInt128(),
                       result:"0")]
         tests.append((input: UInt128(1),
@@ -908,13 +908,13 @@ class CustomDebugStringConvertible : XCTestCase {
     
     
     func testDebugDescriptionProperty() {
-        tests().forEach { test in
+        stringTests().forEach { test in
             XCTAssertEqual(test.input.debugDescription, test.result)
         }
     }
     
     func testStringReflectingInitializer() {
-        tests().forEach { test in
+        stringTests().forEach { test in
             XCTAssertEqual(String(reflecting: test.input), test.result)
         }
     }
@@ -937,7 +937,7 @@ class ComparableTests : XCTestCase {
 }
 
 class ExpressibleByStringLiteralTests : XCTestCase {
-    func tests() -> [(input: String, result: UInt128)] {
+    func stringTests() -> [(input: String, result: UInt128)] {
         var tests = [(input: "", result: UInt128())]
         tests.append((input: "0", result: UInt128()))
         tests.append((input: "1", result: UInt128(1)))
@@ -950,7 +950,7 @@ class ExpressibleByStringLiteralTests : XCTestCase {
     }
     
     func testInitWithStringLiteral() {
-        tests().forEach { test in
+        stringTests().forEach { test in
             XCTAssertEqual(UInt128(stringLiteral: test.input), test.result)
         }
     }
