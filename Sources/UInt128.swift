@@ -363,19 +363,6 @@ extension UInt128 : FixedWidthInteger {
         return self._quotientAndRemainderFullWidth(dividingBy: dividend)
     }
     
-    internal static func _bitFromDoubleWidth(at bitPosition: UInt128, for input: (high: UInt128, low: UInt128)) -> UInt128 {
-        switch bitPosition {
-        case 0:
-            return input.low & 1
-        case 1...127:
-            return input.low >> bitPosition & 1
-        case 128:
-            return input.high & 1
-        default:
-            return input.high >> (bitPosition - 128) & 1
-        }
-    }
-    
     public func remainderReportingOverflow(dividingBy rhs: UInt128) -> (partialValue: UInt128, overflow: ArithmeticOverflow) {
         guard rhs != 0 else {
             return (self, ArithmeticOverflow(true))
@@ -389,6 +376,7 @@ extension UInt128 : FixedWidthInteger {
         return rhs._quotientAndRemainderFullWidth(dividingBy: (high: 0, low: self))
     }
     
+    /// Provides the quotient and remainder when dividing the provided value by self.
     internal func _quotientAndRemainderFullWidth(dividingBy dividend: (high: UInt128, low: UInt128)) -> (quotient: UInt128, remainder: UInt128) {
         let divisor = self
         let numeratorBitsToWalk: UInt128
@@ -400,6 +388,9 @@ extension UInt128 : FixedWidthInteger {
         } else {
             numeratorBitsToWalk = dividend.low.significantBits - 1
         }
+        
+        // The below algorithm was adapted from:
+        // https://en.wikipedia.org/wiki/Division_algorithm#Integer_division_.28unsigned.29_with_remainder
         
         precondition(self != 0, "Division by 0")
         
@@ -417,6 +408,25 @@ extension UInt128 : FixedWidthInteger {
         }
         
         return (quotient, remainder)
+    }
+    
+    /// Returns the bit stored at the given position for the provided double width UInt128 input.
+    ///
+    /// - parameter at: position to grab bit value from.
+    /// - parameter for: the double width UInt128 data value to grab the
+    ///   bit from.
+    /// - returns: single bit stored in a UInt128 value.
+    internal static func _bitFromDoubleWidth(at bitPosition: UInt128, for input: (high: UInt128, low: UInt128)) -> UInt128 {
+        switch bitPosition {
+        case 0:
+            return input.low & 1
+        case 1...127:
+            return input.low >> bitPosition & 1
+        case 128:
+            return input.high & 1
+        default:
+            return input.high >> (bitPosition - 128) & 1
+        }
     }
 }
 
