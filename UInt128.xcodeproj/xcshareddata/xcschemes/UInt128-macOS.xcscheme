@@ -38,23 +38,6 @@
                BlueprintName = "UInt128Tests"
                ReferencedContainer = "container:UInt128.xcodeproj">
             </BuildableReference>
-            <SkippedTests>
-               <Test
-                  Identifier = "BinaryIntegerTests/testModuleEqualOperator()">
-               </Test>
-               <Test
-                  Identifier = "FixedWidthIntegerTests/testByteSwapped()">
-               </Test>
-               <Test
-                  Identifier = "FixedWidthIntegerTests/testDividingFullWidth()">
-               </Test>
-               <Test
-                  Identifier = "FixedWidthIntegerTests/testInitWithBigEndian()">
-               </Test>
-               <Test
-                  Identifier = "FixedWidthIntegerTests/testInitWithLittleEndian()">
-               </Test>
-            </SkippedTests>
          </TestableReference>
       </Testables>
       <AdditionalOptions>

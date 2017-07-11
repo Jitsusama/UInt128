@@ -359,9 +359,21 @@ extension UInt128 : FixedWidthInteger {
         return (quotient, ArithmeticOverflow(false))
     }
     
-    // TODO: Implement Me!
     public func dividingFullWidth(_ dividend: (high: UInt128, low: UInt128)) -> (quotient: UInt128, remainder: UInt128) {
-        fatalError("Not implemented!")
+        return self._quotientAndRemainderFullWidth(dividingBy: dividend)
+    }
+    
+    internal static func _bitFromDoubleWidth(at bitPosition: UInt128, for input: (high: UInt128, low: UInt128)) -> UInt128 {
+        switch bitPosition {
+        case 0:
+            return input.low & 1
+        case 1...127:
+            return input.low >> bitPosition & 1
+        case 128:
+            return input.high & 1
+        default:
+            return input.high >> (bitPosition - 128) & 1
+        }
     }
     
     public func remainderReportingOverflow(dividingBy rhs: UInt128) -> (partialValue: UInt128, overflow: ArithmeticOverflow) {
@@ -373,62 +385,38 @@ extension UInt128 : FixedWidthInteger {
         return (remainder, ArithmeticOverflow(false))
     }
     
-    /// Division and Modulus combined. Someone [else's] smart take on the
-    /// [integer division with remainder] algorithm.
-    ///
-    /// [else's]:
-    ///     https://github.com/calccrypto/uint128_t
-    /// [integer division with remainder]:
-    ///     https://en.wikipedia.org/wiki/Division_algorithm#Integer_division_.28unsigned.29_with_remainder
     public func quotientAndRemainder(dividingBy rhs: UInt128) -> (quotient: UInt128, remainder: UInt128) {
-        // Naughty boy, trying to divide by 0.
-        precondition(rhs != 0, "Division by 0")
+        return rhs._quotientAndRemainderFullWidth(dividingBy: (high: 0, low: self))
+    }
+    
+    internal func _quotientAndRemainderFullWidth(dividingBy dividend: (high: UInt128, low: UInt128)) -> (quotient: UInt128, remainder: UInt128) {
+        let divisor = self
+        let numeratorBitsToWalk: UInt128
         
-        let (dividend, divisor) = (self, rhs)
+        if dividend.high > 0 {
+            numeratorBitsToWalk = dividend.high.significantBits + 128 - 1
+        } else if dividend.low == 0 {
+            return (0, 0)
+        } else {
+            numeratorBitsToWalk = dividend.low.significantBits - 1
+        }
         
-        // x/1 = x
-        if divisor == 1 {
-            return (quotient: dividend, remainder: 0)
-        }
-        // x/x = 1
-        if dividend == divisor {
-            return (quotient: 1, remainder: 0)
-        }
-        // 0/x = 0
-        if dividend == 0 {
-            return (quotient: 0, remainder: 0)
-        }
-        // x = y/z, when y < z, x = 0, r: y
-        // This would happen with below logic, but doing it now saves a few cycles.
-        if dividend < divisor {
-            return (quotient: 0, remainder: dividend)
-        }
-        // Prime the result making the remainder equal the dividend. This will get
-        // decremented until no further even divisions can be made.
-        var result: (quotient: UInt128, remainder: UInt128) = (0, dividend)
-        // Initially shift the divisor left by significant bit difference so that quicker
-        // division can take place. IE: Discover GCD (Greatest Common Divisor).
-        // This value will get shifted right as the algorithm gets closer to the final solution.
-        var shiftedDivisor = divisor << (dividend.significantBits - divisor.significantBits)
-        // Initially shift 1 by the same amount as shiftedDivisor. Subtracting shiftedDivisor
-        // from dividend will be equal to that many subtractions of divisor from dividend.
-        var adder: UInt128 = 1 << (dividend.significantBits - divisor.significantBits)
-        // Remainder cannot be allowed to get below the divisor.
-        while result.remainder >= divisor {
-            // If remainder is great than shiftedDivisor we need to loop again as our
-            // bit shift is to high for even division.
-            if result.remainder >= shiftedDivisor {
-                result.remainder -= shiftedDivisor
-                result.quotient += adder
-            }
-            // Protect ourselves from shifting too far too fast.
-            if result.remainder.significantBits <= shiftedDivisor.significantBits {
-                // Continue to shift down until we've reached our final even division.
-                shiftedDivisor >>= 1
-                adder >>= 1
+        precondition(self != 0, "Division by 0")
+        
+        var quotient = UInt128.min
+        var remainder = UInt128.min
+        
+        for numeratorShiftWidth in (0...numeratorBitsToWalk).reversed() {
+            remainder <<= 1
+            remainder |= UInt128._bitFromDoubleWidth(at: numeratorShiftWidth, for: dividend)
+            
+            if remainder >= divisor {
+                remainder -= divisor
+                quotient |= 1 << numeratorShiftWidth
             }
         }
-        return result
+        
+        return (quotient, remainder)
     }
 }
 
@@ -750,9 +738,7 @@ extension UInt128 : ExpressibleByStringLiteral {
 
 extension FloatingPoint {
     public init(_ value: UInt128) {
-        precondition(
-            value.value.upperBits == 0,
-            "Value is too large to fit into a FloatingPoint until a 128bit FloatingPoint type is defined.")
+        precondition(value.value.upperBits == 0, "Value is too large to fit into a FloatingPoint until a 128bit FloatingPoint type is defined.")
         self.init(value.value.lowerBits)
     }
     

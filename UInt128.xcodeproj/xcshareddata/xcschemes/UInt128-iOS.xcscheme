@@ -38,14 +38,6 @@
                BlueprintName = "UInt128Tests"
                ReferencedContainer = "container:UInt128.xcodeproj">
             </BuildableReference>
-            <SkippedTests>
-               <Test
-                  Identifier = "BinaryIntegerTests/testModuleEqualOperator()">
-               </Test>
-               <Test
-                  Identifier = "FixedWidthIntegerTests/testDividingFullWidth()">
-               </Test>
-            </SkippedTests>
          </TestableReference>
       </Testables>
       <MacroExpansion>

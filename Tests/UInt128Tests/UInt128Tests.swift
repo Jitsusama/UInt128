@@ -371,8 +371,52 @@ class FixedWidthIntegerTests : XCTestCase {
         }
     }
     
+    func testBitFromDoubleWidth() {
+        var tests = [(input: (high: UInt128(1), low: UInt128.min),
+                      position: UInt128.min, result: UInt128.min)]
+        tests.append((input: (high: UInt128(1), low: UInt128.min),
+                      position: UInt128(128), result: UInt128(1)))
+        tests.append((input: (high: UInt128(2), low: UInt128.min),
+                      position: UInt128(128), result: UInt128.min))
+        tests.append((input: (high: UInt128(2), low: UInt128.min),
+                      position: UInt128(129), result: UInt128(1)))
+        tests.append((input: (high: UInt128.min, low: UInt128(2)),
+                      position: UInt128.min, result: UInt128.min))
+        tests.append((input: (high: UInt128.min, low: UInt128(2)),
+                      position: UInt128(1), result: UInt128(1)))
+        
+        tests.forEach { test in
+            let result = UInt128._bitFromDoubleWidth(at: test.position, for: test.input)
+            XCTAssertEqual(
+                result, test.result,
+                "\n\(test.input), bit \(test.position) != \(test.result)")
+        }
+    }
+    
     func testDividingFullWidth() {
-        XCTFail("Test not written yet.")
+        // (0, 1) / 1 = 1r0
+        var tests = [(dividend: (high: UInt128.min, low: UInt128(1)),
+                      divisor: UInt128(1),
+                      result: (quotient: UInt128(1), remainder: UInt128.min))]
+        // (1, 0) / 1 = 0r0
+        tests.append((dividend: (high: UInt128(1), low: UInt128.min),
+                      divisor: UInt128(1),
+                      result: (quotient: UInt128.min, remainder: UInt128.min)))
+        // (1, 0) / 2 = 170141183460469231731687303715884105728r0
+        tests.append((dividend: (high: UInt128(1), low: UInt128.min),
+                      divisor: UInt128(2),
+                      result: (quotient: UInt128(stringLiteral: "170141183460469231731687303715884105728"),
+                               remainder: UInt128.min)))
+        
+        tests.forEach { test in
+            let result = test.divisor.dividingFullWidth(test.dividend)
+            XCTAssertEqual(
+                result.quotient, test.result.quotient,
+                "\n\(test.dividend) / \(test.divisor) == \(test.result)")
+            XCTAssertEqual(
+                result.remainder, test.result.remainder,
+                "\n\(test.dividend) / \(test.divisor) == \(test.result)")
+        }
     }
     
     func testRemainderReportingOverflow() {
