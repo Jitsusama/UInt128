@@ -1016,9 +1016,53 @@ class ExpressibleByStringLiteralTests : XCTestCase {
 
 @available(swift, deprecated: 3.2)
 class DeprecatedAPITests : XCTestCase {
+    func testSuccessor() {
+        XCTAssertEqual(UInt128(1).successor(), UInt128(2))
+    }
+    
+    func testPredecessor() {
+        XCTAssertEqual(UInt128(1).predecessor(), UInt128.min)
+    }
+    
+    func testAdvancedBy() {
+        XCTAssertEqual(UInt128(1).advancedBy(1), UInt128(2))
+    }
+    
+    func testDistanceTo() {
+        XCTAssertEqual(UInt128(1).distanceTo(2), 1)
+    }
+    
+    func testAllZeros() {
+        XCTAssertEqual(UInt128.allZeros, UInt128.min)
+    }
+    
     func testFromUnparsedString() {
         XCTAssertThrowsError(try UInt128.fromUnparsedString(""))
         XCTAssertEqual(try UInt128.fromUnparsedString("1"), UInt128(1))
+    }
+    
+    func testDivideRemainder() {
+        XCTAssertEqual((UInt128(1) /% UInt128(1)).quotient, UInt128(1))
+    }
+    
+    func testPrefixIncrement() {
+        var value = UInt128(1)
+        XCTAssertEqual(++value, UInt128(2))
+    }
+    
+    func testSuffixIncrement() {
+        var value = UInt128(1)
+        XCTAssertEqual(value++, UInt128(1))
+    }
+    
+    func testPrefixDecrement() {
+        var value = UInt128(1)
+        XCTAssertEqual(--value, UInt128.min)
+    }
+    
+    func testSuffixDecrement() {
+        var value = UInt128(1)
+        XCTAssertEqual(value--, UInt128(1))
     }
 }
 
