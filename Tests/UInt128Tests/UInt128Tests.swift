@@ -1014,6 +1014,14 @@ class ExpressibleByStringLiteralTests : XCTestCase {
     }
 }
 
+@available(swift, deprecated: 3.2)
+class DeprecatedAPITests : XCTestCase {
+    func testFromUnparsedString() {
+        XCTAssertThrowsError(try UInt128.fromUnparsedString(""))
+        XCTAssertEqual(try UInt128.fromUnparsedString("1"), UInt128(1))
+    }
+}
+
 class FloatingPointInterworkingTests : XCTestCase {
     func testNonFailableInitializer() {
         var tests = [(input: UInt128(), output: Float(0))]

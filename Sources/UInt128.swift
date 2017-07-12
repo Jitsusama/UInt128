@@ -89,13 +89,17 @@ public struct UInt128 {
                   lowerBits: source.value.lowerBits)
     }
     
+    /// Initialize a UInt128 value from a string.
+    ///
+    /// - parameter source: the string that will be converted into a
+    ///   UInt128 value. Defaults to being analyzed as a base10 number,
+    ///   but can be prefixed with `0b` for base2, `0o` for base8
+    ///   or `0x` for base16.
     public init(_ source: String) throws {
-        if let result = UInt128._valueFromString(source) {
-            self = result
-        }
-        else {
+        guard let result = UInt128._valueFromString(source) else {
             throw UInt128Errors.invalidString
         }
+        self = result
     }
 }
 
@@ -741,6 +745,21 @@ extension UInt128 : ExpressibleByStringLiteral {
         else { radix = 10 }
         
         return radix
+    }
+}
+
+// MARK: - Deprecated API
+
+extension UInt128 {
+    /// Initialize a UInt128 value from a string.
+    ///
+    /// - parameter source: the string that will be converted into a
+    ///   UInt128 value. Defaults to being analyzed as a base10 number,
+    ///   but can be prefixed with `0b` for base2, `0o` for base8
+    ///   or `0x` for base16.
+    @available(swift, deprecated: 3.2, renamed: "init(_:)")
+    public static func fromUnparsedString(_ source: String) throws -> UInt128 {
+        return try UInt128.init(source)
     }
 }
 
