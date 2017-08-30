@@ -130,8 +130,8 @@ class BaseTypeTests : XCTestCase {
     }
 }
 
-let didOverflow = ArithmeticOverflow(true)
-let didNotOverflow = ArithmeticOverflow(false)
+let didOverflow = true
+let didNotOverflow = false
 
 class FixedWidthIntegerTests : XCTestCase {
     func testNonzeroBitCount() {
@@ -327,7 +327,7 @@ class FixedWidthIntegerTests : XCTestCase {
         }
     }
     
-    func divisionTests() -> [(dividend: UInt128, divisor: UInt128, quotient: (partialValue: UInt128, overflow: ArithmeticOverflow), remainder: (partialValue: UInt128, overflow: ArithmeticOverflow))] {
+    func divisionTests() -> [(dividend: UInt128, divisor: UInt128, quotient: (partialValue: UInt128, overflow: Bool), remainder: (partialValue: UInt128, overflow: Bool))] {
         // 0 / 0 = 0, remainder 0, with overflow
         var tests = [(dividend: UInt128.min, divisor: UInt128.min,
                       quotient: (partialValue: UInt128.min, overflow: didOverflow),
@@ -497,7 +497,7 @@ class BinaryIntegerTests : XCTestCase {
         let testResult = UInt128(upperBits: upperBits, lowerBits: lowerBits)
 
         for index in 0 ... UInt128.bitWidth / UInt.bitWidth {
-            let currentWord = testResult._word(at: index)
+            let currentWord = testResult.words[index]
             if UInt.bitWidth == 64 {
                 XCTAssertEqual(currentWord, 4294967297)
             }
