@@ -66,7 +66,7 @@ public struct UInt128 {
     }
     
     /// Undocumented private variable required for passing this type
-    /// to a BinaryFloatingPoint type. See BinaryFloatingPoint.swift.gyb in
+    /// to a BinaryFloatingPoint type. See FloatingPoint.swift.gyb in
     /// the Swift stdlib/public/core directory.
     internal var signBitIndex: Int {
         return 127 - leadingZeroBitCount
@@ -203,10 +203,8 @@ extension UInt128 : FixedWidthInteger {
             (upperBits, resultOverflow) = upperBits.addingReportingOverflow(1)
         }
         
-        let hasOverflowed = (upperOverflow == true) || (resultOverflow == true)
-        
         return (partialValue: UInt128(upperBits: upperBits, lowerBits: lowerBits),
-                overflow: hasOverflowed)
+                overflow: upperOverflow || resultOverflow)
     }
     
     public func subtractingReportingOverflow(_ rhs: UInt128) -> (partialValue: UInt128, overflow: Bool) {
@@ -218,11 +216,9 @@ extension UInt128 : FixedWidthInteger {
         if lowerOverflow {
             (upperBits, resultOverflow) = upperBits.subtractingReportingOverflow(1)
         }
-        
-        let hasOverflowed = (upperOverflow == true) || (resultOverflow == true)
-        
+
         return (partialValue: UInt128(upperBits: upperBits, lowerBits: lowerBits),
-                overflow: hasOverflowed)
+                overflow: upperOverflow || resultOverflow)
     }
     
     public func multipliedReportingOverflow(by rhs: UInt128) -> (partialValue: UInt128, overflow: Bool) {
@@ -451,8 +447,8 @@ extension UInt128 : BinaryInteger {
 
         var words: [UInt] = []
 
-        for n in 0 ... self.bitWidth / UInt.bitWidth {
-            let shiftAmount: UInt64 = UInt64(UInt.bitWidth) * UInt64(n)
+        for currentWord in 0 ... self.bitWidth / UInt.bitWidth {
+            let shiftAmount: UInt64 = UInt64(UInt.bitWidth) * UInt64(currentWord)
             let mask = UInt64(UInt.max)
             var shifted = self
 
