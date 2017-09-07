@@ -130,9 +130,6 @@ class BaseTypeTests : XCTestCase {
     }
 }
 
-let didOverflow = ArithmeticOverflow(true)
-let didNotOverflow = ArithmeticOverflow(false)
-
 class FixedWidthIntegerTests : XCTestCase {
     func testNonzeroBitCount() {
         var tests = [(input: UInt128.min, result: 0)]
@@ -231,19 +228,19 @@ class FixedWidthIntegerTests : XCTestCase {
     func testAddingReportingOverflow() {
         // 0 + 0 = 0
         var tests = [(augend: UInt128.min, addend: UInt128.min,
-                      sum: (partialValue: UInt128.min, overflow: didNotOverflow))]
+                      sum: (partialValue: UInt128.min, overflow: false))]
         // UInt128.max + 0 = UInt128.max
         tests.append((augend: UInt128.max, addend: UInt128.min,
-                      sum: (partialValue: UInt128.max, overflow: didNotOverflow)))
+                      sum: (partialValue: UInt128.max, overflow: false)))
         // UInt128.max + 1 = 0, with overflow
         tests.append((augend: UInt128.max, addend: UInt128(1),
-                      sum: (partialValue: UInt128.min, overflow: didOverflow)))
+                      sum: (partialValue: UInt128.min, overflow: true)))
         // UInt128.max + 2 = 1, with overflow
         tests.append((augend: UInt128.max, addend: UInt128(2),
-                      sum: (partialValue: UInt128(1), overflow: didOverflow)))
+                      sum: (partialValue: UInt128(1), overflow: true)))
         // UInt64.max + 1 = UInt64.max + 1
         tests.append((augend: UInt128(UInt64.max), addend: UInt128(1),
-                      sum: (partialValue: UInt128(upperBits: 1, lowerBits: 0), overflow: didNotOverflow)))
+                      sum: (partialValue: UInt128(upperBits: 1, lowerBits: 0), overflow: false)))
         
         tests.forEach { test in
             let sum = test.augend.addingReportingOverflow(test.addend)
@@ -255,22 +252,22 @@ class FixedWidthIntegerTests : XCTestCase {
     func testSubtractingReportingOverflow() {
         // 0 - 0 = 0
         var tests = [(minuend: UInt128.min, subtrahend: UInt128.min,
-                      difference: (partialValue: UInt128.min, overflow: didNotOverflow))]
+                      difference: (partialValue: UInt128.min, overflow: false))]
         // Uint128.max - 0 = UInt128.max
         tests.append((minuend: UInt128.max, subtrahend: UInt128.min,
-                      difference: (partialValue: UInt128.max, overflow: didNotOverflow)))
+                      difference: (partialValue: UInt128.max, overflow: false)))
         // UInt128.max - 1 = UInt128.max - 1
         tests.append((minuend: UInt128.max, subtrahend: UInt128(1),
-                      difference: (partialValue: UInt128(upperBits: UInt64.max, lowerBits: (UInt64.max >> 1) << 1), overflow: didNotOverflow)))
+                      difference: (partialValue: UInt128(upperBits: UInt64.max, lowerBits: (UInt64.max >> 1) << 1), overflow: false)))
         // UInt64.max + 1 - 1 = UInt64.max
         tests.append((minuend: UInt128(upperBits: 1, lowerBits: 0), subtrahend: UInt128(1),
-                      difference: (partialValue: UInt128(UInt64.max), overflow: didNotOverflow)))
+                      difference: (partialValue: UInt128(UInt64.max), overflow: false)))
         // 0 - 1 = UInt128.max, with overflow
         tests.append((minuend: UInt128.min, subtrahend: UInt128(1),
-                      difference: (partialValue: UInt128.max, overflow: didOverflow)))
+                      difference: (partialValue: UInt128.max, overflow: true)))
         // 0 - 2 = UInt128.max - 1, with overflow
         tests.append((minuend: UInt128.min, subtrahend: UInt128(2),
-                      difference: (partialValue: (UInt128.max >> 1) << 1, overflow: didOverflow)))
+                      difference: (partialValue: (UInt128.max >> 1) << 1, overflow: true)))
         
         tests.forEach { test in
             let difference = test.minuend.subtractingReportingOverflow(test.subtrahend)
@@ -282,22 +279,22 @@ class FixedWidthIntegerTests : XCTestCase {
     func testMultipliedReportingOverflow() {
         // 0 * 0 = 0
         var tests = [(multiplier: UInt128.min, multiplicator: UInt128.min,
-                      product: (partialValue: UInt128.min, overflow: didNotOverflow))]
+                      product: (partialValue: UInt128.min, overflow: false))]
         // UInt64.max * UInt64.max = UInt128.max - UInt64.max - 1
         tests.append((multiplier: UInt128(UInt64.max), multiplicator: UInt128(UInt64.max),
-                      product: (partialValue: UInt128(upperBits: (UInt64.max >> 1) << 1, lowerBits: 1), overflow: didNotOverflow)))
+                      product: (partialValue: UInt128(upperBits: (UInt64.max >> 1) << 1, lowerBits: 1), overflow: false)))
         // UInt128.max * 0 = 0
         tests.append((multiplier: UInt128.max, multiplicator: UInt128.min,
-                      product: (partialValue: UInt128.min, overflow: didNotOverflow)))
+                      product: (partialValue: UInt128.min, overflow: false)))
         // UInt128.max * 1 = UInt128.max
         tests.append((multiplier: UInt128.max, multiplicator: UInt128(1),
-                      product: (partialValue: UInt128.max, overflow: didNotOverflow)))
+                      product: (partialValue: UInt128.max, overflow: false)))
         // UInt128.max * 2 = UInt128.max - 1, with overflow
         tests.append((multiplier: UInt128.max, multiplicator: UInt128(2),
-                      product: (partialValue: (UInt128.max >> 1) << 1, overflow: didOverflow)))
+                      product: (partialValue: (UInt128.max >> 1) << 1, overflow: true)))
         // UInt128.max * UInt128.max = 1, with overflow
         tests.append((multiplier: UInt128.max, multiplicator: UInt128.max,
-                      product: (partialValue: UInt128(1), overflow: didOverflow)))
+                      product: (partialValue: UInt128(1), overflow: true)))
         
         tests.forEach { test in
             let product = test.multiplier.multipliedReportingOverflow(by: test.multiplicator)
@@ -327,35 +324,35 @@ class FixedWidthIntegerTests : XCTestCase {
         }
     }
     
-    func divisionTests() -> [(dividend: UInt128, divisor: UInt128, quotient: (partialValue: UInt128, overflow: ArithmeticOverflow), remainder: (partialValue: UInt128, overflow: ArithmeticOverflow))] {
+    func divisionTests() -> [(dividend: UInt128, divisor: UInt128, quotient: (partialValue: UInt128, overflow: Bool), remainder: (partialValue: UInt128, overflow: Bool))] {
         // 0 / 0 = 0, remainder 0, with overflow
         var tests = [(dividend: UInt128.min, divisor: UInt128.min,
-                      quotient: (partialValue: UInt128.min, overflow: didOverflow),
-                      remainder: (partialValue: UInt128.min, overflow: didOverflow))]
+                      quotient: (partialValue: UInt128.min, overflow: true),
+                      remainder: (partialValue: UInt128.min, overflow: true))]
         // 0 / 1 = 0, remainder 0
         tests.append((dividend: UInt128.min, divisor: UInt128(1),
-                      quotient: (partialValue: UInt128.min, overflow: didNotOverflow),
-                      remainder: (partialValue: UInt128.min, overflow: didNotOverflow)))
+                      quotient: (partialValue: UInt128.min, overflow: false),
+                      remainder: (partialValue: UInt128.min, overflow: false)))
         // 0 / UInt128.max = 0, remainder 0
         tests.append((dividend: UInt128.min, divisor: UInt128.max,
-                      quotient: (partialValue: UInt128.min, overflow: didNotOverflow),
-                      remainder: (partialValue: UInt128.min, overflow: didNotOverflow)))
+                      quotient: (partialValue: UInt128.min, overflow: false),
+                      remainder: (partialValue: UInt128.min, overflow: false)))
         // 1 / 0 = 1, remainder 1, with overflow
         tests.append((dividend: UInt128(1), divisor: UInt128.min,
-                      quotient: (partialValue: UInt128(1), overflow: didOverflow),
-                      remainder: (partialValue: UInt128(1), overflow: didOverflow)))
+                      quotient: (partialValue: UInt128(1), overflow: true),
+                      remainder: (partialValue: UInt128(1), overflow: true)))
         // UInt128.max / UInt64.max = UInt128(upperBits: 1, lowerBits: 1), remainder 0
         tests.append((dividend: UInt128.max, divisor: UInt128(UInt64.max),
-                      quotient: (partialValue: UInt128(upperBits: 1, lowerBits: 1), overflow: didNotOverflow),
-                      remainder: (partialValue: UInt128.min, overflow: didNotOverflow)))
+                      quotient: (partialValue: UInt128(upperBits: 1, lowerBits: 1), overflow: false),
+                      remainder: (partialValue: UInt128.min, overflow: false)))
         // UInt128.max / UInt128.max = 1, remainder 0
         tests.append((dividend: UInt128.max, divisor: UInt128.max,
-                      quotient: (partialValue: UInt128(1), overflow: didNotOverflow),
-                      remainder: (partialValue: UInt128.min, overflow: didNotOverflow)))
+                      quotient: (partialValue: UInt128(1), overflow: false),
+                      remainder: (partialValue: UInt128.min, overflow: false)))
         // UInt64.max / UInt128.max = 0, remainder UInt64.max
         tests.append((dividend: UInt128(UInt64.max), divisor: UInt128.max,
-                      quotient: (partialValue: UInt128.min, overflow: didNotOverflow),
-                      remainder: (partialValue: UInt128(UInt64.max), overflow: didNotOverflow)))
+                      quotient: (partialValue: UInt128.min, overflow: false),
+                      remainder: (partialValue: UInt128(UInt64.max), overflow: false)))
         return tests
     }
     
@@ -496,8 +493,7 @@ class BinaryIntegerTests : XCTestCase {
         let upperBits = UInt64("100000000000000000000000000000001", radix: 2)!
         let testResult = UInt128(upperBits: upperBits, lowerBits: lowerBits)
 
-        for index in 0 ... UInt128.bitWidth / UInt.bitWidth {
-            let currentWord = testResult._word(at: index)
+        testResult.words.forEach { (currentWord) in
             if UInt.bitWidth == 64 {
                 XCTAssertEqual(currentWord, 4294967297)
             }

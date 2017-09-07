@@ -66,7 +66,7 @@ public struct UInt128 {
     }
     
     /// Undocumented private variable required for passing this type
-    /// to a FloatingPoint type. See FloatingPointTypes.swift.gyb in
+    /// to a BinaryFloatingPoint type. See FloatingPoint.swift.gyb in
     /// the Swift stdlib/public/core directory.
     internal var signBitIndex: Int {
         return 127 - leadingZeroBitCount
@@ -193,44 +193,40 @@ extension UInt128 : FixedWidthInteger {
     
     // MARK: Instance Methods
     
-    public func addingReportingOverflow(_ rhs: UInt128) -> (partialValue: UInt128, overflow: ArithmeticOverflow) {
-        var resultOverflow = ArithmeticOverflow.none
+    public func addingReportingOverflow(_ rhs: UInt128) -> (partialValue: UInt128, overflow: Bool) {
+        var resultOverflow = false
         let (lowerBits, lowerOverflow) = self.value.lowerBits.addingReportingOverflow(rhs.value.lowerBits)
         var (upperBits, upperOverflow) = self.value.upperBits.addingReportingOverflow(rhs.value.upperBits)
         
         // If the lower bits overflowed, we need to add 1 to upper bits.
-        if lowerOverflow == .overflow {
+        if lowerOverflow {
             (upperBits, resultOverflow) = upperBits.addingReportingOverflow(1)
         }
         
-        let hasOverflowed = (upperOverflow == .overflow) || (resultOverflow == .overflow)
-        
         return (partialValue: UInt128(upperBits: upperBits, lowerBits: lowerBits),
-                overflow: ArithmeticOverflow(hasOverflowed))
+                overflow: upperOverflow || resultOverflow)
     }
     
-    public func subtractingReportingOverflow(_ rhs: UInt128) -> (partialValue: UInt128, overflow: ArithmeticOverflow) {
-        var resultOverflow = ArithmeticOverflow.none
+    public func subtractingReportingOverflow(_ rhs: UInt128) -> (partialValue: UInt128, overflow: Bool) {
+        var resultOverflow = false
         let (lowerBits, lowerOverflow) = self.value.lowerBits.subtractingReportingOverflow(rhs.value.lowerBits)
         var (upperBits, upperOverflow) = self.value.upperBits.subtractingReportingOverflow(rhs.value.upperBits)
         
         // If the lower bits overflowed, we need to subtract (borrow) 1 from the upper bits.
-        if lowerOverflow == .overflow {
+        if lowerOverflow {
             (upperBits, resultOverflow) = upperBits.subtractingReportingOverflow(1)
         }
-        
-        let hasOverflowed = (upperOverflow == .overflow) || (resultOverflow == .overflow)
-        
+
         return (partialValue: UInt128(upperBits: upperBits, lowerBits: lowerBits),
-                overflow: ArithmeticOverflow(hasOverflowed))
+                overflow: upperOverflow || resultOverflow)
     }
     
-    public func multipliedReportingOverflow(by rhs: UInt128) -> (partialValue: UInt128, overflow: ArithmeticOverflow) {
+    public func multipliedReportingOverflow(by rhs: UInt128) -> (partialValue: UInt128, overflow: Bool) {
         let multiplicationResult = self.multipliedFullWidth(by: rhs)
         let overflowEncountered = multiplicationResult.high > 0
         
         return (partialValue: multiplicationResult.low,
-                overflow: ArithmeticOverflow(overflowEncountered))
+                overflow: overflowEncountered)
     }
     
     public func multipliedFullWidth(by other: UInt128) -> (high: UInt128, low: UInt128.Magnitude) {
@@ -345,7 +341,7 @@ extension UInt128 : FixedWidthInteger {
         
         addends.forEach { addend in
             let interimSum = sum.addingReportingOverflow(addend)
-            if interimSum.overflow == .overflow {
+            if interimSum.overflow {
                 overflowCount += 1
             }
             sum = interimSum.partialValue
@@ -354,26 +350,26 @@ extension UInt128 : FixedWidthInteger {
         return (truncatedValue: sum, overflowCount: overflowCount)
     }
     
-    public func dividedReportingOverflow(by rhs: UInt128) -> (partialValue: UInt128, overflow: ArithmeticOverflow) {
+    public func dividedReportingOverflow(by rhs: UInt128) -> (partialValue: UInt128, overflow: Bool) {
         guard rhs != 0 else {
-            return (self, ArithmeticOverflow(true))
+            return (self, true)
         }
         
         let quotient = self.quotientAndRemainder(dividingBy: rhs).quotient
-        return (quotient, ArithmeticOverflow(false))
+        return (quotient, false)
     }
     
     public func dividingFullWidth(_ dividend: (high: UInt128, low: UInt128)) -> (quotient: UInt128, remainder: UInt128) {
         return self._quotientAndRemainderFullWidth(dividingBy: dividend)
     }
     
-    public func remainderReportingOverflow(dividingBy rhs: UInt128) -> (partialValue: UInt128, overflow: ArithmeticOverflow) {
+    public func remainderReportingOverflow(dividingBy rhs: UInt128) -> (partialValue: UInt128, overflow: Bool) {
         guard rhs != 0 else {
-            return (self, ArithmeticOverflow(true))
+            return (self, true)
         }
         
         let remainder = self.quotientAndRemainder(dividingBy: rhs).remainder
-        return (remainder, ArithmeticOverflow(false))
+        return (remainder, false)
     }
     
     public func quotientAndRemainder(dividingBy rhs: UInt128) -> (quotient: UInt128, remainder: UInt128) {
@@ -440,7 +436,33 @@ extension UInt128 : BinaryInteger {
     // MARK: Instance Properties
     
     public static var bitWidth : Int { return 128 }
-    
+
+
+    // MARK: Instance Methods
+
+    public var words: [UInt] {
+        guard self != UInt128.min else {
+            return []
+        }
+
+        var words: [UInt] = []
+
+        for currentWord in 0 ... self.bitWidth / UInt.bitWidth {
+            let shiftAmount: UInt64 = UInt64(UInt.bitWidth) * UInt64(currentWord)
+            let mask = UInt64(UInt.max)
+            var shifted = self
+
+            if shiftAmount > 0 {
+                shifted &>>= UInt128(upperBits: 0, lowerBits: shiftAmount)
+            }
+
+            let masked: UInt128 = shifted & UInt128(upperBits: 0, lowerBits: mask)
+
+            words.append(UInt(masked.value.lowerBits))
+        }
+        return words
+    }
+
     public var trailingZeroBitCount: Int {
         let mask: UInt128 = 1
         var bitsToWalk = self
@@ -457,7 +479,7 @@ extension UInt128 : BinaryInteger {
     
     // MARK: Initializers
     
-    public init?<T : FloatingPoint>(exactly source: T) {
+    public init?<T : BinaryFloatingPoint>(exactly source: T) {
         if source.isZero {
             self = UInt128()
         }
@@ -469,31 +491,10 @@ extension UInt128 : BinaryInteger {
         }
     }
     
-    public init<T : FloatingPoint>(_ source: T) {
+    public init<T : BinaryFloatingPoint>(_ source: T) {
         self.init(UInt64(source))
     }
-    
-    // MARK: Instance Methods
-    
-    /// Return the word at position `n` in self.
-    public func _word(at n: Int) -> UInt {
-        guard self != UInt128.min else {
-            return UInt()
-        }
-        
-        let shiftAmount: UInt64 = UInt64(UInt.bitWidth) * UInt64(n)
-        let mask = UInt64(UInt.max)
-        var shifted = self
-        
-        if shiftAmount > 0 {
-            shifted &>>= UInt128(upperBits: 0, lowerBits: shiftAmount)
-        }
-        
-        let masked: UInt128 = shifted & UInt128(upperBits: 0, lowerBits: mask)
-        
-        return UInt(masked.value.lowerBits)
-    }
-    
+
     // MARK: Type Methods
     
     public static func /(_ lhs: UInt128, _ rhs: UInt128) -> UInt128 {
@@ -622,7 +623,7 @@ extension UInt128 : Numeric {
     }
     public static func *(_ lhs: UInt128, _ rhs: UInt128) -> UInt128 {
         let result = lhs.multipliedReportingOverflow(by: rhs)
-        precondition(result.overflow != .overflow, "Multiplication overflow!")
+        precondition(!result.overflow, "Multiplication overflow!")
         return result.partialValue
     }
     public static func *=(_ lhs: inout UInt128, _ rhs: UInt128) {
@@ -763,11 +764,11 @@ extension UInt128 {
     }
 }
 
-// MARK: - FloatingPoint Interworking
+// MARK: - BinaryFloatingPoint Interworking
 
-extension FloatingPoint {
+extension BinaryFloatingPoint {
     public init(_ value: UInt128) {
-        precondition(value.value.upperBits == 0, "Value is too large to fit into a FloatingPoint until a 128bit FloatingPoint type is defined.")
+        precondition(value.value.upperBits == 0, "Value is too large to fit into a BinaryFloatingPoint until a 128bit BinaryFloatingPoint type is defined.")
         self.init(value.value.lowerBits)
     }
     
