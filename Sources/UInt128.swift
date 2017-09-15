@@ -648,7 +648,7 @@ extension UInt128 : Comparable {
 
 // MARK: - ExpressibleByStringLiteral Conformance
 
-extension UInt128 : ExpressibleByStringLiteral {
+extension UInt128 : ExpressibleByStringLiteral, LosslessStringConvertible {
     // MARK: Initializers
 
     public init(stringLiteral value: StringLiteralType) {
