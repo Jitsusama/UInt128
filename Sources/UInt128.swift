@@ -128,24 +128,6 @@ extension UInt128 : FixedWidthInteger {
         return value.upperBits.leadingZeroBitCount
     }
 
-    /// Returns the big-endian representation of the integer, changing the byte order if necessary.
-    public var bigEndian: UInt128 {
-        #if arch(i386) || arch(x86_64) || arch(arm) || arch(arm64)
-            return self.byteSwapped
-        #else
-            return self
-        #endif
-    }
-
-    /// Returns the little-endian representation of the integer, changing the byte order if necessary.
-    public var littleEndian: UInt128 {
-        #if arch(i386) || arch(x86_64) || arch(arm) || arch(arm64)
-            return self
-        #else
-            return self.byteSwapped
-        #endif
-    }
-
     /// Returns the current integer with the byte order swapped.
     public var byteSwapped: UInt128 {
         return .init(upperBits: self.value.lowerBits.byteSwapped,
@@ -160,18 +142,6 @@ extension UInt128 : FixedWidthInteger {
     /// to occur, as a UInt is currently 64 bits at the maximum.
     public init(_truncatingBits bits: UInt) {
         self.init(upperBits: 0, lowerBits: UInt64(bits))
-    }
-
-    /// Creates an integer from its big-endian representation, changing the
-    /// byte order if necessary.
-    public init(bigEndian value: UInt128) {
-        self = value.bigEndian
-    }
-
-    /// Creates an integer from its little-endian representation, changing the
-    /// byte order if necessary.
-    public init(littleEndian value: UInt128) {
-        self = value.littleEndian
     }
 
     // MARK: Instance Methods
@@ -444,8 +414,6 @@ extension UInt128 : BinaryInteger {
         }
         return words
     }
-
-
 
     // MARK: Initializers
 
