@@ -107,23 +107,25 @@ public struct UInt128 {
 
 extension UInt128 : FixedWidthInteger {
     // MARK: Instance Properties
-    
+
+    public static var bitWidth : Int { return 128 }
+
     public var nonzeroBitCount: Int {
         return value.lowerBits.nonzeroBitCount + value.upperBits.nonzeroBitCount
     }
-    
-    public var leadingZeroBitCount: Int {
-        var zeroCount = 0
-        var shiftWidth = 127
-        
-        while shiftWidth >= 0 {
-            let currentBit = self &>> shiftWidth
-            guard currentBit == 0 else { break }
-            zeroCount += 1
-            shiftWidth -= 1
+
+    public var trailingZeroBitCount: Int {
+        if value.lowerBits == 0 {
+            return UInt64.bitWidth + value.upperBits.trailingZeroBitCount
         }
-        
-        return zeroCount
+        return value.lowerBits.trailingZeroBitCount
+    }
+
+    public var leadingZeroBitCount: Int {
+        if value.upperBits == 0 {
+            return UInt64.bitWidth + value.lowerBits.leadingZeroBitCount
+        }
+        return value.upperBits.leadingZeroBitCount
     }
     
     /// Returns the big-endian representation of the integer, changing the byte order if necessary.
@@ -146,7 +148,8 @@ extension UInt128 : FixedWidthInteger {
 
     /// Returns the current integer with the byte order swapped.
     public var byteSwapped: UInt128 {
-        return .init(upperBits: self.value.lowerBits.byteSwapped, lowerBits: self.value.upperBits.byteSwapped)
+        return .init(upperBits: self.value.lowerBits.byteSwapped,
+                     lowerBits: self.value.upperBits.byteSwapped)
     }
     
     // MARK: Initializers
@@ -303,8 +306,10 @@ extension UInt128 : FixedWidthInteger {
             lowerUpperBits.overflowCount)
         
         // Bring the 64bit unsigned integer results together into a high and low 128bit unsigned integer result.
-        return (high: .init(upperBits: upperUpperBits.truncatedValue, lowerBits: lowerUpperBits.truncatedValue),
-                low: .init(upperBits: upperLowerBits.truncatedValue, lowerBits: lowerLowerBits.truncatedValue))
+        return (high: .init(upperBits: upperUpperBits.truncatedValue,
+                            lowerBits: lowerUpperBits.truncatedValue),
+                low: .init(upperBits: upperLowerBits.truncatedValue,
+                           lowerBits: lowerLowerBits.truncatedValue))
     }
     
     /// Takes a variable amount of 64bit Unsigned Integers and adds them together,
@@ -413,9 +418,6 @@ extension UInt128 : FixedWidthInteger {
 // MARK: - BinaryInteger Conformance
 
 extension UInt128 : BinaryInteger {
-    // MARK: Instance Properties
-    
-    public static var bitWidth : Int { return 128 }
 
 
     // MARK: Instance Methods
@@ -443,19 +445,7 @@ extension UInt128 : BinaryInteger {
         return words
     }
 
-    public var trailingZeroBitCount: Int {
-        let mask: UInt128 = 1
-        var bitsToWalk = self
 
-        for currentPosition in 0...128 {
-            if bitsToWalk & mask == 1 {
-                return currentPosition
-            }
-            bitsToWalk >>= 1
-        }
-
-        return 128
-    }
     
     // MARK: Initializers
     
