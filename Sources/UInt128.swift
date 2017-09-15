@@ -38,7 +38,7 @@ public enum UInt128Errors : Error {
 /// Storage is based upon a tuple of 2, 64-bit, unsigned integers.
 public struct UInt128 {
     // MARK: Instance Properties
-    
+
     /// Internal value is presented as a tuple of 2 64-bit
     /// unsigned integers.
     internal var value: (upperBits: UInt64, lowerBits: UInt64)
@@ -47,7 +47,7 @@ public struct UInt128 {
     public var significantBits: UInt128 {
         var significantBits: UInt128 = 0
         var bitsToWalk: UInt64 = 0 // The bits to crawl in loop.
-        
+
         // When upperBits > 0, lowerBits are all significant.
         if self.value.upperBits > 0 {
             bitsToWalk = self.value.upperBits
@@ -55,40 +55,40 @@ public struct UInt128 {
         } else if self.value.lowerBits > 0 {
             bitsToWalk = self.value.lowerBits
         }
-        
+
         // Walk significant bits by shifting right until all bits are equal to 0.
         while bitsToWalk > 0 {
             bitsToWalk >>= 1
             significantBits += 1
         }
-        
+
         return significantBits
     }
-    
+
     /// Undocumented private variable required for passing this type
     /// to a BinaryFloatingPoint type. See FloatingPoint.swift.gyb in
     /// the Swift stdlib/public/core directory.
     internal var signBitIndex: Int {
         return 127 - leadingZeroBitCount
     }
-    
+
     // MARK: Initializers
-    
+
     /// Designated initializer for the UInt128 type.
     public init(upperBits: UInt64, lowerBits: UInt64) {
         value.upperBits = upperBits
         value.lowerBits = lowerBits
     }
-    
+
     public init() {
         self.init(upperBits: 0, lowerBits: 0)
     }
-    
+
     public init(_ source: UInt128) {
         self.init(upperBits: source.value.upperBits,
                   lowerBits: source.value.lowerBits)
     }
-    
+
     /// Initialize a UInt128 value from a string.
     ///
     /// - parameter source: the string that will be converted into a
@@ -127,7 +127,7 @@ extension UInt128 : FixedWidthInteger {
         }
         return value.upperBits.leadingZeroBitCount
     }
-    
+
     /// Returns the big-endian representation of the integer, changing the byte order if necessary.
     public var bigEndian: UInt128 {
         #if arch(i386) || arch(x86_64) || arch(arm) || arch(arm64)
@@ -151,9 +151,9 @@ extension UInt128 : FixedWidthInteger {
         return .init(upperBits: self.value.lowerBits.byteSwapped,
                      lowerBits: self.value.upperBits.byteSwapped)
     }
-    
+
     // MARK: Initializers
-    
+
     /// Creates a UInt128 from a given value, with the input's value
     /// truncated to a size no larger than what UInt128 can handle.
     /// Since the input is constrained to an UInt, no truncation needs
@@ -161,40 +161,40 @@ extension UInt128 : FixedWidthInteger {
     public init(_truncatingBits bits: UInt) {
         self.init(upperBits: 0, lowerBits: UInt64(bits))
     }
-    
+
     /// Creates an integer from its big-endian representation, changing the
     /// byte order if necessary.
     public init(bigEndian value: UInt128) {
         self = value.bigEndian
     }
-    
+
     /// Creates an integer from its little-endian representation, changing the
     /// byte order if necessary.
     public init(littleEndian value: UInt128) {
         self = value.littleEndian
     }
-    
+
     // MARK: Instance Methods
-    
+
     public func addingReportingOverflow(_ rhs: UInt128) -> (partialValue: UInt128, overflow: Bool) {
         var resultOverflow = false
         let (lowerBits, lowerOverflow) = self.value.lowerBits.addingReportingOverflow(rhs.value.lowerBits)
         var (upperBits, upperOverflow) = self.value.upperBits.addingReportingOverflow(rhs.value.upperBits)
-        
+
         // If the lower bits overflowed, we need to add 1 to upper bits.
         if lowerOverflow {
             (upperBits, resultOverflow) = upperBits.addingReportingOverflow(1)
         }
-        
+
         return (partialValue: UInt128(upperBits: upperBits, lowerBits: lowerBits),
                 overflow: upperOverflow || resultOverflow)
     }
-    
+
     public func subtractingReportingOverflow(_ rhs: UInt128) -> (partialValue: UInt128, overflow: Bool) {
         var resultOverflow = false
         let (lowerBits, lowerOverflow) = self.value.lowerBits.subtractingReportingOverflow(rhs.value.lowerBits)
         var (upperBits, upperOverflow) = self.value.upperBits.subtractingReportingOverflow(rhs.value.upperBits)
-        
+
         // If the lower bits overflowed, we need to subtract (borrow) 1 from the upper bits.
         if lowerOverflow {
             (upperBits, resultOverflow) = upperBits.subtractingReportingOverflow(1)
@@ -203,37 +203,37 @@ extension UInt128 : FixedWidthInteger {
         return (partialValue: .init(upperBits: upperBits, lowerBits: lowerBits),
                 overflow: upperOverflow || resultOverflow)
     }
-    
+
     public func multipliedReportingOverflow(by rhs: UInt128) -> (partialValue: UInt128, overflow: Bool) {
         let multiplicationResult = self.multipliedFullWidth(by: rhs)
         let overflowEncountered = multiplicationResult.high > 0
-        
+
         return (partialValue: multiplicationResult.low,
                 overflow: overflowEncountered)
     }
-    
+
     public func multipliedFullWidth(by other: UInt128) -> (high: UInt128, low: UInt128.Magnitude) {
         // Bit mask that facilitates masking the lower 32 bits of a 64 bit UInt.
         let lower32 = UInt64(UInt32.max)
-        
+
         // Decompose lhs into an array of 4, 32 significant bit UInt64s.
         let lhsArray = [
             self.value.upperBits >> 32, /*0*/ self.value.upperBits & lower32, /*1*/
             self.value.lowerBits >> 32, /*2*/ self.value.lowerBits & lower32  /*3*/
         ]
-        
+
         // Decompose rhs into an array of 4, 32 significant bit UInt64s.
         let rhsArray = [
             other.value.upperBits >> 32, /*0*/ other.value.upperBits & lower32, /*1*/
             other.value.lowerBits >> 32, /*2*/ other.value.lowerBits & lower32  /*3*/
         ]
-        
+
         // The future contents of this array will be used to store segment
         // multiplication results.
         var resultArray = [[UInt64]](
             repeating: [UInt64](repeating: 0, count: 4), count: 4
         )
-        
+
         // Loop through every combination of lhsArray[x] * rhsArray[y]
         for rhsSegment in 0 ..< rhsArray.count {
             for lhsSegment in 0 ..< lhsArray.count {
@@ -241,7 +241,7 @@ extension UInt128 : FixedWidthInteger {
                 resultArray[lhsSegment][rhsSegment] = currentValue
             }
         }
-        
+
         // Perform multiplication similar to pen and paper in 64bit, 32bit masked increments.
         let bitSegment8 = resultArray[3][3] & lower32
         let bitSegment7 = UInt128._variadicAdditionWithOverflowCount(
@@ -304,14 +304,14 @@ extension UInt128 : FixedWidthInteger {
             bitSegment3.truncatedValue >> 32,
             bitSegment1.truncatedValue,
             lowerUpperBits.overflowCount)
-        
+
         // Bring the 64bit unsigned integer results together into a high and low 128bit unsigned integer result.
         return (high: .init(upperBits: upperUpperBits.truncatedValue,
                             lowerBits: lowerUpperBits.truncatedValue),
                 low: .init(upperBits: upperLowerBits.truncatedValue,
                            lowerBits: lowerLowerBits.truncatedValue))
     }
-    
+
     /// Takes a variable amount of 64bit Unsigned Integers and adds them together,
     /// tracking the total amount of overflows that occurred during addition.
     ///
@@ -323,7 +323,7 @@ extension UInt128 : FixedWidthInteger {
     private static func _variadicAdditionWithOverflowCount(_ addends: UInt64...) -> (truncatedValue: UInt64, overflowCount: UInt64) {
         var sum: UInt64 = 0
         var overflowCount: UInt64 = 0
-        
+
         addends.forEach { addend in
             let interimSum = sum.addingReportingOverflow(addend)
             if interimSum.overflow {
@@ -331,41 +331,41 @@ extension UInt128 : FixedWidthInteger {
             }
             sum = interimSum.partialValue
         }
-        
+
         return (truncatedValue: sum, overflowCount: overflowCount)
     }
-    
+
     public func dividedReportingOverflow(by rhs: UInt128) -> (partialValue: UInt128, overflow: Bool) {
         guard rhs != 0 else {
             return (self, true)
         }
-        
+
         let quotient = self.quotientAndRemainder(dividingBy: rhs).quotient
         return (quotient, false)
     }
-    
+
     public func dividingFullWidth(_ dividend: (high: UInt128, low: UInt128)) -> (quotient: UInt128, remainder: UInt128) {
         return self._quotientAndRemainderFullWidth(dividingBy: dividend)
     }
-    
+
     public func remainderReportingOverflow(dividingBy rhs: UInt128) -> (partialValue: UInt128, overflow: Bool) {
         guard rhs != 0 else {
             return (self, true)
         }
-        
+
         let remainder = self.quotientAndRemainder(dividingBy: rhs).remainder
         return (remainder, false)
     }
-    
+
     public func quotientAndRemainder(dividingBy rhs: UInt128) -> (quotient: UInt128, remainder: UInt128) {
         return rhs._quotientAndRemainderFullWidth(dividingBy: (high: 0, low: self))
     }
-    
+
     /// Provides the quotient and remainder when dividing the provided value by self.
     internal func _quotientAndRemainderFullWidth(dividingBy dividend: (high: UInt128, low: UInt128)) -> (quotient: UInt128, remainder: UInt128) {
         let divisor = self
         let numeratorBitsToWalk: UInt128
-        
+
         if dividend.high > 0 {
             numeratorBitsToWalk = dividend.high.significantBits + 128 - 1
         } else if dividend.low == 0 {
@@ -373,28 +373,28 @@ extension UInt128 : FixedWidthInteger {
         } else {
             numeratorBitsToWalk = dividend.low.significantBits - 1
         }
-        
+
         // The below algorithm was adapted from:
         // https://en.wikipedia.org/wiki/Division_algorithm#Integer_division_.28unsigned.29_with_remainder
-        
+
         precondition(self != 0, "Division by 0")
-        
+
         var quotient = UInt128.min
         var remainder = UInt128.min
-        
+
         for numeratorShiftWidth in (0...numeratorBitsToWalk).reversed() {
             remainder <<= 1
             remainder |= ._bitFromDoubleWidth(at: numeratorShiftWidth, for: dividend)
-            
+
             if remainder >= divisor {
                 remainder -= divisor
                 quotient |= 1 << numeratorShiftWidth
             }
         }
-        
+
         return (quotient, remainder)
     }
-    
+
     /// Returns the bit stored at the given position for the provided double width UInt128 input.
     ///
     /// - parameter at: position to grab bit value from.
@@ -446,9 +446,9 @@ extension UInt128 : BinaryInteger {
     }
 
 
-    
+
     // MARK: Initializers
-    
+
     public init?<T : BinaryFloatingPoint>(exactly source: T) {
         if source.isZero {
             self = 0
@@ -460,57 +460,57 @@ extension UInt128 : BinaryInteger {
             self = .init(UInt64(source))
         }
     }
-    
+
     public init<T : BinaryFloatingPoint>(_ source: T) {
         self.init(UInt64(source))
     }
 
     // MARK: Type Methods
-    
+
     public static func /(_ lhs: UInt128, _ rhs: UInt128) -> UInt128 {
         let result = lhs.dividedReportingOverflow(by: rhs)
-        
+
         return result.partialValue
     }
-    
+
     public static func /=(_ lhs: inout UInt128, _ rhs: UInt128) {
         lhs = lhs / rhs
     }
-    
+
     public static func %(_ lhs: UInt128, _ rhs: UInt128) -> UInt128 {
         let result = lhs.remainderReportingOverflow(dividingBy: rhs)
-        
+
         return result.partialValue
     }
-    
+
     public static func %=(_ lhs: inout UInt128, _ rhs: UInt128) {
         lhs = lhs % rhs
     }
-    
+
     /// Performs a bitwise AND operation on 2 UInt128 data types.
     public static func &=(_ lhs: inout UInt128, _ rhs: UInt128) {
         let upperBits = lhs.value.upperBits & rhs.value.upperBits
         let lowerBits = lhs.value.lowerBits & rhs.value.lowerBits
-        
+
         lhs = .init(upperBits: upperBits, lowerBits: lowerBits)
     }
-    
+
     /// Performs a bitwise OR operation on 2 UInt128 data types.
     public static func |=(_ lhs: inout UInt128, _ rhs: UInt128) {
         let upperBits = lhs.value.upperBits | rhs.value.upperBits
         let lowerBits = lhs.value.lowerBits | rhs.value.lowerBits
-        
+
         lhs = .init(upperBits: upperBits, lowerBits: lowerBits)
     }
-    
+
     /// Performs a bitwise XOR operation on 2 UInt128 data types.
     public static func ^=(_ lhs: inout UInt128, _ rhs: UInt128) {
         let upperBits = lhs.value.upperBits ^ rhs.value.upperBits
         let lowerBits = lhs.value.lowerBits ^ rhs.value.lowerBits
-        
+
         lhs = .init(upperBits: upperBits, lowerBits: lowerBits)
     }
-    
+
     /// Perform a masked right SHIFT operation self.
     ///
     /// The masking operation will mask `rhs` against the highest
@@ -519,7 +519,7 @@ extension UInt128 : BinaryInteger {
     /// and `rhs = 129` will become `rhs = 1`.
     public static func &>>=(_ lhs: inout UInt128, _ rhs: UInt128) {
         let shiftWidth = rhs.value.lowerBits & 127
-        
+
         switch shiftWidth {
         case 0: return // Do nothing shift.
         case 1...63:
@@ -534,7 +534,7 @@ extension UInt128 : BinaryInteger {
             lhs = .init(upperBits: 0, lowerBits: lowerBits)
         }
     }
-    
+
     /// Perform a masked left SHIFT operation on self.
     ///
     /// The masking operation will mask `rhs` against the highest
@@ -543,7 +543,7 @@ extension UInt128 : BinaryInteger {
     /// and `rhs = 129` will become `rhs = 1`.
     public static func &<<=(_ lhs: inout UInt128, _ rhs: UInt128) {
         let shiftWidth = rhs.value.lowerBits & 127
-        
+
         switch shiftWidth {
         case 0: return // Do nothing shift.
         case 1...63:
@@ -622,13 +622,13 @@ extension UInt128 : ExpressibleByIntegerLiteral {
 
 extension UInt128 : CustomStringConvertible {
     // MARK: Instance Properties
-    
+
     public var description: String {
         return self._valueToString()
     }
-    
+
     // MARK: Instance Methods
-    
+
     /// Converts the stored value into a string representation.
     /// - parameter radix:
     ///     The radix for the base numbering system you wish to have
@@ -674,7 +674,7 @@ extension UInt128 : CustomDebugStringConvertible {
 extension UInt128 : Comparable {
     public static func <(lhs: UInt128, rhs: UInt128) -> Bool {
         return lhs.value.upperBits < rhs.value.upperBits ||
-                lhs.value.upperBits == rhs.value.upperBits && lhs.value.lowerBits < rhs.value.lowerBits
+            lhs.value.upperBits == rhs.value.upperBits && lhs.value.lowerBits < rhs.value.lowerBits
     }
 }
 
@@ -682,32 +682,32 @@ extension UInt128 : Comparable {
 
 extension UInt128 : ExpressibleByStringLiteral {
     // MARK: Initializers
-    
+
     public init(stringLiteral value: StringLiteralType) {
         self.init()
-        
+
         if let result = UInt128._valueFromString(value) {
             self = result
         }
     }
-    
+
     // MARK: Type Methods
-    
+
     internal static func _valueFromString(_ value: String) -> UInt128? {
         let radix = UInt128._determineRadixFromString(value)
         let inputString = radix == 10 ? value : String(value.dropFirst(2))
-        
+
         return UInt128(inputString, radix: radix)
     }
-    
+
     internal static func _determineRadixFromString(_ string: String) -> Int {
         let radix: Int
-        
+
         if string.hasPrefix("0b") { radix = 2 }
         else if string.hasPrefix("0o") { radix = 8 }
         else if string.hasPrefix("0x") { radix = 16 }
         else { radix = 10 }
-        
+
         return radix
     }
 }
@@ -734,7 +734,7 @@ extension BinaryFloatingPoint {
         precondition(value.value.upperBits == 0, "Value is too large to fit into a BinaryFloatingPoint until a 128bit BinaryFloatingPoint type is defined.")
         self.init(value.value.lowerBits)
     }
-    
+
     public init?(exactly value: UInt128) {
         if value.value.upperBits > 0 {
             return nil
