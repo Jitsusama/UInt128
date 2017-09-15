@@ -108,7 +108,7 @@ public struct UInt128 {
 extension UInt128 : FixedWidthInteger {
     // MARK: Instance Properties
 
-    public static var bitWidth : Int { return 128 }
+    public static var bitWidth : Int { return UInt64.bitWidth * 2 }
 
     public var nonzeroBitCount: Int {
         return value.lowerBits.nonzeroBitCount + value.upperBits.nonzeroBitCount
@@ -389,18 +389,18 @@ extension UInt128 : FixedWidthInteger {
 
 extension UInt128 : BinaryInteger {
 
-
     // MARK: Instance Methods
 
     public var words: [UInt] {
         guard self != .min else {
             return []
         }
+        let count = self.bitWidth / UInt.bitWidth
 
-        var words: [UInt] = []
+        var words: [UInt] = [UInt](repeating : 0, count: count)
 
-        for currentWord in 0 ... self.bitWidth / UInt.bitWidth {
-            let shiftAmount: UInt64 = UInt64(UInt.bitWidth) * UInt64(currentWord)
+        for idx in 0 ..< count {
+            let shiftAmount: UInt64 = UInt64(UInt.bitWidth) * UInt64(idx)
             let mask = UInt64(UInt.max)
             var shifted = self
 
@@ -410,7 +410,7 @@ extension UInt128 : BinaryInteger {
 
             let masked = shifted & .init(upperBits: 0, lowerBits: mask)
 
-            words.append(UInt(masked.value.lowerBits))
+            words[idx] = UInt(masked.value.lowerBits)
         }
         return words
     }
