@@ -96,7 +96,7 @@ public struct UInt128 {
     ///   but can be prefixed with `0b` for base2, `0o` for base8
     ///   or `0x` for base16.
     public init(_ source: String) throws {
-        guard let result = UInt128._valueFromString(source) else {
+        guard let result = UInt128._value(from: source) else {
             throw UInt128Errors.invalidString
         }
         self = result
@@ -654,29 +654,27 @@ extension UInt128 : ExpressibleByStringLiteral {
     public init(stringLiteral value: StringLiteralType) {
         self.init()
 
-        if let result = UInt128._valueFromString(value) {
+        if let result = UInt128._value(from: value) {
             self = result
         }
     }
 
     // MARK: Type Methods
 
-    internal static func _valueFromString(_ value: String) -> UInt128? {
-        let radix = UInt128._determineRadixFromString(value)
-        let inputString = radix == 10 ? value : String(value.dropFirst(2))
+    internal static func _value(from string: String) -> UInt128? {
+        let radix = UInt128._determineRadix(from: string)
+        let inputString = radix == 10 ? string : String(string.dropFirst(2))
 
         return UInt128(inputString, radix: radix)
     }
 
-    internal static func _determineRadixFromString(_ string: String) -> Int {
-        let radix: Int
-
-        if string.hasPrefix("0b") { radix = 2 }
-        else if string.hasPrefix("0o") { radix = 8 }
-        else if string.hasPrefix("0x") { radix = 16 }
-        else { radix = 10 }
-
-        return radix
+    internal static func _determineRadix(from string: String) -> Int {
+        switch string.prefix(2) {
+        case "0b": return 2
+        case "0o": return 8
+        case "0x": return 16
+        default: return 10
+        }
     }
 }
 
