@@ -156,8 +156,8 @@ extension UInt128 : FixedWidthInteger {
             (upperBits, resultOverflow) = upperBits.addingReportingOverflow(1)
         }
 
-        return (partialValue: UInt128(upperBits: upperBits, lowerBits: lowerBits),
-                overflow: upperOverflow || resultOverflow)
+        return (.init(upperBits: upperBits, lowerBits: lowerBits),
+                upperOverflow || resultOverflow)
     }
 
     public func subtractingReportingOverflow(_ rhs: UInt128) -> (partialValue: UInt128, overflow: Bool) {
@@ -170,16 +170,16 @@ extension UInt128 : FixedWidthInteger {
             (upperBits, resultOverflow) = upperBits.subtractingReportingOverflow(1)
         }
 
-        return (partialValue: .init(upperBits: upperBits, lowerBits: lowerBits),
-                overflow: upperOverflow || resultOverflow)
+        return (.init(upperBits: upperBits, lowerBits: lowerBits),
+                upperOverflow || resultOverflow)
     }
 
     public func multipliedReportingOverflow(by rhs: UInt128) -> (partialValue: UInt128, overflow: Bool) {
         let multiplicationResult = self.multipliedFullWidth(by: rhs)
         let overflowEncountered = multiplicationResult.high > 0
 
-        return (partialValue: multiplicationResult.low,
-                overflow: overflowEncountered)
+        return (multiplicationResult.low,
+                overflowEncountered)
     }
 
     public func multipliedFullWidth(by other: UInt128) -> (high: UInt128, low: UInt128.Magnitude) {
@@ -276,10 +276,10 @@ extension UInt128 : FixedWidthInteger {
             lowerUpperBits.overflowCount)
 
         // Bring the 64bit unsigned integer results together into a high and low 128bit unsigned integer result.
-        return (high: .init(upperBits: upperUpperBits.truncatedValue,
-                            lowerBits: lowerUpperBits.truncatedValue),
-                low: .init(upperBits: upperLowerBits.truncatedValue,
-                           lowerBits: lowerLowerBits.truncatedValue))
+        return (.init(upperBits: upperUpperBits.truncatedValue,
+                      lowerBits: lowerUpperBits.truncatedValue),
+                .init(upperBits: upperLowerBits.truncatedValue,
+                      lowerBits: lowerLowerBits.truncatedValue))
     }
 
     /// Takes a variable amount of 64bit Unsigned Integers and adds them together,
@@ -302,7 +302,7 @@ extension UInt128 : FixedWidthInteger {
             sum = interimSum.partialValue
         }
 
-        return (truncatedValue: sum, overflowCount: overflowCount)
+        return (sum, overflowCount)
     }
 
     public func dividedReportingOverflow(by rhs: UInt128) -> (partialValue: UInt128, overflow: Bool) {
