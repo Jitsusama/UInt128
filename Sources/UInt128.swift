@@ -109,19 +109,7 @@ extension UInt128 : FixedWidthInteger {
     // MARK: Instance Properties
     
     public var nonzeroBitCount: Int {
-        var nonZeroCount = 0
-        var shiftWidth = 0
-        
-        while shiftWidth < 128 {
-            let shiftedSelf = self &>> shiftWidth
-            let currentBit = shiftedSelf & 1
-            if currentBit == 1 {
-                nonZeroCount += 1
-            }
-            shiftWidth += 1
-        }
-        
-        return nonZeroCount
+        return value.lowerBits.nonzeroBitCount + value.upperBits.nonzeroBitCount
     }
     
     public var leadingZeroBitCount: Int {
@@ -184,11 +172,7 @@ extension UInt128 : FixedWidthInteger {
     /// Creates an integer from its little-endian representation, changing the
     /// byte order if necessary.
     public init(littleEndian value: UInt128) {
-        #if arch(i386) || arch(x86_64) || arch(arm) || arch(arm64)
-            self = value
-        #else
-            self = value.byteSwapped
-        #endif
+        self = value.littleEndian
     }
     
     // MARK: Instance Methods
@@ -466,14 +450,14 @@ extension UInt128 : BinaryInteger {
     public var trailingZeroBitCount: Int {
         let mask: UInt128 = 1
         var bitsToWalk = self
-        
+
         for currentPosition in 0...128 {
             if bitsToWalk & mask == 1 {
                 return currentPosition
             }
             bitsToWalk >>= 1
         }
-        
+
         return 128
     }
     
