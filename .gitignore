@@ -5,7 +5,8 @@
 xcuserdata
 # Vi swap files
 *.swp
-# SPM files
+# Artifacts
 /.build
 /Packages
+/Carthage
 
