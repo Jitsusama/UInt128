@@ -28,6 +28,17 @@ let bizarreUInt128: UInt128 = "0xf1f3f5f7f9fbfdfffefcfaf0f8f6f4f2"
 
 /// User tests that act as a basic smoke test on library functionality.
 class SystemTests : XCTestCase {
+    // Picked up by the LinuxMain.swift test runner.
+    static var allTests = {
+        return [
+            ("testCanReceiveAnInt", testCanReceiveAnInt),
+            ("testCanBeSentToAnInt", testCanBeSentToAnInt),
+            ("testIntegerLiteralInput", testIntegerLiteralInput),
+            ("testCanReceiveAString", testCanReceiveAString),
+            ("testStringLiteralInput", testStringLiteralInput),
+            ("testCanBeSentToAFloat", testCanBeSentToAFloat)]
+    }
+    
     func testCanReceiveAnInt() {
         let expectedResult = UInt128(upperBits: 0, lowerBits: 1)
         let testResult = UInt128(Int(1))
@@ -67,6 +78,17 @@ class SystemTests : XCTestCase {
 
 /// Test properties and methods that are not tied to protocol conformance.
 class BaseTypeTests : XCTestCase {
+    // Picked up by the LinuxMain.swift test runner.
+    static var allTests = {
+        return [
+            ("testSignificantBitsReturnsProperBitCount", testSignificantBitsReturnsProperBitCount),
+            ("testDesignatedInitializerProperlySetsInternalValue", testDesignatedInitializerProperlySetsInternalValue),
+            ("testDefaultInitializerSetsUpperAndLowerBitsToZero", testDefaultInitializerSetsUpperAndLowerBitsToZero),
+            ("testInitWithUInt128", testInitWithUInt128),
+            ("testStringInitializerWithEmptyString", testStringInitializerWithEmptyString),
+            ("testStringInitializerWithSupportedNumberFormats", testStringInitializerWithSupportedNumberFormats)]
+    }
+    
     func testSignificantBitsReturnsProperBitCount() {
         var tests = [(input: UInt128(),
                       expected: UInt128(upperBits: 0, lowerBits: 0))]
@@ -131,6 +153,28 @@ class BaseTypeTests : XCTestCase {
 }
 
 class FixedWidthIntegerTests : XCTestCase {
+    // Picked up by the LinuxMain.swift test runner.
+    static var allTests = {
+        return [
+            ("testNonzeroBitCount", testNonzeroBitCount),
+            ("testLeadingZeroBitCount", testLeadingZeroBitCount),
+            ("testBigEndianProperty", testBigEndianProperty),
+            ("testBigEndianInitializer", testBigEndianInitializer),
+            ("testLittleEndianProperty", testLittleEndianProperty),
+            ("testLittleEndianInitializer", testLittleEndianInitializer),
+            ("testByteSwappedProperty", testByteSwappedProperty),
+            ("testInitWithTruncatingBits", testInitWithTruncatingBits),
+            ("testAddingReportingOverflow", testAddingReportingOverflow),
+            ("testSubtractingReportingOverflow", testSubtractingReportingOverflow),
+            ("testMultipliedReportingOverflow", testMultipliedReportingOverflow),
+            ("testMultipliedFullWidth", testMultipliedFullWidth),
+            ("testDividedReportingOverflow", testDividedReportingOverflow),
+            ("testBitFromDoubleWidth", testBitFromDoubleWidth),
+            ("testDividingFullWidth", testDividingFullWidth),
+            ("testRemainderReportingOverflow", testRemainderReportingOverflow),
+            ("testQuotientAndRemainder", testQuotientAndRemainder)]
+    }
+    
     func testNonzeroBitCount() {
         var tests = [(input: UInt128.min, result: 0)]
         tests.append((input: UInt128(1), result: 1))
@@ -444,6 +488,28 @@ class FixedWidthIntegerTests : XCTestCase {
 }
 
 class BinaryIntegerTests : XCTestCase {
+    // Picked up by the LinuxMain.swift test runner.
+    static var allTests = {
+        return [
+            ("testBitWidthEquals128", testBitWidthEquals128),
+            ("testTrailingZeroBitCount", testTrailingZeroBitCount),
+            ("testInitFailableFloatingPointExactlyExpectedSuccesses", testInitFailableFloatingPointExactlyExpectedSuccesses),
+            ("testInitFailableFloatingPointExactlyExpectedFailures", testInitFailableFloatingPointExactlyExpectedFailures),
+            ("testInitFloatingPoint", testInitFloatingPoint),
+            ("test_word", test_word),
+            ("testDivideOperator", testDivideOperator),
+            ("testDivideEqualOperator", testDivideEqualOperator),
+            ("testModuloOperator", testModuloOperator),
+            ("testModuloEqualOperator", testModuloEqualOperator),
+            ("testBooleanAndEqualOperator", testBooleanAndEqualOperator),
+            ("testBooleanOrEqualOperator", testBooleanOrEqualOperator),
+            ("testBooleanXorEqualOperator", testBooleanXorEqualOperator),
+            ("testMaskingRightShiftEqualOperatorStandardCases", testMaskingRightShiftEqualOperatorStandardCases),
+            ("testMaskingRightShiftEqualOperatorEdgeCases", testMaskingRightShiftEqualOperatorEdgeCases),
+            ("testMaskingLeftShiftEqualOperatorStandardCases", testMaskingLeftShiftEqualOperatorStandardCases),
+            ("testMaskingLeftShiftEqualOperatorEdgeCases", testMaskingLeftShiftEqualOperatorEdgeCases)]
+    }
+    
     func testBitWidthEquals128() {
         XCTAssertEqual(UInt128.bitWidth, 128)
     }
@@ -714,6 +780,11 @@ class BinaryIntegerTests : XCTestCase {
 }
 
 class HashableTests : XCTestCase {
+    // Picked up by the LinuxMain.swift test runner.
+    static var allTests = {
+        return [("testHashValueProperty", testHashValueProperty)]
+    }
+    
     func hashableTests() -> [(input: UInt128, result: Int)] {
         var tests = [(input: UInt128(), result: 0)]
         tests.append((input: UInt128(1), result: 1))
@@ -731,6 +802,17 @@ class HashableTests : XCTestCase {
 }
 
 class NumericTests : XCTestCase {
+    // Picked up by the LinuxMain.swift test runner.
+    static var allTests = {
+        return [
+            ("testAdditionOperator", testAdditionOperator),
+            ("testAdditionEqualOperator", testAdditionEqualOperator),
+            ("testSubtractionOperator", testSubtractionOperator),
+            ("testSubtractionEqualOperator", testSubtractionEqualOperator),
+            ("testMultiplicationOperator", testMultiplicationOperator),
+            ("testMultiplicationEqualOperator", testMultiplicationEqualOperator)]
+    }
+    
     func additionTests() -> [(augend: UInt128, addend: UInt128, sum: UInt128)] {
         // 0 + 0 = 0
         var tests = [(augend: UInt128.min, addend: UInt128.min, sum: UInt128.min)]
@@ -835,6 +917,11 @@ class NumericTests : XCTestCase {
 }
 
 class EquatableTests : XCTestCase {
+    // Picked up by the LinuxMain.swift test runner.
+    static var allTests = {
+        return [("testBooleanEqualsOperator", testBooleanEqualsOperator)]
+    }
+    
     func testBooleanEqualsOperator() {
         var tests = [(lhs: UInt128.min,
                       rhs: UInt128.min, result: true)]
@@ -856,6 +943,11 @@ class EquatableTests : XCTestCase {
 }
 
 class ExpressibleByIntegerLiteralTests : XCTestCase {
+    // Picked up by the LinuxMain.swift test runner.
+    static var allTests = {
+        return [("testInitWithIntegerLiteral", testInitWithIntegerLiteral)]
+    }
+    
     func testInitWithIntegerLiteral() {
         var tests = [(input: 0, result: UInt128())]
         tests.append((input: 1, result: UInt128(upperBits: 0, lowerBits: 1)))
@@ -868,6 +960,15 @@ class ExpressibleByIntegerLiteralTests : XCTestCase {
 }
 
 class CustomStringConvertibleTests : XCTestCase {
+    // Picked up by the LinuxMain.swift test runner.
+    static var allTests = {
+        return [
+            ("testDescriptionProperty", testDescriptionProperty),
+            ("testStringDescribingInitializer", testStringDescribingInitializer),
+            ("testStringUInt128InitializerLowercased", testStringUInt128InitializerLowercased),
+            ("testStringUInt128InitializerUppercased", testStringUInt128InitializerUppercased)]
+    }
+    
     func stringTests() -> [(input: UInt128, result: [Int: String])] {
         var tests = [(input: UInt128(), result:[
             2: "0", 8: "0", 10: "0", 16: "0", 18: "0", 36: "0"])]
@@ -932,6 +1033,13 @@ class CustomStringConvertibleTests : XCTestCase {
 }
 
 class CustomDebugStringConvertible : XCTestCase {
+    // Picked up by the LinuxMain.swift test runner.
+    static var allTests = {
+        return [
+            ("testDebugDescriptionProperty", testDebugDescriptionProperty),
+            ("testStringReflectingInitializer", testStringReflectingInitializer)]
+    }
+    
     func stringTests() -> [(input: UInt128, result: String)] {
         var tests = [(input: UInt128(),
                       result:"0")]
@@ -961,6 +1069,11 @@ class CustomDebugStringConvertible : XCTestCase {
 }
 
 class ComparableTests : XCTestCase {
+    // Picked up by the LinuxMain.swift test runner.
+    static var allTests = {
+        return [("testLessThanOperator", testLessThanOperator)]
+    }
+    
     func testLessThanOperator() {
         var tests = [(lhs: UInt128.min, rhs: UInt128(1), result: true)]
         tests.append((lhs: UInt128.min, rhs: UInt128(upperBits: 1, lowerBits: 0), result: true))
@@ -977,6 +1090,13 @@ class ComparableTests : XCTestCase {
 }
 
 class ExpressibleByStringLiteralTests : XCTestCase {
+    // Picked up by the LinuxMain.swift test runner.
+    static var allTests = {
+        return [
+            ("testInitWithStringLiteral", testInitWithStringLiteral),
+            ("testEvaluatedWithStringLiteral", testEvaluatedWithStringLiteral)]
+    }
+    
     func stringTests() -> [(input: String, result: UInt128)] {
         var tests = [(input: "", result: UInt128())]
         tests.append((input: "0", result: UInt128()))
@@ -1012,13 +1132,81 @@ class ExpressibleByStringLiteralTests : XCTestCase {
 
 @available(swift, deprecated: 3.2)
 class DeprecatedAPITests : XCTestCase {
+    // Picked up by the LinuxMain.swift test runner.
+    static var allTests = {
+        return [
+            ("testSuccessor", testSuccessor),
+            ("testPredecessor", testPredecessor),
+            ("testAdvancedBy", testAdvancedBy),
+            ("testDistanceTo", testDistanceTo),
+            ("testAllZeros", testAllZeros),
+            ("testFromUnparsedString", testFromUnparsedString),
+            ("testDivideRemainder", testDivideRemainder),
+            ("testPrefixIncrement", testPrefixIncrement),
+            ("testSuffixIncrement", testSuffixIncrement),
+            ("testPrefixDecrement", testPrefixDecrement),
+            ("testSuffixDecrement", testSuffixDecrement)]
+    }
+    
+    func testSuccessor() {
+        XCTAssertEqual(UInt128(1).successor(), UInt128(2))
+    }
+    
+    func testPredecessor() {
+        XCTAssertEqual(UInt128(1).predecessor(), UInt128.min)
+    }
+    
+    func testAdvancedBy() {
+        XCTAssertEqual(UInt128(1).advancedBy(1), UInt128(2))
+    }
+    
+    func testDistanceTo() {
+        XCTAssertEqual(UInt128(1).distanceTo(2), 1)
+    }
+    
+    func testAllZeros() {
+        XCTAssertEqual(UInt128.allZeros, UInt128.min)
+    }
+    
     func testFromUnparsedString() {
         XCTAssertThrowsError(try UInt128.fromUnparsedString(""))
         XCTAssertEqual(try UInt128.fromUnparsedString("1"), UInt128(1))
     }
+    
+    func testDivideRemainder() {
+        XCTAssertEqual((UInt128(1) /% UInt128(1)).quotient, UInt128(1))
+    }
+    
+    func testPrefixIncrement() {
+        var value = UInt128(1)
+        XCTAssertEqual(++value, UInt128(2))
+    }
+    
+    func testSuffixIncrement() {
+        var value = UInt128(1)
+        XCTAssertEqual(value++, UInt128(1))
+    }
+    
+    func testPrefixDecrement() {
+        var value = UInt128(1)
+        XCTAssertEqual(--value, UInt128.min)
+    }
+    
+    func testSuffixDecrement() {
+        var value = UInt128(1)
+        XCTAssertEqual(value--, UInt128(1))
+    }
 }
 
 class FloatingPointInterworkingTests : XCTestCase {
+    // Picked up by the LinuxMain.swift test runner.
+    static var allTests = {
+        return [
+            ("testNonFailableInitializer", testNonFailableInitializer),
+            ("testFailableInitializer", testFailableInitializer),
+            ("testSignBitIndex", testSignBitIndex)]
+    }
+    
     func testNonFailableInitializer() {
         var tests = [(input: UInt128(), output: Float(0))]
         tests.append((input: UInt128(upperBits: 0, lowerBits: UInt64.max),

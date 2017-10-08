@@ -749,18 +749,76 @@ extension UInt128 : ExpressibleByStringLiteral {
     }
 }
 
-// MARK: - Deprecated API
+// MARK: - Deprecated APIs
+
+infix operator /% : AssignmentPrecedence
 
 extension UInt128 {
-    /// Initialize a UInt128 value from a string.
-    ///
-    /// - parameter source: the string that will be converted into a
-    ///   UInt128 value. Defaults to being analyzed as a base10 number,
-    ///   but can be prefixed with `0b` for base2, `0o` for base8
-    ///   or `0x` for base16.
-    @available(swift, deprecated: 3.2, renamed: "init(_:)")
+    // MARK: Instance Methods
+    
+    @available(swift, deprecated: 3.1, obsoleted: 4.1)
+    public func successor() -> UInt128 {
+        return self &+ 1
+    }
+    
+    @available(swift, deprecated: 3.1, obsoleted: 4.1)
+    public func predecessor() -> UInt128 {
+        return self &- 1
+    }
+    
+    @available(swift, deprecated: 3.1, obsoleted: 4.1, renamed: "advanced(by:)")
+    public func advancedBy(_ n: Stride) -> UInt128 {
+        return self.advanced(by: n)
+    }
+    
+    @available(swift, deprecated: 3.1, obsoleted: 4.1, renamed: "distance(to:)")
+    public func distanceTo(_ end: UInt128) -> Stride {
+        return self.distance(to: end)
+    }
+    
+    // MARK: Type Properties
+    
+    @available(swift, deprecated: 3.2, obsoleted: 4.1, renamed: "min")
+    public static var allZeros: UInt128 = 0
+    
+    // MARK: Type Methods
+    
+    @available(swift, deprecated: 3.2, obsoleted: 4.1, renamed: "init(_:)")
     public static func fromUnparsedString(_ source: String) throws -> UInt128 {
         return try UInt128.init(source)
+    }
+    
+    // MARK: Operators
+    
+    @available(swift, deprecated: 3.2, obsoleted: 4.1, renamed: "quotientAndRemainder(dividingBy:)")
+    static public func /%(dividend: UInt128, divisor: UInt128) -> (quotient: UInt128, remainder: UInt128) {
+        return dividend.quotientAndRemainder(dividingBy: divisor)
+    }
+    
+    @available(swift, deprecated: 3.0, obsoleted: 4.1)
+    static prefix public func ++(lhs: inout UInt128) -> UInt128 {
+        lhs = lhs + 1
+        return lhs
+    }
+    
+    @available(swift, deprecated: 3.0, obsoleted: 4.1)
+    static postfix public func ++(lhs: inout UInt128) -> UInt128 {
+        let result = lhs
+        lhs = lhs + 1
+        return result
+    }
+    
+    @available(swift, deprecated: 3.0, obsoleted: 4.1)
+    static prefix public func --(lhs: inout UInt128) -> UInt128 {
+        lhs = lhs - 1
+        return lhs
+    }
+    
+    @available(swift, deprecated: 3.0, obsoleted: 4.1)
+    static postfix public func --(lhs: inout UInt128) -> UInt128 {
+        let result = lhs
+        lhs = lhs - 1
+        return result
     }
 }
 
