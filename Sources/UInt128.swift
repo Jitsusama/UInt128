@@ -126,6 +126,20 @@ extension UInt128 : FixedWidthInteger {
         return zeroCount
     }
 
+    public var trailingZeroBitCount: Int {
+        let mask: UInt128 = 1
+        var bitsToWalk = self
+
+        for currentPosition in 0...128 {
+            if bitsToWalk & mask == 1 {
+                return currentPosition
+            }
+            bitsToWalk >>= 1
+        }
+
+        return 128
+    }
+
     /// Returns the big-endian representation of the integer, changing the byte order if necessary.
     public var bigEndian: UInt128 {
         #if arch(i386) || arch(x86_64) || arch(arm) || arch(arm64)
@@ -435,7 +449,7 @@ extension UInt128 : BinaryInteger {
 
         var words: [UInt] = []
 
-        for currentWord in 0 ... self.bitWidth / UInt.bitWidth {
+        for currentWord in 0 ..< self.bitWidth / UInt.bitWidth {
             let shiftAmount: UInt64 = UInt64(UInt.bitWidth) * UInt64(currentWord)
             let mask = UInt64(UInt.max)
             var shifted = self
@@ -449,20 +463,6 @@ extension UInt128 : BinaryInteger {
             words.append(UInt(masked.value.lowerBits))
         }
         return words
-    }
-
-    public var trailingZeroBitCount: Int {
-        let mask: UInt128 = 1
-        var bitsToWalk = self
-
-        for currentPosition in 0...128 {
-            if bitsToWalk & mask == 1 {
-                return currentPosition
-            }
-            bitsToWalk >>= 1
-        }
-
-        return 128
     }
 
     // MARK: Initializers

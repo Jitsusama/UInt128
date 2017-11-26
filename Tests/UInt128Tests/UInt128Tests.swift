@@ -492,8 +492,10 @@ class BinaryIntegerTests : XCTestCase {
         let lowerBits = UInt64("100000000000000000000000000000001", radix: 2)!
         let upperBits = UInt64("100000000000000000000000000000001", radix: 2)!
         let testResult = UInt128(upperBits: upperBits, lowerBits: lowerBits)
+        let words = testResult.words
 
-        testResult.words.forEach { (currentWord) in
+        XCTAssertEqual(words.count, 2)
+        words.forEach { (currentWord) in
             if UInt.bitWidth == 64 {
                 XCTAssertEqual(currentWord, 4294967297)
             }
