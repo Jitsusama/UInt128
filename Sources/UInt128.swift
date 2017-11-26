@@ -160,7 +160,8 @@ extension UInt128 : FixedWidthInteger {
 
     /// Returns the current integer with the byte order swapped.
     public var byteSwapped: UInt128 {
-        return UInt128(upperBits: self.value.lowerBits.byteSwapped, lowerBits: self.value.upperBits.byteSwapped)
+        return UInt128(upperBits: self.value.lowerBits.byteSwapped,
+                       lowerBits: self.value.upperBits.byteSwapped)
     }
 
     // MARK: Initializers
@@ -176,21 +177,13 @@ extension UInt128 : FixedWidthInteger {
     /// Creates an integer from its big-endian representation, changing the
     /// byte order if necessary.
     public init(bigEndian value: UInt128) {
-        #if arch(i386) || arch(x86_64) || arch(arm) || arch(arm64)
-            self = value.byteSwapped
-        #else
-            self = value
-        #endif
+        self = value.bigEndian
     }
 
     /// Creates an integer from its little-endian representation, changing the
     /// byte order if necessary.
     public init(littleEndian value: UInt128) {
-        #if arch(i386) || arch(x86_64) || arch(arm) || arch(arm64)
-            self = value
-        #else
-            self = value.byteSwapped
-        #endif
+        self = value.littleEndian
     }
 
     // MARK: Instance Methods
