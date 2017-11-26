@@ -109,19 +109,7 @@ extension UInt128 : FixedWidthInteger {
     // MARK: Instance Properties
 
     public var nonzeroBitCount: Int {
-        var nonZeroCount = 0
-        var shiftWidth = 0
-
-        while shiftWidth < 128 {
-            let shiftedSelf = self &>> shiftWidth
-            let currentBit = shiftedSelf & 1
-            if currentBit == 1 {
-                nonZeroCount += 1
-            }
-            shiftWidth += 1
-        }
-
-        return nonZeroCount
+        return value.lowerBits.nonzeroBitCount + value.upperBits.nonzeroBitCount
     }
 
     public var leadingZeroBitCount: Int {
@@ -687,7 +675,7 @@ extension UInt128 : CustomStringConvertible {
         // Go through internal value until every base position is string(ed).
         repeat {
             divmodResult = divmodResult.quotient.quotientAndRemainder(dividingBy: UInt128(radix))
-            let index = characterPool.characters.index(characterPool.startIndex, offsetBy: Int(divmodResult.remainder))
+            let index = characterPool.index(characterPool.startIndex, offsetBy: Int(divmodResult.remainder))
             result.insert(characterPool[index], at: result.startIndex)
         } while divmodResult.quotient > 0
         return result
