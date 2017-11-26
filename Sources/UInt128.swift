@@ -719,14 +719,12 @@ extension UInt128 : ExpressibleByStringLiteral {
     }
 
     internal static func _determineRadixFromString(_ string: String) -> Int {
-        let radix: Int
-
-        if string.hasPrefix("0b") { radix = 2 }
-        else if string.hasPrefix("0o") { radix = 8 }
-        else if string.hasPrefix("0x") { radix = 16 }
-        else { radix = 10 }
-
-        return radix
+        switch string.prefix(2) {
+        case "0b": return 2
+        case "0o": return 8
+        case "0x": return 16
+        default: return 10
+        }
     }
 }
 
