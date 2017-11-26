@@ -126,6 +126,20 @@ extension UInt128 : FixedWidthInteger {
         return zeroCount
     }
 
+    public var trailingZeroBitCount: Int {
+        let mask: UInt128 = 1
+        var bitsToWalk = self
+
+        for currentPosition in 0...128 {
+            if bitsToWalk & mask == 1 {
+                return currentPosition
+            }
+            bitsToWalk >>= 1
+        }
+
+        return 128
+    }
+
     /// Returns the big-endian representation of the integer, changing the byte order if necessary.
     public var bigEndian: UInt128 {
         #if arch(i386) || arch(x86_64) || arch(arm) || arch(arm64)
@@ -146,7 +160,8 @@ extension UInt128 : FixedWidthInteger {
 
     /// Returns the current integer with the byte order swapped.
     public var byteSwapped: UInt128 {
-        return UInt128(upperBits: self.value.lowerBits.byteSwapped, lowerBits: self.value.upperBits.byteSwapped)
+        return UInt128(upperBits: self.value.lowerBits.byteSwapped,
+                       lowerBits: self.value.upperBits.byteSwapped)
     }
 
     // MARK: Initializers
@@ -162,21 +177,13 @@ extension UInt128 : FixedWidthInteger {
     /// Creates an integer from its big-endian representation, changing the
     /// byte order if necessary.
     public init(bigEndian value: UInt128) {
-        #if arch(i386) || arch(x86_64) || arch(arm) || arch(arm64)
-            self = value.byteSwapped
-        #else
-            self = value
-        #endif
+        self = value.bigEndian
     }
 
     /// Creates an integer from its little-endian representation, changing the
     /// byte order if necessary.
     public init(littleEndian value: UInt128) {
-        #if arch(i386) || arch(x86_64) || arch(arm) || arch(arm64)
-            self = value
-        #else
-            self = value.byteSwapped
-        #endif
+        self = value.littleEndian
     }
 
     // MARK: Instance Methods
@@ -235,8 +242,8 @@ extension UInt128 : FixedWidthInteger {
 
         // The future contents of this array will be used to store segment
         // multiplication results.
-        var resultArray = [[UInt64]].init(
-            repeating: [UInt64].init(repeating: 0, count: 4), count: 4
+        var resultArray = [[UInt64]](
+            repeating: [UInt64](repeating: 0, count: 4), count: 4
         )
 
         // Loop through every combination of lhsArray[x] * rhsArray[y]
@@ -435,7 +442,7 @@ extension UInt128 : BinaryInteger {
 
         var words: [UInt] = []
 
-        for currentWord in 0 ... self.bitWidth / UInt.bitWidth {
+        for currentWord in 0 ..< self.bitWidth / UInt.bitWidth {
             let shiftAmount: UInt64 = UInt64(UInt.bitWidth) * UInt64(currentWord)
             let mask = UInt64(UInt.max)
             var shifted = self
@@ -449,20 +456,6 @@ extension UInt128 : BinaryInteger {
             words.append(UInt(masked.value.lowerBits))
         }
         return words
-    }
-
-    public var trailingZeroBitCount: Int {
-        let mask: UInt128 = 1
-        var bitsToWalk = self
-
-        for currentPosition in 0...128 {
-            if bitsToWalk & mask == 1 {
-                return currentPosition
-            }
-            bitsToWalk >>= 1
-        }
-
-        return 128
     }
 
     // MARK: Initializers
@@ -726,14 +719,12 @@ extension UInt128 : ExpressibleByStringLiteral {
     }
 
     internal static func _determineRadixFromString(_ string: String) -> Int {
-        let radix: Int
-
-        if string.hasPrefix("0b") { radix = 2 }
-        else if string.hasPrefix("0o") { radix = 8 }
-        else if string.hasPrefix("0x") { radix = 16 }
-        else { radix = 10 }
-
-        return radix
+        switch string.prefix(2) {
+        case "0b": return 2
+        case "0o": return 8
+        case "0x": return 16
+        default: return 10
+        }
     }
 }
 
@@ -748,7 +739,7 @@ extension UInt128 {
     ///   or `0x` for base16.
     @available(swift, deprecated: 3.2, renamed: "init(_:)")
     public static func fromUnparsedString(_ source: String) throws -> UInt128 {
-        return try UInt128.init(source)
+        return try UInt128(source)
     }
 }
 
