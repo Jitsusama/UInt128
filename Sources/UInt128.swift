@@ -235,8 +235,8 @@ extension UInt128 : FixedWidthInteger {
 
         // The future contents of this array will be used to store segment
         // multiplication results.
-        var resultArray = [[UInt64]].init(
-            repeating: [UInt64].init(repeating: 0, count: 4), count: 4
+        var resultArray = [[UInt64]](
+            repeating: [UInt64](repeating: 0, count: 4), count: 4
         )
 
         // Loop through every combination of lhsArray[x] * rhsArray[y]
@@ -429,7 +429,7 @@ extension UInt128 : BinaryInteger {
     // MARK: Instance Methods
 
     public var words: [UInt] {
-        guard self != UInt128.min else {
+        guard self != .min else {
             return []
         }
 
@@ -748,7 +748,7 @@ extension UInt128 {
     ///   or `0x` for base16.
     @available(swift, deprecated: 3.2, renamed: "init(_:)")
     public static func fromUnparsedString(_ source: String) throws -> UInt128 {
-        return try UInt128.init(source)
+        return try UInt128(source)
     }
 }
 
