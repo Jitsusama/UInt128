@@ -436,7 +436,7 @@ extension UInt128 : BinaryInteger {
     // MARK: Instance Methods
 
     public var words: [UInt] {
-        guard self != .min else {
+        guard self != UInt128.min else {
             return []
         }
 
