@@ -113,17 +113,10 @@ extension UInt128 : FixedWidthInteger {
     }
 
     public var leadingZeroBitCount: Int {
-        var zeroCount = 0
-        var shiftWidth = 127
-
-        while shiftWidth >= 0 {
-            let currentBit = self &>> shiftWidth
-            guard currentBit == 0 else { break }
-            zeroCount += 1
-            shiftWidth -= 1
+        if value.upperBits == 0 {
+            return UInt64.bitWidth + value.lowerBits.leadingZeroBitCount
         }
-
-        return zeroCount
+        return value.upperBits.leadingZeroBitCount
     }
 
     /// Returns the big-endian representation of the integer, changing the byte order if necessary.
@@ -162,21 +155,13 @@ extension UInt128 : FixedWidthInteger {
     /// Creates an integer from its big-endian representation, changing the
     /// byte order if necessary.
     public init(bigEndian value: UInt128) {
-        #if arch(i386) || arch(x86_64) || arch(arm) || arch(arm64)
-            self = value.byteSwapped
-        #else
-            self = value
-        #endif
+        self = value.bigEndian
     }
 
     /// Creates an integer from its little-endian representation, changing the
     /// byte order if necessary.
     public init(littleEndian value: UInt128) {
-        #if arch(i386) || arch(x86_64) || arch(arm) || arch(arm64)
-            self = value
-        #else
-            self = value.byteSwapped
-        #endif
+        self = value.littleEndian
     }
 
     // MARK: Instance Methods
@@ -452,17 +437,10 @@ extension UInt128 : BinaryInteger {
     }
 
     public var trailingZeroBitCount: Int {
-        let mask: UInt128 = 1
-        var bitsToWalk = self
-
-        for currentPosition in 0...128 {
-            if bitsToWalk & mask == 1 {
-                return currentPosition
-            }
-            bitsToWalk >>= 1
+        if value.lowerBits == 0 {
+            return UInt64.bitWidth + value.upperBits.trailingZeroBitCount
         }
-
-        return 128
+        return value.lowerBits.trailingZeroBitCount
     }
 
     // MARK: Initializers
