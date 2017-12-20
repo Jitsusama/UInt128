@@ -45,7 +45,7 @@ public struct UInt128 {
 
     /// Counts up the significant bits in stored data.
     public var significantBits: UInt128 {
-        return  UInt128(UInt128.bitWidth - leadingZeroBitCount)
+        return UInt128(UInt128.bitWidth - leadingZeroBitCount)
     }
 
     /// Undocumented private variable required for passing this type
