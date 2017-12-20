@@ -45,24 +45,7 @@ public struct UInt128 {
 
     /// Counts up the significant bits in stored data.
     public var significantBits: UInt128 {
-        var significantBits: UInt128 = 0
-        var bitsToWalk: UInt64 = 0 // The bits to crawl in loop.
-
-        // When upperBits > 0, lowerBits are all significant.
-        if self.value.upperBits > 0 {
-            bitsToWalk = self.value.upperBits
-            significantBits = 64
-        } else if self.value.lowerBits > 0 {
-            bitsToWalk = self.value.lowerBits
-        }
-
-        // Walk significant bits by shifting right until all bits are equal to 0.
-        while bitsToWalk > 0 {
-            bitsToWalk >>= 1
-            significantBits += 1
-        }
-
-        return significantBits
+        return  UInt128(UInt128.bitWidth - leadingZeroBitCount)
     }
 
     /// Undocumented private variable required for passing this type
