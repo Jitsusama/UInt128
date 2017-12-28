@@ -204,8 +204,8 @@ extension UInt128 : FixedWidthInteger {
 
         // The future contents of this array will be used to store segment
         // multiplication results.
-        var resultArray = [[UInt64]].init(
-            repeating: [UInt64].init(repeating: 0, count: 4), count: 4
+        var resultArray = [[UInt64]](
+            repeating: [UInt64](repeating: 0, count: 4), count: 4
         )
 
         // Loop through every combination of lhsArray[x] * rhsArray[y]
@@ -405,7 +405,7 @@ extension UInt128 : BinaryInteger {
         var words: [UInt] = []
 
         for currentWord in 0 ..< self.bitWidth / UInt.bitWidth {
-            let shiftAmount: UInt64 = UInt64(UInt.bitWidth) * UInt64(currentWord)
+            let shiftAmount: UInt64 = UInt64(UInt.bitWidth * currentWord)
             let mask = UInt64(UInt.max)
             var shifted = self
 
