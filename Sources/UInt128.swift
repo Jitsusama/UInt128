@@ -64,7 +64,7 @@ public struct UInt128 {
     }
 
     public init() {
-        self = 0
+        self.init(upperBits: 0, lowerBits: 0)
     }
 
     public init(_ source: UInt128) {
@@ -412,7 +412,7 @@ extension UInt128 : BinaryInteger {
 
     public init?<T : BinaryFloatingPoint>(exactly source: T) {
         if source.isZero {
-            self = 0
+            self = UInt128()
         }
         else if source.exponent < 0 || source.rounded() != source {
             return nil
