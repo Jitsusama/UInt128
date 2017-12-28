@@ -64,7 +64,7 @@ public struct UInt128 {
     }
 
     public init() {
-        self.init(upperBits: 0, lowerBits: 0)
+        self = 0
     }
 
     public init(_ source: UInt128) {
