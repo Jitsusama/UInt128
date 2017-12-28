@@ -122,7 +122,8 @@ extension UInt128 : FixedWidthInteger {
 
     /// Returns the current integer with the byte order swapped.
     public var byteSwapped: UInt128 {
-        return UInt128(upperBits: self.value.lowerBits.byteSwapped, lowerBits: self.value.upperBits.byteSwapped)
+        return UInt128(upperBits: self.value.lowerBits.byteSwapped,
+                       lowerBits: self.value.upperBits.byteSwapped)
     }
 
     // MARK: Initializers
@@ -430,7 +431,7 @@ extension UInt128 : BinaryInteger {
 
     public init?<T : BinaryFloatingPoint>(exactly source: T) {
         if source.isZero {
-            self = UInt128()
+            self = 0
         }
         else if source.exponent < 0 || source.rounded() != source {
             return nil
@@ -707,7 +708,7 @@ extension UInt128 {
     ///   or `0x` for base16.
     @available(swift, deprecated: 3.2, renamed: "init(_:)")
     public static func fromUnparsedString(_ source: String) throws -> UInt128 {
-        return try UInt128.init(source)
+        return try UInt128(source)
     }
 }
 
