@@ -447,28 +447,28 @@ extension UInt128 : BinaryInteger {
 
     // MARK: Type Methods
 
-    public static func /(_ lhs: UInt128, _ rhs: UInt128) -> UInt128 {
+    public static func /(lhs: UInt128, rhs: UInt128) -> UInt128 {
         let result = lhs.dividedReportingOverflow(by: rhs)
 
         return result.partialValue
     }
 
-    public static func /=(_ lhs: inout UInt128, _ rhs: UInt128) {
+    public static func /=(lhs: inout UInt128, rhs: UInt128) {
         lhs = lhs / rhs
     }
 
-    public static func %(_ lhs: UInt128, _ rhs: UInt128) -> UInt128 {
+    public static func %(lhs: UInt128, rhs: UInt128) -> UInt128 {
         let result = lhs.remainderReportingOverflow(dividingBy: rhs)
 
         return result.partialValue
     }
 
-    public static func %=(_ lhs: inout UInt128, _ rhs: UInt128) {
+    public static func %=(lhs: inout UInt128, rhs: UInt128) {
         lhs = lhs % rhs
     }
 
     /// Performs a bitwise AND operation on 2 UInt128 data types.
-    public static func &=(_ lhs: inout UInt128, _ rhs: UInt128) {
+    public static func &=(lhs: inout UInt128, rhs: UInt128) {
         let upperBits = lhs.value.upperBits & rhs.value.upperBits
         let lowerBits = lhs.value.lowerBits & rhs.value.lowerBits
 
@@ -476,7 +476,7 @@ extension UInt128 : BinaryInteger {
     }
 
     /// Performs a bitwise OR operation on 2 UInt128 data types.
-    public static func |=(_ lhs: inout UInt128, _ rhs: UInt128) {
+    public static func |=(lhs: inout UInt128, rhs: UInt128) {
         let upperBits = lhs.value.upperBits | rhs.value.upperBits
         let lowerBits = lhs.value.lowerBits | rhs.value.lowerBits
 
@@ -484,7 +484,7 @@ extension UInt128 : BinaryInteger {
     }
 
     /// Performs a bitwise XOR operation on 2 UInt128 data types.
-    public static func ^=(_ lhs: inout UInt128, _ rhs: UInt128) {
+    public static func ^=(lhs: inout UInt128, rhs: UInt128) {
         let upperBits = lhs.value.upperBits ^ rhs.value.upperBits
         let lowerBits = lhs.value.lowerBits ^ rhs.value.lowerBits
 
@@ -497,7 +497,7 @@ extension UInt128 : BinaryInteger {
     /// shift value that will not cause an overflowing shift before
     /// performing the shift. IE: `rhs = 128` will become `rhs = 0`
     /// and `rhs = 129` will become `rhs = 1`.
-    public static func &>>=(_ lhs: inout UInt128, _ rhs: UInt128) {
+    public static func &>>=(lhs: inout UInt128, rhs: UInt128) {
         let shiftWidth = rhs.value.lowerBits & 127
 
         switch shiftWidth {
@@ -521,7 +521,7 @@ extension UInt128 : BinaryInteger {
     /// shift value that will not cause an overflowing shift before
     /// performing the shift. IE: `rhs = 128` will become `rhs = 0`
     /// and `rhs = 129` will become `rhs = 1`.
-    public static func &<<=(_ lhs: inout UInt128, _ rhs: UInt128) {
+    public static func &<<=(lhs: inout UInt128, rhs: UInt128) {
         let shiftWidth = rhs.value.lowerBits & 127
 
         switch shiftWidth {
@@ -555,28 +555,28 @@ extension UInt128 : Hashable {
 // MARK: - Numeric Conformance
 
 extension UInt128 : Numeric {
-    public static func +(_ lhs: UInt128, _ rhs: UInt128) -> UInt128 {
+    public static func +(lhs: UInt128, rhs: UInt128) -> UInt128 {
         precondition(~lhs >= rhs, "Addition overflow!")
         let result = lhs.addingReportingOverflow(rhs)
         return result.partialValue
     }
-    public static func +=(_ lhs: inout UInt128, _ rhs: UInt128) {
+    public static func +=(lhs: inout UInt128, rhs: UInt128) {
         lhs = lhs + rhs
     }
-    public static func -(_ lhs: UInt128, _ rhs: UInt128) -> UInt128 {
+    public static func -(lhs: UInt128, rhs: UInt128) -> UInt128 {
         precondition(lhs >= rhs, "Integer underflow")
         let result = lhs.subtractingReportingOverflow(rhs)
         return result.partialValue
     }
-    public static func -=(_ lhs: inout UInt128, _ rhs: UInt128) {
+    public static func -=(lhs: inout UInt128, rhs: UInt128) {
         lhs = lhs - rhs
     }
-    public static func *(_ lhs: UInt128, _ rhs: UInt128) -> UInt128 {
+    public static func *(lhs: UInt128, rhs: UInt128) -> UInt128 {
         let result = lhs.multipliedReportingOverflow(by: rhs)
         precondition(!result.overflow, "Multiplication overflow!")
         return result.partialValue
     }
-    public static func *=(_ lhs: inout UInt128, _ rhs: UInt128) {
+    public static func *=(lhs: inout UInt128, rhs: UInt128) {
         lhs = lhs * rhs
     }
 }
