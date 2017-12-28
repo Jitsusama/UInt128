@@ -404,7 +404,7 @@ extension UInt128 : BinaryInteger {
 
         var words: [UInt] = []
 
-        for currentWord in 0 ... self.bitWidth / UInt.bitWidth {
+        for currentWord in 0 ..< self.bitWidth / UInt.bitWidth {
             let shiftAmount: UInt64 = UInt64(UInt.bitWidth) * UInt64(currentWord)
             let mask = UInt64(UInt.max)
             var shifted = self
