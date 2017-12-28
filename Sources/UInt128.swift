@@ -398,26 +398,7 @@ extension UInt128 : BinaryInteger {
     // MARK: Instance Methods
 
     public var words: [UInt] {
-        guard self != UInt128.min else {
-            return []
-        }
-
-        var words: [UInt] = []
-
-        for currentWord in 0 ..< self.bitWidth / UInt.bitWidth {
-            let shiftAmount: UInt64 = UInt64(UInt.bitWidth * currentWord)
-            let mask = UInt64(UInt.max)
-            var shifted = self
-
-            if shiftAmount > 0 {
-                shifted &>>= UInt128(upperBits: 0, lowerBits: shiftAmount)
-            }
-
-            let masked: UInt128 = shifted & UInt128(upperBits: 0, lowerBits: mask)
-
-            words.append(UInt(masked.value.lowerBits))
-        }
-        return words
+        return Array(value.lowerBits.words) + Array(value.upperBits.words)
     }
 
     public var trailingZeroBitCount: Int {
