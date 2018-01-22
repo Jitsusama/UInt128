@@ -612,7 +612,7 @@ extension UInt128 : CustomStringConvertible {
         // Used as the check for indexing through UInt128 for string interpolation.
         var divmodResult = (quotient: self, remainder: UInt128(0))
         // Will hold the pool of possible values.
-        let characterPool = (uppercase) ? "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ" : "0123456789abcdefghijklmnopqrstuvwxyz"
+        let characterPool = uppercase ? "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ" : "0123456789abcdefghijklmnopqrstuvwxyz"
         // Go through internal value until every base position is string(ed).
         repeat {
             divmodResult = divmodResult.quotient.quotientAndRemainder(dividingBy: UInt128(radix))
