@@ -538,16 +538,14 @@ extension UInt128 : Hashable {
 extension UInt128 : Numeric {
     public static func +(lhs: UInt128, rhs: UInt128) -> UInt128 {
         precondition(~lhs >= rhs, "Addition overflow!")
-        let result = lhs.addingReportingOverflow(rhs)
-        return result.partialValue
+        return lhs.addingReportingOverflow(rhs).partialValue
     }
     public static func +=(lhs: inout UInt128, rhs: UInt128) {
         lhs = lhs + rhs
     }
     public static func -(lhs: UInt128, rhs: UInt128) -> UInt128 {
         precondition(lhs >= rhs, "Integer underflow")
-        let result = lhs.subtractingReportingOverflow(rhs)
-        return result.partialValue
+        return lhs.subtractingReportingOverflow(rhs).partialValue
     }
     public static func -=(lhs: inout UInt128, rhs: UInt128) {
         lhs = lhs - rhs
@@ -603,14 +601,14 @@ extension UInt128 : CustomStringConvertible {
     /// - returns:
     ///     String representation of the stored UInt128 value.
     internal func _valueToString(radix: Int = 10, uppercase: Bool = true) -> String {
-        precondition(radix > 1 && radix < 37, "radix must be within the range of 2-36.")
+        precondition((1...36).contains(radix), "radix must be within the range of 2-36.")
         // Will store the final string result.
-        var result = String()
         // Simple case.
         if self == 0 {
-            result.append("0")
-            return result
+            return "0"
         }
+
+        var result = String()
         // Used as the check for indexing through UInt128 for string interpolation.
         var divmodResult = (quotient: self, remainder: UInt128(0))
         // Will hold the pool of possible values.
@@ -662,14 +660,16 @@ extension UInt128 : ExpressibleByStringLiteral {
     // MARK: Type Methods
 
     internal static func _valueFromString(_ value: String) -> UInt128? {
-        let radix = UInt128._determineRadixFromString(value)
+        let radix = value.radix
         let inputString = radix == 10 ? value : String(value.dropFirst(2))
 
         return UInt128(inputString, radix: radix)
     }
+}
 
-    internal static func _determineRadixFromString(_ string: String) -> Int {
-        switch string.prefix(2) {
+extension String {
+    fileprivate var radix: Int {
+        switch prefix(2) {
         case "0b": return 2
         case "0o": return 8
         case "0x": return 16
