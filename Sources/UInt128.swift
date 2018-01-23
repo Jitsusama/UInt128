@@ -429,9 +429,7 @@ extension UInt128 : BinaryInteger {
     // MARK: Type Methods
 
     public static func /(lhs: UInt128, rhs: UInt128) -> UInt128 {
-        let result = lhs.dividedReportingOverflow(by: rhs)
-
-        return result.partialValue
+        return lhs.dividedReportingOverflow(by: rhs).partialValue
     }
 
     public static func /=(lhs: inout UInt128, rhs: UInt128) {
@@ -439,9 +437,7 @@ extension UInt128 : BinaryInteger {
     }
 
     public static func %(lhs: UInt128, rhs: UInt128) -> UInt128 {
-        let result = lhs.remainderReportingOverflow(dividingBy: rhs)
-
-        return result.partialValue
+        return lhs.remainderReportingOverflow(dividingBy: rhs).partialValue
     }
 
     public static func %=(lhs: inout UInt128, rhs: UInt128) {
@@ -538,16 +534,14 @@ extension UInt128 : Hashable {
 extension UInt128 : Numeric {
     public static func +(lhs: UInt128, rhs: UInt128) -> UInt128 {
         precondition(~lhs >= rhs, "Addition overflow!")
-        let result = lhs.addingReportingOverflow(rhs)
-        return result.partialValue
+        return lhs.addingReportingOverflow(rhs).partialValue
     }
     public static func +=(lhs: inout UInt128, rhs: UInt128) {
         lhs = lhs + rhs
     }
     public static func -(lhs: UInt128, rhs: UInt128) -> UInt128 {
         precondition(lhs >= rhs, "Integer underflow")
-        let result = lhs.subtractingReportingOverflow(rhs)
-        return result.partialValue
+        return lhs.subtractingReportingOverflow(rhs).partialValue
     }
     public static func -=(lhs: inout UInt128, rhs: UInt128) {
         lhs = lhs - rhs
@@ -603,18 +597,18 @@ extension UInt128 : CustomStringConvertible {
     /// - returns:
     ///     String representation of the stored UInt128 value.
     internal func _valueToString(radix: Int = 10, uppercase: Bool = true) -> String {
-        precondition(radix > 1 && radix < 37, "radix must be within the range of 2-36.")
+        precondition((2...36).contains(radix), "radix must be within the range of 2-36.")
         // Will store the final string result.
-        var result = String()
         // Simple case.
         if self == 0 {
-            result.append("0")
-            return result
+            return "0"
         }
+
+        var result = String()
         // Used as the check for indexing through UInt128 for string interpolation.
         var divmodResult = (quotient: self, remainder: UInt128(0))
         // Will hold the pool of possible values.
-        let characterPool = (uppercase) ? "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ" : "0123456789abcdefghijklmnopqrstuvwxyz"
+        let characterPool = uppercase ? "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ" : "0123456789abcdefghijklmnopqrstuvwxyz"
         // Go through internal value until every base position is string(ed).
         repeat {
             divmodResult = divmodResult.quotient.quotientAndRemainder(dividingBy: UInt128(radix))
@@ -648,6 +642,17 @@ extension UInt128 : Comparable {
 
 // MARK: - ExpressibleByStringLiteral Conformance
 
+extension String {
+    fileprivate var radix: Int {
+        switch prefix(2) {
+        case "0b": return 2
+        case "0o": return 8
+        case "0x": return 16
+        default: return 10
+        }
+    }
+}
+
 extension UInt128 : ExpressibleByStringLiteral {
     // MARK: Initializers
 
@@ -662,19 +667,10 @@ extension UInt128 : ExpressibleByStringLiteral {
     // MARK: Type Methods
 
     internal static func _valueFromString(_ value: String) -> UInt128? {
-        let radix = UInt128._determineRadixFromString(value)
+        let radix = value.radix
         let inputString = radix == 10 ? value : String(value.dropFirst(2))
 
         return UInt128(inputString, radix: radix)
-    }
-
-    internal static func _determineRadixFromString(_ string: String) -> Int {
-        switch string.prefix(2) {
-        case "0b": return 2
-        case "0o": return 8
-        case "0x": return 16
-        default: return 10
-        }
     }
 }
 
