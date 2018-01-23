@@ -429,9 +429,7 @@ extension UInt128 : BinaryInteger {
     // MARK: Type Methods
 
     public static func /(lhs: UInt128, rhs: UInt128) -> UInt128 {
-        let result = lhs.dividedReportingOverflow(by: rhs)
-
-        return result.partialValue
+        return lhs.dividedReportingOverflow(by: rhs).partialValue
     }
 
     public static func /=(lhs: inout UInt128, rhs: UInt128) {
@@ -439,9 +437,7 @@ extension UInt128 : BinaryInteger {
     }
 
     public static func %(lhs: UInt128, rhs: UInt128) -> UInt128 {
-        let result = lhs.remainderReportingOverflow(dividingBy: rhs)
-
-        return result.partialValue
+        return lhs.remainderReportingOverflow(dividingBy: rhs).partialValue
     }
 
     public static func %=(lhs: inout UInt128, rhs: UInt128) {
@@ -646,6 +642,17 @@ extension UInt128 : Comparable {
 
 // MARK: - ExpressibleByStringLiteral Conformance
 
+extension String {
+    fileprivate var radix: Int {
+        switch prefix(2) {
+        case "0b": return 2
+        case "0o": return 8
+        case "0x": return 16
+        default: return 10
+        }
+    }
+}
+
 extension UInt128 : ExpressibleByStringLiteral {
     // MARK: Initializers
 
@@ -664,17 +671,6 @@ extension UInt128 : ExpressibleByStringLiteral {
         let inputString = radix == 10 ? value : String(value.dropFirst(2))
 
         return UInt128(inputString, radix: radix)
-    }
-}
-
-extension String {
-    fileprivate var radix: Int {
-        switch prefix(2) {
-        case "0b": return 2
-        case "0o": return 8
-        case "0x": return 16
-        default: return 10
-        }
     }
 }
 
