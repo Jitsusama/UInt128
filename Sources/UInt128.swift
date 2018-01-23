@@ -597,7 +597,7 @@ extension UInt128 : CustomStringConvertible {
     /// - returns:
     ///     String representation of the stored UInt128 value.
     internal func _valueToString(radix: Int = 10, uppercase: Bool = true) -> String {
-        precondition((1...36).contains(radix), "radix must be within the range of 2-36.")
+        precondition((2...36).contains(radix), "radix must be within the range of 2-36.")
         // Will store the final string result.
         // Simple case.
         if self == 0 {
