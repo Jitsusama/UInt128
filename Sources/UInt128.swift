@@ -603,18 +603,19 @@ extension UInt128 : CustomStringConvertible {
     /// - returns:
     ///     String representation of the stored UInt128 value.
     internal func _valueToString(radix: Int = 10, uppercase: Bool = true) -> String {
-        precondition(radix > 1 && radix < 37, "radix must be within the range of 2-36.")
-        // Will store the final string result.
-        var result = String()
+        precondition((2...36) ~= radix, "radix must be within the range of 2-36.")
         // Simple case.
         if self == 0 {
-            result.append("0")
-            return result
+            return "0"
         }
+
+        // Will store the final string result.
+        var result = String()
+
         // Used as the check for indexing through UInt128 for string interpolation.
         var divmodResult = (quotient: self, remainder: UInt128(0))
         // Will hold the pool of possible values.
-        let characterPool = (uppercase) ? "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ" : "0123456789abcdefghijklmnopqrstuvwxyz"
+        let characterPool = uppercase ? "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ" : "0123456789abcdefghijklmnopqrstuvwxyz"
         // Go through internal value until every base position is string(ed).
         repeat {
             divmodResult = divmodResult.quotient.quotientAndRemainder(dividingBy: UInt128(radix))
