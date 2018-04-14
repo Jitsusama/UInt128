@@ -24,7 +24,7 @@ Pod::Spec.new do |s|
 
   s.homepage         = 'https://github.com/Jitsusama/UInt128'
   s.license          = { :type => 'Apache-2.0', :file => 'LICENSE' }
-  s.author           = { 'Jitsusama' => 'i@gmail.com' }
+  s.author           = { 'Joel Gerber' => 'joel@grrbrr.ca' }
   s.source           = { :git => 'https://github.com/Jitsusama/UInt128.git', :tag => s.version.to_s }
   s.swift_version = "4.0"
 
