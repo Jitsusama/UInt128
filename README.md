@@ -7,7 +7,7 @@ native unsigned integer types support.
 
 ## Installation
 This library includes Carthage and SPM support out of the box. Reference this git
-repository in a Cartfile or Package.swift file in order to easily include this library
+repository in a Podfile, Cartfile or Package.swift file in order to easily include this library
 while also being able to easily track changes.
 
 You can also manually copy over the Sources/UInt128.swift file into your project and
