@@ -2,37 +2,41 @@
 # Be sure to run `pod lib lint UInt128.podspec' to ensure this is a
 # valid spec before submitting.
 #
-# Any lines starting with a # are optional, but their use is encouraged
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html
 #
 
-Pod::Spec.new do |s|
-  s.name             = 'UInt128'
-  s.version          = '0.7.0'
-  s.summary          = 'A Swift 128-bit Unsigned Integer Data Type conforming to the UnsignedInteger Protocol'
+Pod::Spec.new do |spec|
+  # Project metadata
+  spec.name = 'UInt128'
+  spec.version = '0.8.0'
+  spec.summary = 'A Swift 128-bit Unsigned Integer Data Type'
+  spec.description = <<~DESC
+     This library provides a Swift 4.0 compatible 128-bit Unsigned Integer
+     data type. It includes support for all of the protocols that you would
+     expect from a native UnsignedInteger type in the Swift standard library.
+  DESC
+  spec.homepage = 'https://github.com/Jitsusama/UInt128'
+  spec.license = {
+    :type => 'Apache-2.0',
+    :file => 'LICENSE'
+  }
+  spec.author = {
+    'Joel Gerber' => 'joel@grrbrr.ca'
+  }
+  spec.source = {
+    :git => 'https://github.com/Jitsusama/UInt128.git',
+    :tag => spec.version.to_s
+  }
 
-# This description is used to generate tags and improve search results.
-#   * Think: What does it do? Why did you write it? What is the focus?
-#   * Try to keep it short, snappy and to the point.
-#   * Write the description between the DESC delimiters below.
-#   * Finally, don't worry about the indent, CocoaPods strips it!
+  # Where to look for source files
+  spec.source_files = 'Sources/*'
 
-  s.description      = <<-DESC
-                       A Swift 128-bit Unsigned Integer Data Type conforming to the UnsignedInteger Protocol. 
-                       This library also implements a number of other initializers and properties that Swift's native unsigned integer types support.
-                       DESC
+  # State supported version of the Swift library
+  spec.swift_version = "4.0"
 
-  s.homepage         = 'https://github.com/Jitsusama/UInt128'
-  s.license          = { :type => 'Apache-2.0', :file => 'LICENSE' }
-  s.author           = { 'Joel Gerber' => 'joel@grrbrr.ca' }
-  s.source           = { :git => 'https://github.com/Jitsusama/UInt128.git', :tag => s.version.to_s }
-  s.swift_version = "4.0"
-
-  s.ios.deployment_target = "8.0"
-  s.tvos.deployment_target = "9.0"
-  s.osx.deployment_target = "10.9"
-  s.watchos.deployment_target = "2.0"
-
-  s.source_files = 'Sources/*'
-  
+  # OS deployment targets
+  spec.ios.deployment_target = "8.0"
+  spec.tvos.deployment_target = "9.0"
+  spec.osx.deployment_target = "10.9"
+  spec.watchos.deployment_target = "2.0"
 end
