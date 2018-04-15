@@ -389,12 +389,13 @@ extension UInt128 : FixedWidthInteger {
 
 // MARK: - BinaryInteger Conformance
 
-extension UInt128 : BinaryInteger {
+extension UInt128 {
     // MARK: Instance Properties
 
     public static var bitWidth : Int { return 128 }
+}
 
-
+extension UInt128 : BinaryInteger {
     // MARK: Instance Methods
 
     public var words: [UInt] {
