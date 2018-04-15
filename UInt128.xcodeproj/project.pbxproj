@@ -263,6 +263,7 @@
 					};
 					481A309F1F02F8A000C4438A = {
 						CreatedOnToolsVersion = 8.3.3;
+						LastSwiftMigration = 0930;
 						ProvisioningStyle = Automatic;
 					};
 					481A30AE1F02FB9F00C4438A = {
@@ -485,7 +486,8 @@
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "watchsimulator watchos";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				TARGET_NAME = UInt128;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -542,7 +544,8 @@
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "watchsimulator watchos";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				TARGET_NAME = UInt128;
 				VALIDATE_PRODUCT = YES;
