@@ -8,7 +8,7 @@
 Pod::Spec.new do |spec|
   # Project metadata
   spec.name = 'UInt128'
-  spec.version = '0.7.0'
+  spec.version = '0.8.0'
   spec.summary = 'A Swift 128-bit Unsigned Integer Data Type'
   spec.description = <<~DESC
      This library provides a Swift 4.0 compatible 128-bit Unsigned Integer
