@@ -680,6 +680,25 @@ extension UInt128 : ExpressibleByStringLiteral {
     }
 }
 
+extension UInt128 : Codable {
+    private enum CodingKeys : String, CodingKey {
+        case upperBits = "upperBits", lowerBits = "lowerBits"
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let upperBits = try container.decode(UInt64.self, forKey: .upperBits)
+        let lowerBits = try container.decode(UInt64.self, forKey: .lowerBits)
+        self.init(upperBits: upperBits, lowerBits: lowerBits)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(value.upperBits, forKey: .upperBits)
+        try container.encode(value.lowerBits, forKey: .lowerBits)
+    }
+}
+
 // MARK: - Deprecated API
 
 extension UInt128 {
