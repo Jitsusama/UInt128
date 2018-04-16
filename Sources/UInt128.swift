@@ -680,6 +680,8 @@ extension UInt128 : ExpressibleByStringLiteral {
     }
 }
 
+// MARK: - Codable Conformance
+
 extension UInt128 : Codable {
     private enum CodingKeys : String, CodingKey {
         case upperBits = "upperBits", lowerBits = "lowerBits"
