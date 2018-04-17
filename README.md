@@ -1,7 +1,10 @@
 # UInt128
-A Swift 128-bit Unsigned Integer Data Type conforming to the UnsignedInteger Protocol.
-This library also implements a number of other initializers and properties that Swift's
-native unsigned integer types support.
+A Swift 128-bit Unsigned Integer Data Type conforming to the UnsignedInteger,
+FixedWidth, BinaryInteger, Hashable, Numeric, Equatable,
+ExpressibleByIntegerLiteral, CustomStringConvertible, CustomDebugStringConvertible,
+Comparable, ExpressibleByStringLiteral and Codable (thanks @adamnemecek) Protocols,
+as well as extending the BinaryFloatingPoint and String types to support operating
+with its new type.
 
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 
@@ -11,7 +14,7 @@ Reference this git repository in a Podfile, Cartfile or Package.swift file in
 order to easily include this library while also being able to easily track
 changes.
 
-You can also manually copy over the Sources/UInt128.swift file into your project
+You can also manually copy over the `Sources/UInt128.swift` file into your project
 and it should work great. I've purposely kept this library constrained to a
 single file in order to support this use case.
 
