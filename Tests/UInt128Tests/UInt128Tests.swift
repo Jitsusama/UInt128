@@ -1010,6 +1010,15 @@ class ExpressibleByStringLiteralTests : XCTestCase {
     }
 }
 
+class CodableTests : XCTestCase {
+    func testCodable() {
+        let enc: UInt128 = "340282366920938463463374607431768211455"
+        let data = try! JSONEncoder().encode(enc)
+        let dec = try! JSONDecoder().decode(UInt128.self, from: data)
+        XCTAssertEqual(enc, dec)
+    }
+}
+
 @available(swift, deprecated: 3.2)
 class DeprecatedAPITests : XCTestCase {
     func testFromUnparsedString() {
