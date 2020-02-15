@@ -19,8 +19,6 @@ let package = Package(
             dependencies: []),
         .testTarget(
             name: "UInt128Tests",
-            dependencies: ["UInt128"],
-            path: "Tests"
-        )
+            dependencies: ["UInt128"]),
     ]
 )
