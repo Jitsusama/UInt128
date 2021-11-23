@@ -530,7 +530,8 @@ extension UInt128 : UnsignedInteger {}
 
 extension UInt128 : Hashable {
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(self.value.lowerBits.hashValue ^ self.value.upperBits.hashValue)
+        hasher.combine(self.value.lowerBits.hashValue)
+        hasher.combine(self.value.upperBits.hashValue)
     }
 }
 
