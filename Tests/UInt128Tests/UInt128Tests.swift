@@ -713,23 +713,6 @@ class BinaryIntegerTests : XCTestCase {
     }
 }
 
-class HashableTests : XCTestCase {
-    func hashableTests() -> [(input: UInt128, result: Int)] {
-        var tests = [(input: UInt128(), result: 0)]
-        tests.append((input: UInt128(1), result: 1))
-        tests.append((input: UInt128(Int.max), result: Int.max))
-        tests.append((input: try! UInt128("85070591730234615862769194512323794261"),
-                      result: -1537228672809129302))
-        return tests
-    }
-
-    func testHashValueProperty() {
-        hashableTests().forEach { test in
-            XCTAssertEqual(test.input.hashValue, test.result)
-        }
-    }
-}
-
 class NumericTests : XCTestCase {
     func additionTests() -> [(augend: UInt128, addend: UInt128, sum: UInt128)] {
         // 0 + 0 = 0
