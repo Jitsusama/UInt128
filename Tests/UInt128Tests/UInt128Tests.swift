@@ -478,10 +478,17 @@ class BinaryIntegerTests : XCTestCase {
     }
 
     func testInitFloatingPoint() {
+        #if arch(x86_64)
         var tests = [(input: Float80(), result: UInt128())]
         tests.append((input: Float80(0.1), result: UInt128()))
         tests.append((input: Float80(1.0), result: UInt128(1)))
         tests.append((input: Float80(UInt64.max), result: UInt128(UInt64.max)))
+        #else
+        var tests = [(input: 0.0, result: UInt128())]
+        tests.append((input: 0.1, result: UInt128()))
+        tests.append((input: 1.0, result: UInt128(1)))
+        tests.append((input: Double(UInt32.max), result: UInt128(UInt32.max)))
+        #endif
 
         tests.forEach { test in
             XCTAssertEqual(UInt128(test.input), test.result)
