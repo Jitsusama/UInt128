@@ -67,11 +67,6 @@ public struct UInt128 {
         self.init(upperBits: 0, lowerBits: 0)
     }
 
-    public init(_ source: UInt128) {
-        self.init(upperBits: source.value.upperBits,
-                  lowerBits: source.value.lowerBits)
-    }
-
     /// Initialize a UInt128 value from a string.
     /// Returns `nil` if input cannot be converted to a UInt128 value.
     ///
