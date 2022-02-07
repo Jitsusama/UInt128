@@ -73,14 +73,15 @@ public struct UInt128 {
     }
 
     /// Initialize a UInt128 value from a string.
+    /// Returns `nil` if input cannot be converted to a UInt128 value.
     ///
     /// - parameter source: the string that will be converted into a
     ///   UInt128 value. Defaults to being analyzed as a base10 number,
     ///   but can be prefixed with `0b` for base2, `0o` for base8
     ///   or `0x` for base16.
-    public init(_ source: String) throws {
+    public init?(_ source: String) {
         guard let result = UInt128._valueFromString(source) else {
-            throw UInt128Errors.invalidString
+            return nil
         }
         self = result
     }
@@ -713,7 +714,10 @@ extension UInt128 {
     ///   or `0x` for base16.
     @available(swift, deprecated: 3.2, renamed: "init(_:)")
     public static func fromUnparsedString(_ source: String) throws -> UInt128 {
-        return try UInt128(source)
+        guard let result = UInt128(source) else {
+            throw UInt128Errors.invalidString
+        }
+        return result
     }
 }
 

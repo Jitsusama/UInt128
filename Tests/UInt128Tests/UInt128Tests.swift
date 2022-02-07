@@ -48,7 +48,7 @@ class SystemTests : XCTestCase {
 
     func testCanReceiveAString() {
         let expectedResult = UInt128(upperBits: 0, lowerBits: 1)
-        let testResult = try! UInt128(String("1"))
+        let testResult = UInt128(String("1"))
         XCTAssertEqual(testResult, expectedResult)
     }
 
@@ -116,7 +116,7 @@ class BaseTypeTests : XCTestCase {
     }
 
     func testStringInitializerWithEmptyString() {
-        XCTAssertThrowsError(try UInt128(""))
+        XCTAssertNil(UInt128("" as String))
     }
 
     func testStringInitializerWithSupportedNumberFormats() {
@@ -124,8 +124,8 @@ class BaseTypeTests : XCTestCase {
         tests.append("0o8")
         tests.append("0xG")
 
-        try! tests.forEach { test in
-            XCTAssertThrowsError(try UInt128(test))
+        tests.forEach { test in
+            XCTAssertNil(UInt128(test))
         }
     }
 }
