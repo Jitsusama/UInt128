@@ -663,6 +663,9 @@ extension UInt128 : ExpressibleByStringLiteral {
     internal static func _valueFromString(_ value: String) -> UInt128? {
         let radix = UInt128._determineRadixFromString(value)
         let inputString = radix == 10 ? value : String(value.dropFirst(2))
+        guard inputString.isEmpty == false else {
+            return nil
+        }
 
         return UInt128(inputString, radix: radix)
     }
