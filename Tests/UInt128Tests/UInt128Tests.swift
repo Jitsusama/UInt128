@@ -24,7 +24,7 @@ import XCTest
 @testable import UInt128
 
 // A UInt128 with a decently complicated bit pattern
-let bizarreUInt128: UInt128 = "0xf1f3f5f7f9fbfdfffefcfaf0f8f6f4f2"
+let bizarreUInt128 = UInt128("0xf1f3f5f7f9fbfdfffefcfaf0f8f6f4f2")!
 
 /// User tests that act as a basic smoke test on library functionality.
 class SystemTests : XCTestCase {
@@ -54,7 +54,7 @@ class SystemTests : XCTestCase {
 
     func testStringLiteralInput() {
         let expectedResult = UInt128(upperBits: 0, lowerBits: 1)
-        let testResult: UInt128 = "1"
+        let testResult = UInt128("1")
         XCTAssertEqual(testResult, expectedResult)
     }
 
@@ -390,7 +390,7 @@ class FixedWidthIntegerTests : XCTestCase {
         }
     }
 
-    func testDividingFullWidth() {
+    func testDividingFullWidth() throws {
         // (0, 1) / 1 = 1r0
         var tests = [(dividend: (high: UInt128.min, low: UInt128(1)),
                       divisor: UInt128(1),
@@ -402,7 +402,7 @@ class FixedWidthIntegerTests : XCTestCase {
         // (1, 0) / 2 = 170141183460469231731687303715884105728r0
         tests.append((dividend: (high: UInt128(1), low: UInt128.min),
                       divisor: UInt128(2),
-                      result: (quotient: UInt128(stringLiteral: "170141183460469231731687303715884105728"),
+                      result: (quotient: try XCTUnwrap(UInt128("170141183460469231731687303715884105728")),
                                remainder: UInt128.min)))
 
         tests.forEach { test in
@@ -966,43 +966,43 @@ class ComparableTests : XCTestCase {
     }
 }
 
-class ExpressibleByStringLiteralTests : XCTestCase {
-    func stringTests() -> [(input: String, result: UInt128)] {
-        var tests = [(input: "", result: UInt128())]
+class FailableStringInitializerTests : XCTestCase {
+    func stringTests() -> [(input: String, result: UInt128?)] {
+        var tests = [(input: "", result: nil as UInt128?)]
         tests.append((input: "0", result: UInt128()))
         tests.append((input: "1", result: UInt128(1)))
         tests.append((input: "99", result: UInt128(99)))
         tests.append((input: "0b0101", result: UInt128(5)))
         tests.append((input: "0o11", result: UInt128(9)))
         tests.append((input: "0xFF", result: UInt128(255)))
-        tests.append((input: "0z1234", result: UInt128()))
+        tests.append((input: "0z1234", result: nil))
         return tests
     }
 
     func testInitWithStringLiteral() {
         stringTests().forEach { test in
-            XCTAssertEqual(UInt128(stringLiteral: test.input), test.result)
+            XCTAssertEqual(UInt128(test.input), test.result)
         }
     }
 
     func testEvaluatedWithStringLiteral() {
-        let binaryTest: UInt128 = "0b11"
+        let binaryTest = UInt128("0b11")
         XCTAssertEqual(binaryTest, UInt128(3))
 
-        let octalTest: UInt128 = "0o11"
+        let octalTest = UInt128("0o11")
         XCTAssertEqual(octalTest, UInt128(9))
 
-        let decimalTest: UInt128 = "11"
+        let decimalTest = UInt128("11")
         XCTAssertEqual(decimalTest, UInt128(11))
 
-        let hexTest: UInt128 = "0x11"
+        let hexTest = UInt128("0x11")
         XCTAssertEqual(hexTest, UInt128(17))
     }
 }
 
 class CodableTests : XCTestCase {
-    func testCodable() {
-        let enc: UInt128 = "340282366920938463463374607431768211455"
+    func testCodable() throws {
+        let enc = try XCTUnwrap(UInt128("340282366920938463463374607431768211455"))
         let data = try! JSONEncoder().encode(enc)
         let dec = try! JSONDecoder().decode(UInt128.self, from: data)
         XCTAssertEqual(enc, dec)

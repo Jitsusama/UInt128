@@ -645,41 +645,6 @@ extension UInt128 : Comparable {
     }
 }
 
-// MARK: - ExpressibleByStringLiteral Conformance
-
-extension UInt128 : ExpressibleByStringLiteral {
-    // MARK: Initializers
-
-    public init(stringLiteral value: StringLiteralType) {
-        self.init()
-
-        if let result = UInt128._valueFromString(value) {
-            self = result
-        }
-    }
-
-    // MARK: Type Methods
-
-    internal static func _valueFromString(_ value: String) -> UInt128? {
-        let radix = UInt128._determineRadixFromString(value)
-        let inputString = radix == 10 ? value : String(value.dropFirst(2))
-        guard inputString.isEmpty == false else {
-            return nil
-        }
-
-        return UInt128(inputString, radix: radix)
-    }
-
-    internal static func _determineRadixFromString(_ string: String) -> Int {
-        switch string.prefix(2) {
-        case "0b": return 2
-        case "0o": return 8
-        case "0x": return 16
-        default: return 10
-        }
-    }
-}
-
 // MARK: - Codable Conformance
 
 extension UInt128 : Codable {
@@ -717,6 +682,19 @@ extension UInt128 {
         }
         return result
     }
+    
+    /// The required initializer of `ExpressibleByStringLiteral`.
+    ///
+    /// Note that the `ExpressibleByStringLiteral` conformance has been removed because it
+    /// does not handle failures gracefully and it always shadows the failable initializer in Swift 5.
+    @available(swift, deprecated: 5.0, message: "The ExpressibleByStringLiteral conformance has been removed. Use failable initializer instead.", renamed: "init(_:)")
+    public init(stringLiteral value: StringLiteralType) {
+        self.init()
+
+        if let result = UInt128._valueFromString(value) {
+            self = result
+        }
+    }
 }
 
 // MARK: - BinaryFloatingPoint Interworking
@@ -752,3 +730,24 @@ extension String {
     }
 }
 
+extension UInt128 {
+
+    internal static func _valueFromString(_ value: String) -> UInt128? {
+        let radix = UInt128._determineRadixFromString(value)
+        let inputString = radix == 10 ? value : String(value.dropFirst(2))
+        guard inputString.isEmpty == false else {
+            return nil
+        }
+
+        return UInt128(inputString, radix: radix)
+    }
+
+    internal static func _determineRadixFromString(_ string: String) -> Int {
+        switch string.prefix(2) {
+        case "0b": return 2
+        case "0o": return 8
+        case "0x": return 16
+        default: return 10
+        }
+    }
+}
