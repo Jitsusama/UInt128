@@ -1,4 +1,4 @@
-// swift-tools-version:5.1
+// swift-tools-version:5.5
 
 import PackageDescription
 
@@ -10,6 +10,5 @@ let package = Package(
     targets: [
         .target(name: "UInt128"),
         .testTarget(name: "UInt128Tests", dependencies: ["UInt128"]),
-    ],
-    swiftLanguageVersions: [.v5]
+    ]
 )
