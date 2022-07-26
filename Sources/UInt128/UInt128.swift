@@ -45,22 +45,22 @@ public struct UInt128 {
 
     /// Counts up the significant bits in stored data.
     public var significantBits: UInt128 {
-        return UInt128(UInt128.bitWidth - leadingZeroBitCount)
+        return UInt128(UInt128.bitWidth - self.leadingZeroBitCount)
     }
 
     /// Undocumented private variable required for passing this type
     /// to a BinaryFloatingPoint type. See FloatingPoint.swift.gyb in
     /// the Swift stdlib/public/core directory.
     internal var signBitIndex: Int {
-        return 127 - leadingZeroBitCount
+        return 127 - self.leadingZeroBitCount
     }
 
     // MARK: Initializers
 
     /// Designated initializer for the UInt128 type.
     public init(upperBits: UInt64, lowerBits: UInt64) {
-        value.upperBits = upperBits
-        value.lowerBits = lowerBits
+        self.value.upperBits = upperBits
+        self.value.lowerBits = lowerBits
     }
 
     public init() {
@@ -88,14 +88,14 @@ extension UInt128: FixedWidthInteger {
     // MARK: Instance Properties
 
     public var nonzeroBitCount: Int {
-        return value.lowerBits.nonzeroBitCount + value.upperBits.nonzeroBitCount
+        return self.value.lowerBits.nonzeroBitCount + self.value.upperBits.nonzeroBitCount
     }
 
     public var leadingZeroBitCount: Int {
-        if value.upperBits == 0 {
-            return UInt64.bitWidth + value.lowerBits.leadingZeroBitCount
+        if self.value.upperBits == 0 {
+            return UInt64.bitWidth + self.value.lowerBits.leadingZeroBitCount
         }
-        return value.upperBits.leadingZeroBitCount
+        return self.value.upperBits.leadingZeroBitCount
     }
 
     /// Returns the big-endian representation of the integer, changing the byte order if necessary.
@@ -395,14 +395,14 @@ extension UInt128: BinaryInteger {
     // MARK: Instance Methods
 
     public var words: [UInt] {
-        return Array(value.lowerBits.words) + Array(value.upperBits.words)
+        return Array(self.value.lowerBits.words) + Array(self.value.upperBits.words)
     }
 
     public var trailingZeroBitCount: Int {
         if value.lowerBits == 0 {
-            return UInt64.bitWidth + value.upperBits.trailingZeroBitCount
+            return UInt64.bitWidth + self.value.upperBits.trailingZeroBitCount
         }
-        return value.lowerBits.trailingZeroBitCount
+        return self.value.lowerBits.trailingZeroBitCount
     }
 
     // MARK: Initializers
@@ -524,8 +524,8 @@ extension UInt128: UnsignedInteger {}
 
 extension UInt128: Hashable {
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(value.lowerBits)
-        hasher.combine(value.upperBits)
+        hasher.combine(self.value.lowerBits)
+        hasher.combine(self.value.upperBits)
     }
 }
 
@@ -659,8 +659,8 @@ extension UInt128: Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(value.upperBits, forKey: .upperBits)
-        try container.encode(value.lowerBits, forKey: .lowerBits)
+        try container.encode(self.value.upperBits, forKey: .upperBits)
+        try container.encode(self.value.lowerBits, forKey: .lowerBits)
     }
 }
 
