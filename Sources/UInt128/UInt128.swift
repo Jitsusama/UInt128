@@ -44,6 +44,7 @@ public struct UInt128 {
     public internal(set) var value: (upperBits: UInt64, lowerBits: UInt64)
 
     /// Counts up the significant bits in stored data.
+    @inlinable @inline(__always)
     public var significantBits: Self {
         return Self(Self.bitWidth - self.leadingZeroBitCount)
     }
@@ -51,6 +52,7 @@ public struct UInt128 {
     /// Undocumented private variable required for passing this type
     /// to a BinaryFloatingPoint type. See FloatingPoint.swift.gyb in
     /// the Swift stdlib/public/core directory.
+    @inlinable @inline(__always)
     internal var signBitIndex: Int {
         return 127 - self.leadingZeroBitCount
     }
@@ -63,6 +65,7 @@ public struct UInt128 {
         self.value.lowerBits = lowerBits
     }
 
+    @inlinable @inline(__always)
     public init() {
         self.init(upperBits: 0, lowerBits: 0)
     }
@@ -87,10 +90,12 @@ public struct UInt128 {
 extension UInt128: FixedWidthInteger {
     // MARK: Instance Properties
 
+    @inlinable @inline(__always)
     public var nonzeroBitCount: Int {
         return self.value.lowerBits.nonzeroBitCount + self.value.upperBits.nonzeroBitCount
     }
 
+    @inlinable @inline(__always)
     public var leadingZeroBitCount: Int {
         if self.value.upperBits == 0 {
             return UInt64.bitWidth + self.value.lowerBits.leadingZeroBitCount
@@ -99,6 +104,7 @@ extension UInt128: FixedWidthInteger {
     }
 
     /// Returns the big-endian representation of the integer, changing the byte order if necessary.
+    @inlinable @inline(__always)
     public var bigEndian: Self {
         #if arch(i386) || arch(x86_64) || arch(arm) || arch(arm64)
             return self.byteSwapped
@@ -108,6 +114,7 @@ extension UInt128: FixedWidthInteger {
     }
 
     /// Returns the little-endian representation of the integer, changing the byte order if necessary.
+    @inlinable @inline(__always)
     public var littleEndian: Self {
         #if arch(i386) || arch(x86_64) || arch(arm) || arch(arm64)
             return self
@@ -117,6 +124,7 @@ extension UInt128: FixedWidthInteger {
     }
 
     /// Returns the current integer with the byte order swapped.
+    @inlinable @inline(__always)
     public var byteSwapped: Self {
         return Self(upperBits: self.value.lowerBits.byteSwapped,
                     lowerBits: self.value.upperBits.byteSwapped)
@@ -128,18 +136,21 @@ extension UInt128: FixedWidthInteger {
     /// truncated to a size no larger than what UInt128 can handle.
     /// Since the input is constrained to an UInt, no truncation needs
     /// to occur, as a UInt is currently 64 bits at the maximum.
+    @inlinable @inline(__always)
     public init(_truncatingBits bits: UInt) {
         self.init(upperBits: 0, lowerBits: UInt64(bits))
     }
 
     /// Creates an integer from its big-endian representation, changing the
     /// byte order if necessary.
+    @inlinable @inline(__always)
     public init(bigEndian value: Self) {
         self = value.bigEndian
     }
 
     /// Creates an integer from its little-endian representation, changing the
     /// byte order if necessary.
+    @inlinable @inline(__always)
     public init(littleEndian value: Self) {
         self = value.littleEndian
     }
@@ -398,6 +409,7 @@ extension UInt128: BinaryInteger {
         return Array(self.value.lowerBits.words) + Array(self.value.upperBits.words)
     }
 
+    @inlinable @inline(__always)
     public var trailingZeroBitCount: Int {
         if value.lowerBits == 0 {
             return UInt64.bitWidth + self.value.upperBits.trailingZeroBitCount
@@ -523,6 +535,7 @@ extension UInt128: UnsignedInteger {}
 // MARK: - Hashable Conformance
 
 extension UInt128: Hashable {
+    @inlinable @inline(__always)
     public func hash(into hasher: inout Hasher) {
         hasher.combine(self.value.lowerBits)
         hasher.combine(self.value.upperBits)
@@ -562,6 +575,7 @@ extension UInt128: Numeric {
 
 extension UInt128: Equatable {
     /// Checks if the `lhs` is equal to the `rhs`.
+    @inlinable @inline(__always)
     public static func ==(lhs: Self, rhs: Self) -> Bool {
         lhs.value == rhs.value
     }
