@@ -27,7 +27,7 @@ import XCTest
 let bizarreUInt128 = UInt128("0xf1f3f5f7f9fbfdfffefcfaf0f8f6f4f2")!
 
 /// User tests that act as a basic smoke test on library functionality.
-class SystemTests : XCTestCase {
+class SystemTests: XCTestCase {
     func testCanReceiveAnInt() {
         let expectedResult = UInt128(upperBits: 0, lowerBits: 1)
         let testResult = UInt128(Int(1))
@@ -66,7 +66,7 @@ class SystemTests : XCTestCase {
 }
 
 /// Test properties and methods that are not tied to protocol conformance.
-class BaseTypeTests : XCTestCase {
+class BaseTypeTests: XCTestCase {
     func testSignificantBitsReturnsProperBitCount() {
         var tests = [(input: UInt128(),
                       expected: UInt128(upperBits: 0, lowerBits: 0))]
@@ -130,7 +130,7 @@ class BaseTypeTests : XCTestCase {
     }
 }
 
-class FixedWidthIntegerTests : XCTestCase {
+class FixedWidthIntegerTests: XCTestCase {
     func testNonzeroBitCount() {
         var tests = [(input: UInt128.min, result: 0)]
         tests.append((input: UInt128(1), result: 1))
@@ -443,7 +443,7 @@ class FixedWidthIntegerTests : XCTestCase {
     }
 }
 
-class BinaryIntegerTests : XCTestCase {
+class BinaryIntegerTests: XCTestCase {
     func testBitWidthEquals128() {
         XCTAssertEqual(UInt128.bitWidth, 128)
     }
@@ -720,7 +720,7 @@ class BinaryIntegerTests : XCTestCase {
     }
 }
 
-class NumericTests : XCTestCase {
+class NumericTests: XCTestCase {
     func additionTests() -> [(augend: UInt128, addend: UInt128, sum: UInt128)] {
         // 0 + 0 = 0
         var tests = [(augend: UInt128.min, addend: UInt128.min, sum: UInt128.min)]
@@ -824,7 +824,7 @@ class NumericTests : XCTestCase {
     }
 }
 
-class EquatableTests : XCTestCase {
+class EquatableTests: XCTestCase {
     func testBooleanEqualsOperator() {
         var tests = [(lhs: UInt128.min,
                       rhs: UInt128.min, result: true)]
@@ -845,7 +845,7 @@ class EquatableTests : XCTestCase {
     }
 }
 
-class ExpressibleByIntegerLiteralTests : XCTestCase {
+class ExpressibleByIntegerLiteralTests: XCTestCase {
     func testInitWithIntegerLiteral() {
         var tests = [(input: 0, result: UInt128())]
         tests.append((input: 1, result: UInt128(upperBits: 0, lowerBits: 1)))
@@ -857,7 +857,7 @@ class ExpressibleByIntegerLiteralTests : XCTestCase {
     }
 }
 
-class CustomStringConvertibleTests : XCTestCase {
+class CustomStringConvertibleTests: XCTestCase {
     func stringTests() -> [(input: UInt128, result: [Int: String])] {
         var tests = [(input: UInt128(), result:[
             2: "0", 8: "0", 10: "0", 16: "0", 18: "0", 36: "0"])]
@@ -921,7 +921,7 @@ class CustomStringConvertibleTests : XCTestCase {
 
 }
 
-class CustomDebugStringConvertible : XCTestCase {
+class CustomDebugStringConvertible: XCTestCase {
     func stringTests() -> [(input: UInt128, result: String)] {
         var tests = [(input: UInt128(),
                       result:"0")]
@@ -936,7 +936,6 @@ class CustomDebugStringConvertible : XCTestCase {
         return tests
     }
 
-
     func testDebugDescriptionProperty() {
         stringTests().forEach { test in
             XCTAssertEqual(test.input.debugDescription, test.result)
@@ -950,7 +949,7 @@ class CustomDebugStringConvertible : XCTestCase {
     }
 }
 
-class ComparableTests : XCTestCase {
+class ComparableTests: XCTestCase {
     func testLessThanOperator() {
         var tests = [(lhs: UInt128.min, rhs: UInt128(1), result: true)]
         tests.append((lhs: UInt128.min, rhs: UInt128(upperBits: 1, lowerBits: 0), result: true))
@@ -966,7 +965,7 @@ class ComparableTests : XCTestCase {
     }
 }
 
-class FailableStringInitializerTests : XCTestCase {
+class FailableStringInitializerTests: XCTestCase {
     func stringTests() -> [(input: String, result: UInt128?)] {
         var tests = [(input: "", result: nil as UInt128?)]
         tests.append((input: "0", result: UInt128()))
@@ -1000,7 +999,7 @@ class FailableStringInitializerTests : XCTestCase {
     }
 }
 
-class CodableTests : XCTestCase {
+class CodableTests: XCTestCase {
     func testCodable() throws {
         let enc = try XCTUnwrap(UInt128("340282366920938463463374607431768211455"))
         let data = try! JSONEncoder().encode(enc)
@@ -1010,14 +1009,14 @@ class CodableTests : XCTestCase {
 }
 
 @available(swift, deprecated: 3.2)
-class DeprecatedAPITests : XCTestCase {
+class DeprecatedAPITests: XCTestCase {
     func testFromUnparsedString() {
         XCTAssertThrowsError(try UInt128.fromUnparsedString(""))
         XCTAssertEqual(try UInt128.fromUnparsedString("1"), UInt128(1))
     }
 }
 
-class FloatingPointInterworkingTests : XCTestCase {
+class FloatingPointInterworkingTests: XCTestCase {
     func testNonFailableInitializer() {
         var tests = [(input: UInt128(), output: Float(0))]
         tests.append((input: UInt128(upperBits: 0, lowerBits: UInt64.max),
@@ -1050,4 +1049,3 @@ class FloatingPointInterworkingTests : XCTestCase {
         }
     }
 }
-
