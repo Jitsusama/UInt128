@@ -41,7 +41,7 @@ public struct UInt128 {
 
     /// Internal value is presented as a tuple of 2 64-bit
     /// unsigned integers.
-    internal var value: (upperBits: UInt64, lowerBits: UInt64)
+    public internal(set) var value: (upperBits: UInt64, lowerBits: UInt64)
 
     /// Counts up the significant bits in stored data.
     public var significantBits: UInt128 {
