@@ -563,10 +563,7 @@ extension UInt128: Numeric {
 extension UInt128: Equatable {
     /// Checks if the `lhs` is equal to the `rhs`.
     public static func ==(lhs: Self, rhs: Self) -> Bool {
-        if lhs.value.lowerBits == rhs.value.lowerBits && lhs.value.upperBits == rhs.value.upperBits {
-            return true
-        }
-        return false
+        lhs.value == rhs.value
     }
 }
 
