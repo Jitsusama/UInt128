@@ -22,6 +22,8 @@
 // limitations under the License.
 //
 
+import Foundation
+
 // MARK: Error Type
 
 /// An `ErrorType` for `UInt128` data types. It includes cases
@@ -36,6 +38,7 @@ public enum UInt128Errors : Error {
 
 /// A 128-bit unsigned integer value type.
 /// Storage is based upon a tuple of 2, 64-bit, unsigned integers.
+@frozen
 public struct UInt128 {
     // MARK: Instance Properties
 
@@ -749,5 +752,32 @@ extension UInt128 {
         case "0x": return 16
         default: return 10
         }
+    }
+}
+
+extension UInt128 {
+    internal var swapped: Self {
+        Self(
+            upperBits: self.value.upperBits.byteSwapped,
+            lowerBits: self.value.lowerBits.byteSwapped
+        )
+    }
+}
+
+extension UUID {
+    public init(value: UInt128) {
+        let value = withUnsafeBytes(of: value.swapped) {
+            $0.baseAddress!.assumingMemoryBound(to: uuid_t.self)
+        }.pointee
+        self.init(uuid: value)
+    }
+}
+
+extension UInt128 {
+    public init(uuid: UUID) {
+        let value = withUnsafeBytes(of: uuid) {
+            $0.baseAddress!.assumingMemoryBound(to: UInt128.self)
+        }.pointee
+        self = value.swapped
     }
 }

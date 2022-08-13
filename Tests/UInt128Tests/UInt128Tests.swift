@@ -1051,3 +1051,17 @@ class FloatingPointInterworkingTests : XCTestCase {
     }
 }
 
+class UUIDTests: XCTestCase {
+    func testUUID() {
+        let expected = UUID(uuidString: "00000000-0000-0000-0000-000000000001")!
+        let result = UUID(value: 1)
+        XCTAssert(expected == result)
+        XCTAssert(UInt128(uuid: result) == 1)
+    }
+
+    func testUUID1() {
+        let expected = UUID()
+        let result = UUID(value: UInt128(uuid: expected))
+        XCTAssert(expected == result)
+    }
+}
