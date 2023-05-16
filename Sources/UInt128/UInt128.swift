@@ -607,6 +607,9 @@ extension UInt128 : CustomStringConvertible {
             return "0"
         }
 
+        let radix = UInt128(radix)
+        var index: String.Index
+        
         // Will store the final string result.
         var result = String()
 
@@ -616,8 +619,8 @@ extension UInt128 : CustomStringConvertible {
         let characterPool = uppercase ? "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ" : "0123456789abcdefghijklmnopqrstuvwxyz"
         // Go through internal value until every base position is string(ed).
         repeat {
-            divmodResult = divmodResult.quotient.quotientAndRemainder(dividingBy: UInt128(radix))
-            let index = characterPool.index(characterPool.startIndex, offsetBy: Int(divmodResult.remainder))
+            divmodResult = divmodResult.quotient.quotientAndRemainder(dividingBy: radix)
+            index = characterPool.index(characterPool.startIndex, offsetBy: Int(truncatingIfNeeded: divmodResult.remainder.value.lowerBits))
             result.insert(characterPool[index], at: result.startIndex)
         } while divmodResult.quotient > 0
         return result
