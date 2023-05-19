@@ -591,15 +591,13 @@ extension UInt128 : CustomStringConvertible {
 
     // MARK: Instance Methods
 
-    /// Converts the stored value into a string representation.
-    /// - parameter radix:
-    ///     The radix for the base numbering system you wish to have
-    ///     the type presented in.
-    /// - parameter uppercase:
-    ///     Determines whether letter components of the outputted string will be in
-    ///     uppercase format or not.
-    /// - returns:
-    ///     String representation of the stored UInt128 value.
+    /// Converts the stored value into a string representation based on radix.
+    /// - Parameters:
+    ///   - radix: The radix for the base numbering system to emit. Default is 10.
+    ///   - uppercase: Specify true for uppercase and false for lowercase  for returned String.
+    /// - Returns: String representation of the stored UInt128 value.
+    /// - Precondition: Valid radix is from 2...36
+    /// - Complexity: O(n) where n is the number of decimal digits in the final representation
     internal func _valueToString(radix: Int = 10, uppercase: Bool = true) -> String {
         precondition((2...36) ~= radix, "radix must be within the range of 2-36.")
         // Simple case.
@@ -607,11 +605,28 @@ extension UInt128 : CustomStringConvertible {
             return "0"
         }
 
+        var result = String()
+       
+        // reserve maxbuffer size for UInt.max as ascii for respective radix.
+        //        ex. print(UInt128.max._valueToString(radix: 2).count)
+
+        switch radix {
+            case 10:
+                result.reserveCapacity(39)
+            case 16:
+                result.reserveCapacity(32)
+            case 2:
+                result.reserveCapacity(128)
+            case 8:
+                result.reserveCapacity(43)
+            default:
+                // Base3 is next worst case after Base2
+                // General for any other radix not enumerated above.
+                result.reserveCapacity(81)
+        }
+        
         let radix = UInt128(radix)
         var index: String.Index
-        
-        // Will store the final string result.
-        var result = String()
 
         // Used as the check for indexing through UInt128 for string interpolation.
         var divmodResult = (quotient: self, remainder: UInt128(0))
@@ -621,10 +636,33 @@ extension UInt128 : CustomStringConvertible {
         repeat {
             divmodResult = divmodResult.quotient.quotientAndRemainder(dividingBy: radix)
             index = characterPool.index(characterPool.startIndex, offsetBy: Int(truncatingIfNeeded: divmodResult.remainder.value.lowerBits))
-            result.insert(characterPool[index], at: result.startIndex)
+            result.append(characterPool[index])
         } while divmodResult.quotient > 0
-        return result
+        return String(result.reversed())
     }
+    
+//    internal func _valueToStringPrevious(radix: Int = 10, uppercase: Bool = true) -> String {
+//        precondition((2...36) ~= radix, "radix must be within the range of 2-36.")
+//        // Simple case.
+//        if self == 0 {
+//            return "0"
+//        }
+//
+//        // Will store the final string result.
+//        var result = String()
+//
+//        // Used as the check for indexing through UInt128 for string interpolation.
+//        var divmodResult = (quotient: self, remainder: UInt128(0))
+//        // Will hold the pool of possible values.
+//        let characterPool = uppercase ? "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ" : "0123456789abcdefghijklmnopqrstuvwxyz"
+//        // Go through internal value until every base position is string(ed).
+//        repeat {
+//            divmodResult = divmodResult.quotient.quotientAndRemainder(dividingBy: UInt128(radix))
+//            let index = characterPool.index(characterPool.startIndex, offsetBy: Int(divmodResult.remainder))
+//            result.insert(characterPool[index], at: result.startIndex)
+//        } while divmodResult.quotient > 0
+//        return result
+//    }
 }
 
 // MARK: - CustomDebugStringConvertible Conformance
