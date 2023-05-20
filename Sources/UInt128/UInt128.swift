@@ -594,7 +594,7 @@ extension UInt128 : CustomStringConvertible {
     /// Converts the stored value into a string representation based on radix.
     /// - Parameters:
     ///   - radix: The radix for the base numbering system to emit. Default is 10.
-    ///   - uppercase: Specify true for uppercase and false for lowercase  for returned String.
+    ///   - uppercase: Specify true for uppercase and false for lowercase for returned String.
     /// - Returns: String representation of the stored UInt128 value.
     /// - Precondition: Valid radix is from 2...36
     /// - Complexity: O(n) where n is the number of decimal digits in the final representation
