@@ -631,16 +631,18 @@ extension UInt128: CustomStringConvertible {
   /// - Complexity: O(n) where n is the number of decimal digits in the final representation
   internal func _valueToString(radix: Int = 10, uppercase: Bool = true) -> String {
     precondition((2...36) ~= radix, "radix must be within the range of 2-36.")
+
     // Simple case.
     if self == 0 {
       return "0"
     }
 
     var result = String()
+    let radix = UInt128(radix)
+    var index: String.Index
 
-    // reserve maxbuffer size for UInt.max as ascii for respective radix.
-    //        ex. print(UInt128.max._valueToString(radix: 2).count)
-
+    // Reserve maxbuffer size for UInt.max as ASCII for respective radix.
+    // ex. print(UInt128.max._valueToString(radix: 2).count)
     switch radix {
     case 10:
       result.reserveCapacity(39)
@@ -656,14 +658,12 @@ extension UInt128: CustomStringConvertible {
       result.reserveCapacity(81)
     }
 
-    let radix = UInt128(radix)
-    var index: String.Index
-
     // Used as the check for indexing through UInt128 for string interpolation.
     var divmodResult = (quotient: self, remainder: UInt128(0))
     // Will hold the pool of possible values.
     let characterPool =
       uppercase ? "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ" : "0123456789abcdefghijklmnopqrstuvwxyz"
+
     // Go through internal value until every base position is string(ed).
     repeat {
       divmodResult = divmodResult.quotient.quotientAndRemainder(dividingBy: radix)
@@ -672,31 +672,9 @@ extension UInt128: CustomStringConvertible {
         offsetBy: Int(truncatingIfNeeded: divmodResult.remainder.value.lowerBits))
       result.append(characterPool[index])
     } while divmodResult.quotient > 0
+
     return String(result.reversed())
   }
-
-  //    internal func _valueToStringPrevious(radix: Int = 10, uppercase: Bool = true) -> String {
-  //        precondition((2...36) ~= radix, "radix must be within the range of 2-36.")
-  //        // Simple case.
-  //        if self == 0 {
-  //            return "0"
-  //        }
-  //
-  //        // Will store the final string result.
-  //        var result = String()
-  //
-  //        // Used as the check for indexing through UInt128 for string interpolation.
-  //        var divmodResult = (quotient: self, remainder: UInt128(0))
-  //        // Will hold the pool of possible values.
-  //        let characterPool = uppercase ? "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ" : "0123456789abcdefghijklmnopqrstuvwxyz"
-  //        // Go through internal value until every base position is string(ed).
-  //        repeat {
-  //            divmodResult = divmodResult.quotient.quotientAndRemainder(dividingBy: UInt128(radix))
-  //            let index = characterPool.index(characterPool.startIndex, offsetBy: Int(divmodResult.remainder))
-  //            result.insert(characterPool[index], at: result.startIndex)
-  //        } while divmodResult.quotient > 0
-  //        return result
-  //    }
 }
 
 // MARK: - CustomDebugStringConvertible Conformance
