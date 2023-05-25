@@ -7,7 +7,7 @@
 // UnsignedInteger protocol as well as standard functions supported
 // by Swift's native unsigned integer types.
 //
-// Copyright 2017 Joel Gerber
+// Copyright 2023 Joel Gerber
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
