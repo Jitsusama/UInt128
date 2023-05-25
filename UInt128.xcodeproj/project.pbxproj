@@ -12,6 +12,7 @@
 		481A30B91F02FC5400C4438A /* UInt128.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 481A30AF1F02FB9F00C4438A /* UInt128.framework */; };
 		481A30BA1F02FC6600C4438A /* UInt128.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_8 /* UInt128.swift */; };
 		481A30BB1F02FC6600C4438A /* UInt128.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_8 /* UInt128.swift */; };
+		482193E72A20168800B90A8D /* UInt128PerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 482193E62A20168800B90A8D /* UInt128PerformanceTests.swift */; };
 		OBJ_21 /* UInt128.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_8 /* UInt128.swift */; };
 		OBJ_28 /* UInt128Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* UInt128Tests.swift */; };
 		OBJ_30 /* UInt128.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = OBJ_14 /* UInt128.framework */; };
@@ -45,6 +46,7 @@
 		167CA9C21EFCF3E50091689C /* UInt128.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = UInt128.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		481A30A01F02F8A000C4438A /* UInt128.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = UInt128.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		481A30AF1F02FB9F00C4438A /* UInt128.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = UInt128.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		482193E62A20168800B90A8D /* UInt128PerformanceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UInt128PerformanceTests.swift; sourceTree = "<group>"; };
 		48389B601EDB9F78008C1177 /* Playground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = Playground.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		OBJ_11 /* UInt128Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UInt128Tests.swift; sourceTree = "<group>"; };
 		OBJ_14 /* UInt128.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = UInt128.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -99,6 +101,7 @@
 			isa = PBXGroup;
 			children = (
 				OBJ_11 /* UInt128Tests.swift */,
+				482193E62A20168800B90A8D /* UInt128PerformanceTests.swift */,
 			);
 			name = UInt128Tests;
 			path = Tests/UInt128Tests;
@@ -355,6 +358,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
 			files = (
+				482193E72A20168800B90A8D /* UInt128PerformanceTests.swift in Sources */,
 				OBJ_28 /* UInt128Tests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
