@@ -22,49 +22,22 @@ import XCTest
 
 @testable import UInt128
 
-final class UInt128PerformanceTests: XCTestCase {
+final class CustomStringConvertiblePerformanceTests: XCTestCase {
+  func testCustomStringInitializer() throws {
+    let options = XCTMeasureOptions()
+    options.iterationCount = 1000
 
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    self.measure(options: options) {
+      _ = String(UInt128.max)
     }
+  }
 
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
+  func testStringLiteralInitializer() throws {
+    let options = XCTMeasureOptions()
+    options.iterationCount = 1000
 
-    func testPerformance_valueToString() throws {
-        
-        let value = UInt128.max
-
-        let options = XCTMeasureOptions()
-        options.iterationCount = 1000
-        
-        self.measure(options: options) {
-            _ = value._valueToString()
-        }
+    self.measure(options: options) {
+      _ = UInt128("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")!
     }
-    
-//    func testPerformance_valueToStringPrevious() throws {
-//        
-//        let value = UInt128.max
-//
-//        let options = XCTMeasureOptions()
-//        options.iterationCount = 1000
-//        
-//        self.measure(options: options) {
-//            _ = value._valueToStringPrevious()
-//        }
-//    }
-    
-    func testPerformance_valueFromString() throws {
-        
-        let options = XCTMeasureOptions()
-        options.iterationCount = 1000
-        
-        self.measure(options: options) {
-            _ = UInt128._valueFromString("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")!
-        }
-    }
+  }
 }
-
-
