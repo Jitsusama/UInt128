@@ -1413,3 +1413,22 @@ class FloatingPointInterworkingTests: XCTestCase {
     }
   }
 }
+
+class UUIDTests: XCTestCase {
+    func testConvertUUID() {
+        let uuid = UUID(uuidString: "1F349019-F3F5-489F-85F5-9CD214D6BD69")!
+        let uint128 = UInt128(uuid: uuid)
+        let uuid128 = UUID(uint128)
+        XCTAssertEqual(uuid128, uuid)
+        
+        let uuid0 = UUID(uuidString: "00000000-0000-0000-0000-000000000000")!
+        let uint1280 = UInt128(uuid: uuid0)
+        let uuid1280 = UUID(uint1280)
+        XCTAssertEqual(uuid1280, uuid0)
+        
+        let uuidf = UUID(uuidString: "FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF")!
+        let uint128f = UInt128(uuid: uuidf)
+        let uuid128f = UUID(uint128f)
+        XCTAssertEqual(uuid128f, uuidf)
+    }
+}

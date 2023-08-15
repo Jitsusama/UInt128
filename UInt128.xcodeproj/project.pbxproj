@@ -13,6 +13,14 @@
 		481A30BA1F02FC6600C4438A /* UInt128.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_8 /* UInt128.swift */; };
 		481A30BB1F02FC6600C4438A /* UInt128.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_8 /* UInt128.swift */; };
 		482193E72A20168800B90A8D /* UInt128PerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 482193E62A20168800B90A8D /* UInt128PerformanceTests.swift */; };
+		867706002A8BAD0A00D09D91 /* UUID+UInt128.swift in Sources */ = {isa = PBXBuildFile; fileRef = 867705FF2A8BAD0A00D09D91 /* UUID+UInt128.swift */; };
+		867706012A8BAD0A00D09D91 /* UUID+UInt128.swift in Sources */ = {isa = PBXBuildFile; fileRef = 867705FF2A8BAD0A00D09D91 /* UUID+UInt128.swift */; };
+		867706022A8BAD0A00D09D91 /* UUID+UInt128.swift in Sources */ = {isa = PBXBuildFile; fileRef = 867705FF2A8BAD0A00D09D91 /* UUID+UInt128.swift */; };
+		867706032A8BAD0A00D09D91 /* UUID+UInt128.swift in Sources */ = {isa = PBXBuildFile; fileRef = 867705FF2A8BAD0A00D09D91 /* UUID+UInt128.swift */; };
+		867706052A8BB44300D09D91 /* UInt128+UUID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 867706042A8BB44300D09D91 /* UInt128+UUID.swift */; };
+		867706062A8BB44300D09D91 /* UInt128+UUID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 867706042A8BB44300D09D91 /* UInt128+UUID.swift */; };
+		867706072A8BB44300D09D91 /* UInt128+UUID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 867706042A8BB44300D09D91 /* UInt128+UUID.swift */; };
+		867706082A8BB44300D09D91 /* UInt128+UUID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 867706042A8BB44300D09D91 /* UInt128+UUID.swift */; };
 		OBJ_21 /* UInt128.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_8 /* UInt128.swift */; };
 		OBJ_28 /* UInt128Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* UInt128Tests.swift */; };
 		OBJ_30 /* UInt128.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = OBJ_14 /* UInt128.framework */; };
@@ -48,6 +56,8 @@
 		481A30AF1F02FB9F00C4438A /* UInt128.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = UInt128.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		482193E62A20168800B90A8D /* UInt128PerformanceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UInt128PerformanceTests.swift; sourceTree = "<group>"; };
 		48389B601EDB9F78008C1177 /* Playground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = Playground.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		867705FF2A8BAD0A00D09D91 /* UUID+UInt128.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UUID+UInt128.swift"; sourceTree = "<group>"; };
+		867706042A8BB44300D09D91 /* UInt128+UUID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UInt128+UUID.swift"; sourceTree = "<group>"; };
 		OBJ_11 /* UInt128Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UInt128Tests.swift; sourceTree = "<group>"; };
 		OBJ_14 /* UInt128.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = UInt128.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		OBJ_15 /* UInt128Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = UInt128Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -134,6 +144,8 @@
 			isa = PBXGroup;
 			children = (
 				OBJ_8 /* UInt128.swift */,
+				867705FF2A8BAD0A00D09D91 /* UUID+UInt128.swift */,
+				867706042A8BB44300D09D91 /* UInt128+UUID.swift */,
 			);
 			path = Sources;
 			sourceTree = SOURCE_ROOT;
@@ -326,6 +338,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
 			files = (
+				867706002A8BAD0A00D09D91 /* UUID+UInt128.swift in Sources */,
+				867706052A8BB44300D09D91 /* UInt128+UUID.swift in Sources */,
 				167CA9BD1EFCF3E50091689C /* UInt128.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -334,6 +348,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				867706022A8BAD0A00D09D91 /* UUID+UInt128.swift in Sources */,
+				867706072A8BB44300D09D91 /* UInt128+UUID.swift in Sources */,
 				481A30BA1F02FC6600C4438A /* UInt128.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -342,6 +358,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				867706032A8BAD0A00D09D91 /* UUID+UInt128.swift in Sources */,
+				867706082A8BB44300D09D91 /* UInt128+UUID.swift in Sources */,
 				481A30BB1F02FC6600C4438A /* UInt128.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -350,6 +368,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
 			files = (
+				867706012A8BAD0A00D09D91 /* UUID+UInt128.swift in Sources */,
+				867706062A8BB44300D09D91 /* UInt128+UUID.swift in Sources */,
 				OBJ_21 /* UInt128.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -40,4 +40,18 @@ final class CustomStringConvertiblePerformanceTests: XCTestCase {
       _ = UInt128("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")!
     }
   }
+    
+}
+
+final class UUIDConvertibalePerformanceTests: XCTestCase {
+    
+    func testUUIDPlus() {
+        let uuid = UUID(uuidString: "1F349019-F3F5-489F-85F5-9CD214D6BD69")!
+        let options = XCTMeasureOptions()
+        options.iterationCount = 1000
+        self.measure(options: options) {
+            _ = UInt128(uuid: uuid)
+        }
+    }
+    
 }
