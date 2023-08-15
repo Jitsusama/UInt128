@@ -24,29 +24,25 @@ extension UUID {
     /// Creates a UUID representation of a UInt128. Since a UUID is always
     /// 128 bits, no truncation occurs.
     public init(_ longInt: UInt128) {
-
-        func byte(_ nr: Int) -> UInt8 {
-            let bits = (16 - (16 - nr)) * 8
-            return UInt8((longInt >> bits) & 0xFF)
-        }
-        
+        let lowerBits = longInt.value.lowerBits
+        let upperBita = longInt.value.upperBits
         let val: uuid_t = (
-            byte(0),
-            byte(1),
-            byte(2),
-            byte(3),
-            byte(4),
-            byte(5),
-            byte(6),
-            byte(7),
-            byte(8),
-            byte(9),
-            byte(10),
-            byte(11),
-            byte(12),
-            byte(13),
-            byte(14),
-            byte(15)
+            UInt8((lowerBits >> (0 * 8)) & 0xFF),
+            UInt8((lowerBits >> (1 * 8)) & 0xFF),
+            UInt8((lowerBits >> (2 * 8)) & 0xFF),
+            UInt8((lowerBits >> (3 * 8)) & 0xFF),
+            UInt8((lowerBits >> (4 * 8)) & 0xFF),
+            UInt8((lowerBits >> (5 * 8)) & 0xFF),
+            UInt8((lowerBits >> (6 * 8)) & 0xFF),
+            UInt8((lowerBits >> (7 * 8)) & 0xFF),
+            UInt8((upperBita >> (0 * 8)) & 0xFF),
+            UInt8((upperBita >> (1 * 8)) & 0xFF),
+            UInt8((upperBita >> (2 * 8)) & 0xFF),
+            UInt8((upperBita >> (3 * 8)) & 0xFF),
+            UInt8((upperBita >> (4 * 8)) & 0xFF),
+            UInt8((upperBita >> (5 * 8)) & 0xFF),
+            UInt8((upperBita >> (6 * 8)) & 0xFF),
+            UInt8((upperBita >> (7 * 8)) & 0xFF)
         )
         self = .init(uuid: val)
     }
