@@ -25,7 +25,7 @@ extension UUID {
     /// 128 bits, no truncation occurs.
     public init(_ longInt: UInt128) {
         let lowerBits = longInt.value.lowerBits
-        let upperBita = longInt.value.upperBits
+        let upperBits = longInt.value.upperBits
         let val: uuid_t = (
             UInt8((lowerBits >> (0 * 8)) & 0xFF),
             UInt8((lowerBits >> (1 * 8)) & 0xFF),
@@ -35,14 +35,14 @@ extension UUID {
             UInt8((lowerBits >> (5 * 8)) & 0xFF),
             UInt8((lowerBits >> (6 * 8)) & 0xFF),
             UInt8((lowerBits >> (7 * 8)) & 0xFF),
-            UInt8((upperBita >> (0 * 8)) & 0xFF),
-            UInt8((upperBita >> (1 * 8)) & 0xFF),
-            UInt8((upperBita >> (2 * 8)) & 0xFF),
-            UInt8((upperBita >> (3 * 8)) & 0xFF),
-            UInt8((upperBita >> (4 * 8)) & 0xFF),
-            UInt8((upperBita >> (5 * 8)) & 0xFF),
-            UInt8((upperBita >> (6 * 8)) & 0xFF),
-            UInt8((upperBita >> (7 * 8)) & 0xFF)
+            UInt8((upperBits >> (0 * 8)) & 0xFF),
+            UInt8((upperBits >> (1 * 8)) & 0xFF),
+            UInt8((upperBits >> (2 * 8)) & 0xFF),
+            UInt8((upperBits >> (3 * 8)) & 0xFF),
+            UInt8((upperBits >> (4 * 8)) & 0xFF),
+            UInt8((upperBits >> (5 * 8)) & 0xFF),
+            UInt8((upperBits >> (6 * 8)) & 0xFF),
+            UInt8((upperBits >> (7 * 8)) & 0xFF)
         )
         self = .init(uuid: val)
     }
